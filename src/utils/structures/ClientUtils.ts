@@ -1,8 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import { Rawon } from "../../structures/Rawon";
-import { Guild, Role } from "discord.js";
-import { parse } from "path";
+import { Guild, Role, ChannelType } from "discord.js";
+import { execSync } from "child_process";
 import prism from "prism-media";
+import { parse } from "path";
 
 const { FFmpeg } = prism;
 
@@ -55,19 +56,19 @@ export class ClientUtils {
                         .filter(ch => {
                             if (t.textOnly) {
                                 return (
-                                    ch.type === "GUILD_TEXT" ||
-                                    ch.type === "GUILD_PUBLIC_THREAD" ||
-                                    ch.type === "GUILD_PRIVATE_THREAD"
+                                    ch.type === t.types.GuildText ||
+                                    ch.type === t.types.PublicThread ||
+                                    ch.type === t.types.PrivateThread
                                 );
                             } else if (t.voiceOnly) {
-                                return ch.type === "GUILD_VOICE";
+                                return ch.type === t.types.GuildVoice;
                             }
 
                             return true;
                         })
                         .map(ch => ch.id),
                 {
-                    context: { textOnly, voiceOnly }
+                    context: { textOnly, voiceOnly, types: ChannelType }
                 }
             );
 
@@ -79,12 +80,12 @@ export class ClientUtils {
                 .filter(ch => {
                     if (textOnly) {
                         return (
-                            ch.type === "GUILD_TEXT" ||
-                            ch.type === "GUILD_PUBLIC_THREAD" ||
-                            ch.type === "GUILD_PRIVATE_THREAD"
+                            ch.type === ChannelType.GuildText ||
+                            ch.type === ChannelType.PublicThread ||
+                            ch.type === ChannelType.PrivateThread
                         );
                     } else if (voiceOnly) {
-                        return ch.type === "GUILD_VOICE";
+                        return ch.type === ChannelType.GuildVoice;
                     }
 
                     return true;
@@ -135,6 +136,15 @@ export class ClientUtils {
             );
         } catch {
             return "Unknown";
+        }
+    }
+
+    public getCommitHash(ref: string, short = true): string {
+        try {
+            const res = execSync(`git rev-parse${short ? " --short" : ""} ${ref}`);
+            return res.toString().trim();
+        } catch {
+            return "???"
         }
     }
 }

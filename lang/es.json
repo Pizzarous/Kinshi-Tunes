@@ -6,6 +6,7 @@
                 "description": "Evaluar al bot",
                 "errorString": "Error",
                 "noCode": "No se ingresó código.",
+                "inputString": "Entrada",
                 "outputString": "Salida",
                 "usage": "{prefix}eval <código>"
             }
@@ -15,12 +16,16 @@
                 "aboutFooter": "Información del bot {botname}",
                 "botUptimeString": "Tiempo de actividad del bot",
                 "botVersionString": "Versión del bot",
+                "cachedUsersString": "Usuarios en caché",
+                "channelsString": "Canales",
+                "commitString": "Commit",
                 "description": "Muestra la información del bot",
                 "discordJSVersionString": "Versión de Discord.js",
                 "ffmpegVersionString": "Versión de FFmpeg",
                 "nodeVersionString": "Versión de Node.js",
                 "osUptimeString": "Tiempo de actividad del S.O.",
                 "processUptimeString": "Tiempo de actividad del proceso",
+                "serversString": "Servidores",
                 "sourceCodeString": "Código Fuente"
             },
             "categoryName": "GENERAL",
@@ -145,7 +150,7 @@
                 "description": "Desbanea a alguien del servidor",
                 "slashMemberDescription": "¿A quién quisieras desbanear?",
                 "slashReasonDescription": "Razón de desbaneo",
-                "ubanSuccess": "**{user}** ha sido **`DESBANEADO`** del servidor.",
+                "unbanSuccess": "**{user}** ha sido **`DESBANEADO`** del servidor.",
                 "unbanFail": "No se pudo **`DESBANEAR`** al miembro, razón: `{message}`",
                 "unbannedByString": "Desbaneado por: {author}",
                 "usage": "{prefix}unban <id> [razón]"
@@ -193,6 +198,19 @@
                 "slashEnableDescription": "Activa la función DJ",
                 "slashRoleDescription": "Mira o cambia la configuración del rol DJ",
                 "slashRoleNewRoleOption": "Nuevo rol DJ"
+            },
+            "filter": {
+                "availableFilters": "Filtros disponibles",
+                "currentlyUsedFilters": "Filtros utilizados actualmente",
+                "currentState": "`{filter}` es actualmente `{state}`",
+                "description": "Configurar el filtro de canción",
+                "embedFooter": "Para {opstate} el filtro, utilice {prefix}filter {opstate} {filter}",
+                "filterSet": "`El filtro {filter}` ya está `{state}`",
+                "slashStateDescription": "{state, select, enable {Activar} other {Desactivar}} un filtro de canción",
+                "slashStateFilterDescription": "The song filter that will be {state, select, enable {activado} other {desactivado}}",
+                "slashStatusDescription": "Comprobar el estado actual de los filtros de canción",
+                "slashStatusFilterDescription": "El filtro de canción que desea comprobar",
+                "specifyFilter": "Por favor, especifique el filtro de canción"
             },
             "lyrics": {
                 "apiError": "El API no pudo encontrar la letra de la canción **{song}**, razón: {message}",
@@ -317,6 +335,7 @@
             "message2": "Lo siento, pero esta interacción es solo para <@{user}>"
         },
         "createMessage": "Hola {author}, mi prefix es **`{prefix}`**",
+        "cmdLoading": "Cargando...",
         "voiceStateUpdate": {
             "connectionReconfigured": "La conexión se ha reconfigurado con éxito.",
             "deleteQueue": "Ha pasado **`{duration}`** y nadie se ha unido al canal de voz, la cola ha sido eliminada.",

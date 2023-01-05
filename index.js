@@ -121,16 +121,3 @@ if (streamStrategy === "play-dl") {
 }
 console.info("[INFO] Starting the bot...");
 import("./dist/index.js");
-
-
-import express from 'express'
-
-const app = express()
-app.get('/', (req, res) => {
-    res.send('Odd is better.');
-  });
-
-const port = process.env.PORT || 6969;
-app.listen(port, () => {
-  console.log(`Serve at http://localhost:${port}`);
-});

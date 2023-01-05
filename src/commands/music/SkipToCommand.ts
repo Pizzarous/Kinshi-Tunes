@@ -6,8 +6,8 @@ import { Command } from "../../utils/decorators/Command";
 import { play } from "../../utils/handlers/GeneralUtil";
 import { QueueSong } from "../../typings";
 import i18n from "../../config";
+import { ApplicationCommandOptionType, Message, VoiceChannel } from "discord.js";
 import { AudioPlayerPlayingState } from "@discordjs/voice";
-import { Message } from "discord.js";
 
 @Command({
     aliases: ["st"],
@@ -18,12 +18,12 @@ import { Message } from "discord.js";
             {
                 description: i18n.__("commands.music.skipTo.slashFirstDescription"),
                 name: "first",
-                type: "SUB_COMMAND"
+                type: ApplicationCommandOptionType.Subcommand
             },
             {
                 description: i18n.__("commands.music.skipTo.slashLastDescription"),
                 name: "last",
-                type: "SUB_COMMAND"
+                type: ApplicationCommandOptionType.Subcommand
             },
             {
                 description: i18n.__("commands.music.skipTo.slashSpecificDescription"),
@@ -33,10 +33,10 @@ import { Message } from "discord.js";
                         description: i18n.__("commands.music.skipTo.slashPositionDescription"),
                         name: "position",
                         required: true,
-                        type: "NUMBER"
+                        type: ApplicationCommandOptionType.Number
                     }
                 ],
-                type: "SUB_COMMAND"
+                type: ApplicationCommandOptionType.Subcommand
             }
         ]
     },
@@ -50,8 +50,11 @@ export class SkipToCommand extends BaseCommand {
         const djRole = await this.client.utils.fetchDJRole(ctx.guild!);
         if (
             this.client.data.data?.[ctx.guild!.id]?.dj?.enable &&
+            (this.client.channels.cache.get(
+                ctx.guild?.queue?.connection?.joinConfig.channelId ?? ""
+            ) as VoiceChannel).members.size > 2 &&
             !ctx.member?.roles.cache.has(djRole?.id ?? "") &&
-            !ctx.member?.permissions.has("MANAGE_GUILD")
+            !ctx.member?.permissions.has("ManageGuild")
         ) {
             return ctx.reply({
                 embeds: [createEmbed("error", i18n.__("commands.music.skipTo.noPermission"), true)]

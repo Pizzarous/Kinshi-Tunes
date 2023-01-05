@@ -22,8 +22,8 @@ export class EvalCommand extends BaseCommand {
 
         const code = ctx.args
             .join(" ")
-            .replace(/^\s*\n?(```(?:[^\s]+\n)?(.*?)```|.*)$/s, (_, a: string, b) => (a.startsWith("```") ? b : a));
-        const embed = createEmbed("info").addField("Input", `\`\`\`js\n${code}\`\`\``);
+            .replace(/```(?:[^\s]+\n)?(.*?)\n?```/gs, (_, a: string) => a);
+        const embed = createEmbed("info").addFields([{ name: i18n.__("commands.developers.eval.inputString"), value: `\`\`\`js\n${code}\`\`\`` }]);
 
         try {
             if (!code) {
@@ -32,10 +32,10 @@ export class EvalCommand extends BaseCommand {
                 });
             }
 
-            const isAsync = /.* --async( +)?(--silent)?$/.test(code);
-            const isSilent = /.* --silent( +)?(--async)?$/.test(code);
+            const isAsync = /--async\s*(--silent)?$/.test(code);
+            const isSilent = /--silent\s*(--async)?$/.test(code);
             const toExecute =
-                isAsync || isSilent ? code.replace(/--(async|silent)( +)?(--(silent|async))?$/, "") : code;
+                isAsync || isSilent ? code.replace(/--(async|silent)\s*(--(silent|async))?$/, "") : code;
             const evaled = inspect(await eval(isAsync ? `(async () => {\n${toExecute}\n})()` : toExecute), {
                 depth: 0
             });
@@ -45,7 +45,7 @@ export class EvalCommand extends BaseCommand {
             const cleaned = this.clean(evaled);
             const output = cleaned.length > 1024 ? `${await this.hastebin(cleaned)}.js` : `\`\`\`js\n${cleaned}\`\`\``;
 
-            embed.addField(i18n.__("commands.developers.eval.outputString"), output);
+            embed.addFields([{ name: i18n.__("commands.developers.eval.outputString"), value: output }]);
             ctx.send({
                 askDeletion: {
                     reference: ctx.author.id
@@ -57,7 +57,7 @@ export class EvalCommand extends BaseCommand {
             const isTooLong = cleaned.length > 1024;
             const error = isTooLong ? `${await this.hastebin(cleaned)}.js` : `\`\`\`js\n${cleaned}\`\`\``;
 
-            embed.setColor("RED").addField(i18n.__("commands.developers.eval.errorString"), error);
+            embed.setColor("Red").addFields([{ name: i18n.__("commands.developers.eval.errorString"), value: error }]);
             ctx.send({
                 askDeletion: {
                     reference: ctx.author.id
