@@ -6,7 +6,7 @@ import { Command } from "../../utils/decorators/Command";
 import i18n from "../../config";
 
 @Command({
-    aliases: ["leave"],
+    aliases: ["leave", "l", "quit", "q"],
     description: i18n.__("commands.music.leave.description"),
     name: "leave",
     slash: {
@@ -19,7 +19,7 @@ export class LeaveCommand extends BaseCommand {
     @validVC
     @sameVC
     public execute(ctx: CommandContext): void {
-        ctx.guild?.leave();
+        ctx.guild?.queue?.destroy();
 
         ctx.reply({
             embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.music.leave.leftMessage")}`)]
