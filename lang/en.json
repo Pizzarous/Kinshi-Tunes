@@ -229,6 +229,11 @@
                 "description": "Pause the music player",
                 "pauseMessage": "The music player has been paused."
             },
+            "leave": {
+                "leftMessage": "I'm wowing out of the voice channel now. Bye-bye for now, uwu!",
+                "notInChannelMessage": "",
+                "description": "Disconnects the bot from the current voice channel."
+            },
             "play": {
                 "alreadyPlaying": "The music player is already playing to **`{voiceChannel}`** voice channel.",
                 "description": "Play some music",
