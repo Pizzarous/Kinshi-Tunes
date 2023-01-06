@@ -3,7 +3,7 @@ import { Rawon } from "../../../structures/Rawon";
 import { checkQuery } from "./checkQuery";
 import { youtube } from "../YouTubeUtil";
 import { getInfo } from "../YTDLUtil";
-import { SearchResult, Video } from "youtubei";
+import { SearchResult/* , Video */ } from "youtubei";
 import { URL } from "url";
 
 export async function searchTrack(
@@ -77,7 +77,7 @@ export async function searchTrack(
             case "youtube": {
                 switch (queryData.type) {
                     case "track": {
-                        const track = await youtube.getVideo(
+                        /* const track = await youtube.getVideo(
                             /youtu\.be/g.exec(url.hostname) ? url.pathname.replace("/", "") : url.toString()
                         );
 
@@ -93,7 +93,26 @@ export async function searchTrack(
                                     url: `https://youtube.com/watch?v=${track.id}`
                                 }
                             ];
-                        }
+                        }*/
+
+                        //Temporary patch while solving the URL issue
+                        const cleanQuery = query.split('&')[0];
+                        const searchRes = (await youtube.search(cleanQuery, { type: "video" }));
+                        const tracks = await Promise.all(
+                            searchRes.map(
+                                (track): Song => ({
+                                    duration: track.duration ?? 0,
+                                    id: track.id,
+                                    thumbnail: track.thumbnails.sort((a, b) => b.height * b.width - a.height * a.width)[0].url,
+                                    title: track.title,
+                                    url: `https://youtube.com/watch?v=${track.id}`
+                                })
+                            )
+                        );
+
+                        result.items = tracks;
+                        // ends here
+
                         break;
                     }
 
@@ -192,7 +211,7 @@ export async function searchTrack(
                             songs.map(async (x): Promise<void> => {
                                 let response = await youtube.search(
                                     x.track.external_ids?.isrc ??
-                                        `${x.track.artists.map(y => y.name).join(", ")}${x.track.name}`,
+                                    `${x.track.artists.map(y => y.name).join(", ")}${x.track.name}`,
                                     { type: "video" }
                                 );
                                 if (!response.length) {
