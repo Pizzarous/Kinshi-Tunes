@@ -3,7 +3,7 @@ import { Rawon } from "../../../structures/Rawon";
 import { checkQuery } from "./checkQuery";
 import { youtube } from "../YouTubeUtil";
 import { getInfo } from "../YTDLUtil";
-import { SearchResult/* , Video */ } from "youtubei";
+import { SearchResult /* , Video */ } from "youtubei";
 import { URL } from "url";
 
 export async function searchTrack(
@@ -95,7 +95,7 @@ export async function searchTrack(
                             ];
                         }*/
 
-                        //Temporary patch while solving the URL issue
+                        // Temporary patch while solving the URL issue
                         const cleanQuery = query.split('&')[0];
                         const searchRes = (await youtube.search(cleanQuery, { type: "video" }));
                         const tracks = await Promise.all(
