@@ -343,12 +343,12 @@
         "cmdLoading": "Loading...",
         "voiceStateUpdate": {
             "connectionReconfigured": "Connection successfully re-configured.",
-            "deleteQueue": "**`{duration}`** has been passed and there's no one who joined the voice channel, the queue has been deleted.",
+            "deleteQueue": "**`{duration}`** has been passed and there's no one who joined the voice channel, so the queue has been deleted uwu.",
             "deleteQueueFooter": "Queue Deleted",
             "disconnectFromVCMessage": "Disconnected from the voice channel, the queue has been deleted.",
             "joinStageMessage": "Successfully joined the stage channel as Speaker.",
             "joiningAsSpeaker": "Moved to the stage channel, trying to join as Speaker...",
-            "pauseQueue": "Everyone has left the voice channel. To save resources, the queue has been paused.\nIf no one joins the voice channel in the next **`{duration}`**, the queue will be deleted.",
+            "pauseQueue": "Everyone has wowwed out of the voice channel uwu. To save resources, the queue has been paused.\nIf no one joins the voice channel in the next **`{duration}`**, the queue will be deleted.",
             "pauseQueueFooter": "Queue Paused",
             "reconfigureConnection": "Moved to a voice channel with a different region, re-configuring connection...",
             "resumeQueue": "Someone has joined the voice channel.\nResuming **{song}**",
@@ -358,26 +358,27 @@
         }
     },
     "reusable": {
-        "invalidUsage": "Invalid usage, please use **`{prefix} {name}`** for more information.",
+        "invalidUsage": "Invawid usage, pwease use **`{prefix} {name}`** fow mowe infowmation.",
         "pageFooter": "Page {actual} of {total}"
     },
     "utils": {
-        "cooldownMessage": "{author}, please wait **`{timeleft}`** of cooldown time.",
+        "cooldownMessage": "{author}, pwease wait **`{timeleft}`** of coowdown time.",
         "generalHandler": {
-            "errorJoining": "Error while joining the voice channel, because: `{message}`",
-            "errorPlaying": "An error occurred while trying to play music, because: `{message}`",
-            "handleVideoInitial": "Added {length} songs to the queue",
-            "leftVC": "Left from the voice channel because I've been inactive for too long.",
-            "queueEnded": "Queue has ended, use **`{usage}`** to play more music.",
-            "startPlaying": "Started playing **{song}**",
-            "stopPlaying": "Stopped playing **{song}**"
+            "errorJoining": "Ewwow while joining da voice channel, because: `{message}`",
+            "errorPlaying": "An ewwow occuwwed while trying to pway music, because: `{message}`",
+            "handleVideoInitial": "Added {length} songs to da queue",
+            "leftVC": "Left da voice channel cuz I've been inactive fow too long. ;3",
+            "leftVCAlone": "Later, skaters! I'm wowwing out of this voice channel uwu 🛹",
+            "queueEnded": "Queue has ended, use **`{usage}`** to pway mowe music.",
+            "startPlaying": "Stawted pwaying **{song}**",
+            "stopPlaying": "Stopped pwaying **{song}**"
         },
         "musicDecorator": {
-            "noInVC": "Sorry, but you need to be in a voice channel to do that.",
-            "noQueue": "Nothing is being played.",
-            "sameVC": "You need to be in the same voice channel as mine.",
-            "validVCJoinable": "Sorry, but I can't **`CONNECT`** to your voice channel, make sure I have the proper permissions.",
-            "validVCPermission": "Sorry, but I can't **`SPEAK`** in this voice channel; make sure I have the proper permissions."
+            "noInVC": "Sowwy, but u need to be in a voice channel to do that.",
+            "noQueue": "Nothing ish being pwayed.",
+            "sameVC": "U need to be in da same voice channel as mine.",
+            "validVCJoinable": "Sowwy, but me can't **`CONNECT`** to your voice channel, make sure I have da proper pewmissions.",
+            "validVCPermission": "Sowwy, but me can't **`SPEAK`** in dis voice channel; make sure I have da proper pewmissions."
         }
     }
 }
