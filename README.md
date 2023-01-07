@@ -2,9 +2,14 @@
 
 > A dedicated open-source music bot based on [@rawon](https://github.com/Clytage/rawon), forked for personal use and developement.
 
+<a href="https://discord.com/api/oauth2/authorize?client_id=1045474091408314479&permissions=414568500416&scope=bot"><img src="https://img.shields.io/static/v1?label=Invite%20Me&message=u.Kinshi%232499&plastic&color=5865F2&logo=discord"></a>
+<img src="https://badgen.net/badge/icon/typescript?icon=typescript&label">
+<a href="https://github.com/Pizzarous/SomewhatUpset/actions?query=workflow%3A%22Lint+code+and+compile+setup+script%22"><img src="https://github.com/Clytage/rawon/workflows/Lint%20code%20and%20compile%20setup%20script/badge.svg" alt="CI Status" /></a>
+
 <a href="https://discord.com/api/oauth2/authorize?client_id=1045474091408314479&permissions=414568500416&scope=bot" target="_blank"><img src="https://img.shields.io/static/v1?label=Invite%20Me&message=u.Kinshi%232499&plastic&color=5865F2&logo=discord"></a>
 <img src="https://badgen.net/badge/icon/typescript?icon=typescript&label">
 <a href="https://github.com/Pizzarous/SomewhatUpset/actions?query=workflow%3A%22Lint+code+and+compile+setup+script%22" target="_blank"><img src="https://github.com/Clytage/rawon/workflows/Lint%20code%20and%20compile%20setup%20script/badge.svg" alt="CI Status" /></a>
+
 
 ## Features
 - Interaction support.
