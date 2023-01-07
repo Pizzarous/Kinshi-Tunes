@@ -37,3 +37,4 @@ Disclaimers are listed on the [DISCLAIMERS.md](./DISCLAIMERS.md) file.
 
 ## Developers
 - [@Pizzarous](https://github.com/Pizzarous)
+- [@Fernot94](https://github.com/Fernot94)
