@@ -1,6 +1,6 @@
 # µ•Kinshi
 
-> A dedicated open-source music bot based on [@rawon](https://github.com/Clytage/rawon)
+> A dedicated open-source music bot based on [@rawon](https://github.com/Clytage/rawon), forked for personal use and developement.
 
 <a href="https://discord.com/api/oauth2/authorize?client_id=1045474091408314479&permissions=414568500416&scope=bot"><img src="https://img.shields.io/static/v1?label=Invite%20Me&message=u.Kinshi%232499&plastic&color=5865F2&logo=discord"></a>
 <img src="https://badgen.net/badge/icon/typescript?icon=typescript&label">
