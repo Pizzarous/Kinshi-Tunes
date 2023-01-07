@@ -77,6 +77,7 @@ export async function searchTrack(
             case "youtube": {
                 switch (queryData.type) {
                     case "track": {
+                        // Waiting for new Release
                         /* const track = await youtube.getVideo(
                             /youtu\.be/g.exec(url.hostname) ? url.pathname.replace("/", "") : url.toString()
                         );
@@ -281,7 +282,11 @@ export async function searchTrack(
 
             result.items = tracks;
         } else {
-            const searchRes = (await youtube.search(query, { type: "video" }));
+            // Check if it is a youtube link as a string
+            const queryContainsYoutubeUrl = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=))(?:[\w-]{10,12})/i.test(query);
+            const cleanQuery = query.split('&')[0];
+            const searchRes = (await youtube.search(queryContainsYoutubeUrl ? cleanQuery : query, { type: "video" }));
+
             const tracks = await Promise.all(
                 searchRes.map(
                     (track): Song => ({
