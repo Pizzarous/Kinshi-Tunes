@@ -1,12 +1,10 @@
 # µ•Kinshi
 
-> A simple powerful Discord music bot built to fulfill your production desires. Easy to use, with no coding required.
+> A dedicated open-source music bot based on [@rawon](https://github.com/Clytage/rawon)
 
 <a href="https://discord.com/api/oauth2/authorize?client_id=1045474091408314479&permissions=414568500416&scope=bot"><img src="https://img.shields.io/static/v1?label=Invite%20Me&message=u.Kinshi%232499&plastic&color=5865F2&logo=discord"></a>
 <img src="https://badgen.net/badge/icon/typescript?icon=typescript&label">
 <a href="https://github.com/Pizzarous/SomewhatUpset/actions?query=workflow%3A%22Lint+code+and+compile+setup+script%22"><img src="https://github.com/Clytage/rawon/workflows/Lint%20code%20and%20compile%20setup%20script/badge.svg" alt="CI Status" /></a>
-
-### Originally fork from [@rawon](https://github.com/Clytage/rawon)
 
 ## Features
 - Interaction support.
@@ -25,7 +23,7 @@ $ npm install
 ```sh
 $ npm run build
 ```
-5. If you want to save your disk spaces, let's prune the dev dependencies
+5. If you want to save your disk space, let's prune the dev dependencies
 ```sh
 $ npm prune --production
 ```
@@ -37,19 +35,5 @@ $ npm start
 ## Disclaimers
 Disclaimers are listed on the [DISCLAIMERS.md](./DISCLAIMERS.md) file.
 
-## Project Contributors
-
-### Current Repository Developers
+## Developers
 - [@Pizzarous](https://github.com/Pizzarous)
-
-### Original Developers
-- [@Mednoob](https://github.com/Mednoob)
-- [@mzrtamp](https://github.com/mzrtamp)
-
-### Original Translators
-- [Developers](#developers) (en, id)
-- [@21Z](https://github.com/21Z) (en)
-- [@lxndr-rl](https://github.com/lxndr-rl) (es)
-- [@MoustacheOff](https://github.com/MoustacheOff) (fr)
-
-> © 2022 Clytage Development
