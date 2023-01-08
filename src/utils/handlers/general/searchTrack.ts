@@ -98,8 +98,6 @@ export async function searchTrack(
 
                         // Temporary patch while solving the URL issue
                         const cleanQuery = query.split(query.includes('youtu.be') ? /[?&]/ : '&')[0];
-                        console.log(query)
-                        console.log(cleanQuery)
                         const searchRes = (await youtube.search(cleanQuery, { type: "video" }));
                         const tracks = await Promise.all(
                             searchRes.map(
@@ -287,8 +285,6 @@ export async function searchTrack(
             // Check if it is a youtube link as a string
             const queryContainsYoutubeUrl = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=))(?:[\w-]{10,12})/i.test(query);
             const cleanQuery = query.split(query.includes('youtu.be') ? /[?&]/ : '&')[0];
-            console.log(query)
-            console.log(cleanQuery)
             const searchRes = (await youtube.search(queryContainsYoutubeUrl ? cleanQuery : query, { type: "video" }));
 
             const tracks = await Promise.all(
