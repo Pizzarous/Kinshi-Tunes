@@ -100,7 +100,12 @@ export async function searchTrack(
                     }
 
                     case "playlist": {
-                        const playlist = await youtube.getPlaylist(url.toString());
+                        // Modified to allow playlists directly from video links
+                        const list = /list=([^&]+)/g.exec(url.href) ?? [];
+                        const currentSong = /index=(\d+)/.exec(url.href);
+                        const songIndex = currentSong ? currentSong[1] : undefined;
+
+                        const playlist = await youtube.getPlaylist(list[1].toString());
 
                         if (playlist) {
                             const tracks = await Promise.all(
@@ -116,6 +121,12 @@ export async function searchTrack(
                                     })
                                 )
                             );
+
+                            // Organizes the playlist according to song index
+                            if (songIndex) {
+                                const temp = tracks.splice(parseInt(songIndex) - 1, 1)[0];
+                                tracks.unshift(temp);
+                            }
 
                             result.items = tracks;
                         }
