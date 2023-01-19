@@ -80,7 +80,7 @@ export async function searchTrack(
                         const track = await youtube.getVideo(
                             /youtu\.be/g.exec(url.hostname) ? url.pathname.replace("/", "") : url.searchParams.get("v") ?? ''
                         );
-                        console.log("track: ", track);
+                        console.log("Track: ", track);
 
                         if (track) {
                             result.items = [
@@ -95,17 +95,14 @@ export async function searchTrack(
                                 }
                             ];
                         }
-
                         break;
                     }
 
                     case "playlist": {
-                        // Modified to allow playlists directly from video links
-                        const list = /list=([^&]+)/g.exec(url.href) ?? [];
-                        const currentSong = /index=(\d+)/.exec(url.href);
-                        const songIndex = currentSong ? currentSong[1] : undefined;
-
-                        const playlist = await youtube.getPlaylist(list[1].toString());
+                        const list = url.searchParams.get("list") ?? "";
+                        const playlist = await youtube.getPlaylist(list);
+                        const songIndex = url.searchParams.get("index");
+                        let temp = null;
 
                         if (playlist) {
                             const tracks = await Promise.all(
@@ -122,11 +119,8 @@ export async function searchTrack(
                                 )
                             );
 
-                            // Organizes the playlist according to song index
-                            if (songIndex) {
-                                const temp = tracks.splice(parseInt(songIndex) - 1, 1)[0];
-                                tracks.unshift(temp);
-                            }
+                            if (songIndex) temp = parseInt(songIndex) < 101 ? tracks.splice(parseInt(songIndex) - 1, 1)[0] : null;
+                            if (temp) tracks.unshift(temp);
 
                             result.items = tracks;
                         }
