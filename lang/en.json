@@ -365,17 +365,17 @@
         "cooldownMessage": "{author}, pwease wait **`{timeleft}`** of cooldown time.",
         "generalHandler": {
             "errorJoining": "Error while joining da voice channel, because: `{message}`",
-            "errorPlaying": "An error occurred while trying to pway music, because: `{message}`",
+            "errorPlaying": "An error occurred while trying to play music, because: `{message}`",
             "handleVideoInitial": "Added {length} songs to da queue",
             "leftVC": "Left da voice channel cuz I've been inactive fow too long. ;3",
             "leftVCAlone": "Later, skaters! I'm wowwing out of this voice channel uwu 🛹",
-            "queueEnded": "Queue has ended, use **`{usage}`** to pway more music.",
-            "startPlaying": "Started pwaying **{song}**",
-            "stopPlaying": "Stopped pwaying **{song}**"
+            "queueEnded": "Queue has ended, use **`{usage}`** to play more music.",
+            "startPlaying": "Started playing **{song}**",
+            "stopPlaying": "Stopped playing **{song}**"
         },
         "musicDecorator": {
             "noInVC": "Sowwy, but u need to be in a voice channel to do that.",
-            "noQueue": "Nothing ish being pwayed.",
+            "noQueue": "Nothing ish being played.",
             "sameVC": "U need to be in da same voice channel as mine.",
             "validVCJoinable": "Sowwy, but me can't **`CONNECT`** to your voice channel, make sure I have da proper permissions.",
             "validVCPermission": "Sowwy, but me can't **`SPEAK`** in dis voice channel; make sure I have da proper permissions."
