@@ -240,7 +240,7 @@
             },
             "restart": {
                 "leftMessage": "Restarting now. I'll be back in a jiffy!",
-                "errorMessage": "Ha! You can never make me restart, silly!",
+                "errorMessage": "You can't reboot me, silly!",
                 "description": "Shuts down the bot."
             },
             "play": {

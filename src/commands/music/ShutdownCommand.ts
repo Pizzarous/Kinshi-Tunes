@@ -5,7 +5,7 @@ import { Command } from "../../utils/decorators/Command";
 import i18n from "../../config";
 
 @Command({
-    aliases: ["shutdown"],
+    aliases: ["shutdown", "bye", "terminate", "exit"],
     description: i18n.__("commands.music.shutdown.description"),
     name: "shutdown",
     slash: {
