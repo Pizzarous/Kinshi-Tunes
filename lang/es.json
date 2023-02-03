@@ -229,6 +229,20 @@
                 "description": "Pausa la reproducción de música",
                 "pauseMessage": "Se ha pausado el reproductor de música."
             },
+            "leave": {
+                "leftMessage": "Estoy saliendo del canal de voz ahora. Hasta pronto, uwu!",
+                "description": "Desconecta el bot del canal de voz actual."
+            },
+            "shutdown": {
+                "leftMessage": "Apagándose ahora. ¡Adiós para siempre!",
+                "errorMessage": "¡Ja! Nunca podrás apagarme, uwu!",
+                "description": "Apaga el bot."
+            },
+            "restart": {
+                "leftMessage": "Reiniciándose ahora. ¡Volveré en un abrir y cerrar de ojos!",
+                "errorMessage": "¡Ja! Nunca podrás hacer que me reinicie, ¡tonto!",
+                "description": "Apaga el bot."
+            },
             "play": {
                 "alreadyPlaying": "El reproductor de música ya está reproduciendo en el canal de voz **`{voiceChannel}`**.",
                 "description": "Reproduce algo de música",

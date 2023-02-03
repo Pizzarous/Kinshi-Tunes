@@ -152,6 +152,7 @@
                 "slashReasonDescription": "Alasan un-ban",
                 "unbanSuccess": "**{user}** telah di **`UN-BAN`** dari server ini.",
                 "unbanFail": "Tidak dapat **`UN-BAN`** member, dikarenakan: `{message}`",
+                "unbannedByString": "Dibebaskan oleh: {author}",
                 "usage": "{prefix}unban <id> [alasan]"
             },
             "unmute": {
@@ -227,6 +228,20 @@
                 "alreadyPause": "Media player sedang dijeda.",
                 "description": "Menjeda media player",
                 "pauseMessage": "Media player telah dijeda."
+            },
+            "leave": {
+                "leftMessage": "Sekarang saya keluar dari saluran suara. Sampai jumpa lagi, uwu!",
+                "description": "Memutuskan bot dari saluran suara saat ini."
+            },
+            "shutdown": {
+                "leftMessage": "Mematikan sekarang. Sampai jumpa untuk selamanya!",
+                "errorMessage": "Ha! Kamu tidak bisa mematikan saya, uwu!",
+                "description": "Mematikan bot."
+            },
+            "restart": {
+                "leftMessage": "Merestart sekarang. Saya akan kembali sebentar lagi!",
+                "errorMessage": "Ha! Kamu tidak bisa membuat saya restart, lucu!",
+                "description": "Mematikan bot."
             },
             "play": {
                 "alreadyPlaying": "Media player sedang memainkan lagu di channel **`{voiceChannel}`**.",

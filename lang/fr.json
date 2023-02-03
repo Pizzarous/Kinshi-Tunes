@@ -229,6 +229,20 @@
                 "description": "Mettre en pause le lecteur de musique",
                 "pauseMessage": "Le lecteur de musique a été mis en pause."
             },
+            "leave": {
+                "leftMessage": "Je quitte maintenant le canal vocal. Au revoir pour l'instant, uwu!",
+                "description": "Déconnecte le bot du canal vocal actuel."
+            },
+            "shutdown": {
+                "leftMessage": "Je m'éteins maintenant. Bye-bye pour de bon!",
+                "errorMessage": "Ha! Tu ne peux jamais m'éteindre, uwu!",
+                "description": "Éteint le bot."
+            },
+            "restart": {
+                "leftMessage": "Je redémarre maintenant. Je serai de retour en un rien de temps!",
+                "errorMessage": "Ha! Tu ne peux jamais me faire redémarrer, ridicule!",
+                "description": "Éteint le bot."
+            },
             "play": {
                 "alreadyPlaying": "Le lecteur de musique est déjà en train de jouer sur le salon vocal **`{voiceChannel}`**.",
                 "description": "Jouer de la musique",

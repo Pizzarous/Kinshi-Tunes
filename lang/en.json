@@ -237,7 +237,12 @@
                 "leftMessage": "Shutting down now. Bye-bye for good!",
                 "errorMessage": "Ha! You can never shut me down, uwu!",
                 "description": "Shuts down the bot."
-            },            
+            },
+            "restart": {
+                "leftMessage": "Restarting now. I'll be back in a jiffy!",
+                "errorMessage": "Ha! You can never make me restart, silly!",
+                "description": "Shuts down the bot."
+            },
             "play": {
                 "alreadyPlaying": "The music player is already playing to **`{voiceChannel}`** voice channel.",
                 "description": "Play some music",
