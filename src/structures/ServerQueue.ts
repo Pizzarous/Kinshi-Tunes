@@ -7,7 +7,7 @@ import { filterArgs } from "../utils/functions/ffmpegArgs";
 import { Rawon } from "./Rawon";
 import i18n from "../config";
 import { AudioPlayer, AudioPlayerPlayingState, AudioPlayerStatus, AudioResource, createAudioPlayer, VoiceConnection } from "@discordjs/voice";
-import { TextChannel, Snowflake } from "discord.js";
+import { TextChannel, Snowflake, GuildMember } from "discord.js";
 
 const nonEnum = { enumerable: false };
 
@@ -127,6 +127,12 @@ export class ServerQueue {
             this.playing = false;
             void play(this.textChannel.guild, (this.player.state.resource as AudioResource<QueueSong>).metadata.key, true);
         }
+    }
+
+    public clear(ctx: GuildMember): void {
+        const currentSong = this.songs.current();
+        this.songs.clear();
+        if (currentSong) this.songs.addSong(currentSong, ctx);
     }
 
     public stop(): void {

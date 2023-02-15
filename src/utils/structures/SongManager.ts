@@ -43,4 +43,10 @@ export class SongManager extends Collection<Snowflake, QueueSong> {
     public sortByIndex(): this {
         return this.sort((a, b) => a.index - b.index);
     }
+
+    public current(): Song | null {
+        const firstSong = this.first();
+        if (firstSong) return firstSong.song;
+        return null;
+    }
 }
