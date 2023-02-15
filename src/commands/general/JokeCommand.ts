@@ -14,7 +14,7 @@ interface JokeApiResponse {
 }
 
 @Command({
-    aliases: ["joke"],
+    aliases: ["joke", "yoke"],
     description: i18n.__("commands.general.joke.description"),
     name: "joke",
     slash: {
