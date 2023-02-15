@@ -45,6 +45,10 @@
                 "usage": "{prefix}help [nama perintah]",
                 "usageString": "Penggunaan"
             },
+            "joke": {
+                "description": "Memberikan lelucon acak.",
+                "errorMessage": "Ups! Terjadi kesalahan saat mencoba mendapatkan lelucon. Silakan coba lagi nanti."
+            },
             "invite": {
                 "clickURL": "**[Klik disini]({url})** untung meng-invite bot ini ke server anda.",
                 "description": "Dapatkan link invite untuk bot",

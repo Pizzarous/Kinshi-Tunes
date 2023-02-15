@@ -45,6 +45,10 @@
                 "usage": "{prefix}help [comando]",
                 "usageString": "Uso"
             },
+            "joke": {
+                "description": "Cuenta un chiste al azar.",
+                "errorMessage": "¡Ups! Algo salió mal al intentar obtener un chiste. Por favor, inténtalo de nuevo más tarde."
+            },
             "invite": {
                 "clickURL": "**[Haga click]({url})** aquí para invitar a este bot a su servidor.",
                 "description": "Obtén el enlace de invitación para el bot",

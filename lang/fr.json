@@ -45,6 +45,10 @@
                 "usage": "{prefix}help [commande]",
                 "usageString": "Usage"
             },
+            "joke": {
+                "description": "Raconte une blague au hasard.",
+                "errorMessage": "Oops ! Quelque chose s'est mal passé lors de la tentative d'obtenir une blague. Veuillez réessayer plus tard."
+            },
             "invite": {
                 "clickURL": "**[Cliquez ici]({url})** pour inviter ce bot sur votre serveur.",
                 "description": "Obtenez le lien d'invitation pour le bot",

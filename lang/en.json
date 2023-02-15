@@ -45,6 +45,10 @@
                 "usage": "{prefix}help [command]",
                 "usageString": "Usage"
             },
+            "joke": {
+                "description": "Tells a random joke.",
+                "errorMessage": "Oops! Something went wrong while trying to get a joke. Please try again later."
+            },
             "invite": {
                 "clickURL": "**[Click here]({url})** to invite this bot to your server.",
                 "description": "Get the invite link for the bot",
