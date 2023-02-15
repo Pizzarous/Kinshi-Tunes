@@ -330,6 +330,10 @@
                 "description": "Stop the music player",
                 "stoppedMessage": "The music player has been stopped."
             },
+            "clearQueue": {
+                "description": "Clear the queue.",
+                "clearedMessage": "The queue has been cleared."
+            },
             "volume": {
                 "changeVolume": "To change the volume, provide the volume number when using this command.",
                 "currentVolume": "The current volume is **`{volume}`**",

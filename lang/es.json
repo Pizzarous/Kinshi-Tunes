@@ -330,6 +330,10 @@
                 "description": "Para el reproductor de música",
                 "stoppedMessage": "El reproductor de música se ha detenido."
             },
+            "clearQueue": {
+                "description": "Limpiar la cola.",
+                "clearedMessage": "La cola ha sido limpiada."
+            },
             "volume": {
                 "changeVolume": "Para cambiar el volúmen, ingresa un número usando este comando.",
                 "currentVolume": "El volúmen actual es **`{volume}`**",
