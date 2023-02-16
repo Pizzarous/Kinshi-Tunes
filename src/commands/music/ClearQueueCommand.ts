@@ -1,4 +1,4 @@
-import { inVC, sameVC, validVC } from "../../utils/decorators/MusicUtil";
+import { inVC, sameVC, validVC, haveQueue } from "../../utils/decorators/MusicUtil";
 import { CommandContext } from "../../structures/CommandContext";
 import { createEmbed } from "../../utils/functions/createEmbed";
 import { BaseCommand } from "../../structures/BaseCommand";
@@ -18,6 +18,7 @@ export class ClearQueueCommand extends BaseCommand {
     @inVC
     @validVC
     @sameVC
+    @haveQueue
     public execute(ctx: CommandContext): void {
         ctx.guild?.queue?.clear(ctx.member!);
         ctx.reply({
