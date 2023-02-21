@@ -6,7 +6,7 @@ import i18n from "../../config";
 
 @Command({
     aliases: ["shutdown", "bye", "terminate", "exit"],
-    description: i18n.__("commands.music.shutdown.description"),
+    description: i18n.__("commands.general.shutdown.description"),
     name: "shutdown",
     slash: {
         options: []
@@ -17,7 +17,7 @@ export class ShutdownCommand extends BaseCommand {
     public execute(ctx: CommandContext): void {
         if ((!process.env.ADMIN_ID) || ctx.author.id !== process.env.ADMIN_ID) {
             ctx.reply({
-                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.music.shutdown.errorMessage")}`)]
+                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.shutdown.errorMessage")}`)]
             }).catch(e => this.client.logger.error("SHUTDOWN_CMD_ERR:", e));
             return;
         }
@@ -25,7 +25,7 @@ export class ShutdownCommand extends BaseCommand {
         ctx.guild?.queue?.destroy();
 
         ctx.reply({
-            embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.music.shutdown.leftMessage")}`)]
+            embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.general.shutdown.leftMessage")}`)]
         }).catch(e => this.client.logger.error("SHUTDOWN_CMD_ERR:", e));
 
         setTimeout(() => {

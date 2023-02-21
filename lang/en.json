@@ -49,6 +49,16 @@
                 "description": "Tells a random joke.",
                 "errorMessage": "Oops! Something went wrong while trying to get a joke. Please try again later."
             },
+            "shutdown": {
+                "leftMessage": "Shutting down now. Bye-bye for good!",
+                "errorMessage": "Ha! You can never shut me down, uwu!",
+                "description": "Shuts down the bot."
+            },
+            "restart": {
+                "leftMessage": "Restarting now. I'll be back in a jiffy!",
+                "errorMessage": "You can't reboot me, silly!",
+                "description": "Restarts the bot."
+            },
             "invite": {
                 "clickURL": "**[Click here]({url})** to invite this bot to your server.",
                 "description": "Get the invite link for the bot",
@@ -236,16 +246,6 @@
             "leave": {
                 "leftMessage": "I'm wowing out of the voice channel now. Bye-bye for now, uwu!",
                 "description": "Disconnects the bot from the current voice channel."
-            },
-            "shutdown": {
-                "leftMessage": "Shutting down now. Bye-bye for good!",
-                "errorMessage": "Ha! You can never shut me down, uwu!",
-                "description": "Shuts down the bot."
-            },
-            "restart": {
-                "leftMessage": "Restarting now. I'll be back in a jiffy!",
-                "errorMessage": "You can't reboot me, silly!",
-                "description": "Shuts down the bot."
             },
             "play": {
                 "alreadyPlaying": "The music player is already playing to **`{voiceChannel}`** voice channel.",
