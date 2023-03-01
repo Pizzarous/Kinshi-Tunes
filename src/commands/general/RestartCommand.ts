@@ -6,7 +6,7 @@ import i18n from "../../config";
 
 @Command({
     aliases: ["restart", "reboot", "reset"],
-    description: i18n.__("commands.music.restart.description"),
+    description: i18n.__("commands.general.restart.description"),
     name: "restart",
     slash: {
         options: []
@@ -17,7 +17,7 @@ export class RestartCommand extends BaseCommand {
     public execute(ctx: CommandContext): void {
         if ((!process.env.ADMIN_ID) || ctx.author.id !== process.env.ADMIN_ID) {
             ctx.reply({
-                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.music.restart.errorMessage")}`)]
+                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.restart.errorMessage")}`)]
             }).catch(e => this.client.logger.error("RESTART_CMD_ERR:", e));
             return;
         }
@@ -25,7 +25,7 @@ export class RestartCommand extends BaseCommand {
         ctx.guild?.queue?.destroy();
 
         ctx.reply({
-            embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.music.restart.leftMessage")}`)]
+            embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.general.restart.leftMessage")}`)]
         }).catch(e => this.client.logger.error("RESTART_CMD_ERR:", e));
 
         setTimeout(() => {

@@ -49,6 +49,16 @@
                 "description": "Cuenta un chiste al azar.",
                 "errorMessage": "¡Ups! Algo salió mal al intentar obtener un chiste. Por favor, inténtalo de nuevo más tarde."
             },
+            "shutdown": {
+                "leftMessage": "Apagándose ahora. ¡Adiós para siempre!",
+                "errorMessage": "¡Ja! Nunca podrás apagarme, uwu!",
+                "description": "Apaga el bot."
+            },
+            "restart": {
+                "leftMessage": "Reiniciándose ahora. ¡Volveré en un abrir y cerrar de ojos!",
+                "errorMessage": "¡Ja! Nunca podrás hacer que me reinicie, ¡tonto!",
+                "description": "Reinicia al bot."
+            },
             "invite": {
                 "clickURL": "**[Haga click]({url})** aquí para invitar a este bot a su servidor.",
                 "description": "Obtén el enlace de invitación para el bot",
@@ -236,16 +246,6 @@
             "leave": {
                 "leftMessage": "Estoy saliendo del canal de voz ahora. Hasta pronto, uwu!",
                 "description": "Desconecta el bot del canal de voz actual."
-            },
-            "shutdown": {
-                "leftMessage": "Apagándose ahora. ¡Adiós para siempre!",
-                "errorMessage": "¡Ja! Nunca podrás apagarme, uwu!",
-                "description": "Apaga el bot."
-            },
-            "restart": {
-                "leftMessage": "Reiniciándose ahora. ¡Volveré en un abrir y cerrar de ojos!",
-                "errorMessage": "¡Ja! Nunca podrás hacer que me reinicie, ¡tonto!",
-                "description": "Apaga el bot."
             },
             "play": {
                 "alreadyPlaying": "El reproductor de música ya está reproduciendo en el canal de voz **`{voiceChannel}`**.",
