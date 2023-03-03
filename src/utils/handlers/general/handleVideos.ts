@@ -77,6 +77,26 @@ export async function handleVideos(
         }).on("debug", message => {
             client.logger.debug(message);
         });
+
+        /* TEMP FIX */
+        connection.on('stateChange', (oldState, newState) => {
+            const oldNetworking = Reflect.get(oldState, 'networking');
+            const newNetworking = Reflect.get(newState, 'networking');
+
+            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+            const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
+                const newUdp = Reflect.get(newNetworkState, 'udp');
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+                clearInterval(newUdp?.keepAliveInterval);
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            oldNetworking?.off('stateChange', networkStateChangeHandler);
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+            newNetworking?.on('stateChange', networkStateChangeHandler);
+        });
+        /* TEMP FIX */
+
         ctx.guild!.queue.connection = connection;
 
         client.debugLog.logData(
@@ -91,8 +111,7 @@ export async function handleVideos(
         client.debugLog.logData(
             "error",
             "HANDLE_VIDEOS",
-            `Error occured while connecting to ${ctx.guild!.name}(${ctx.guild!.id}). Reason: ${
-                (error as Error).message
+            `Error occured while connecting to ${ctx.guild!.name}(${ctx.guild!.id}). Reason: ${(error as Error).message
             }`
         );
 
