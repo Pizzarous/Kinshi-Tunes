@@ -78,7 +78,8 @@ export async function handleVideos(
             client.logger.debug(message);
         });
 
-        /* FIX ISSUE WITH MUSIC STOPPING AT 58 SECONDS*/
+        /* FIX ISSUE WITH MUSIC STOPPING AT 58 SECONDS */
+        /*
         connection.on("stateChange", (oldState, newState) => {
             const oldNetworking = Reflect.get(oldState, "networking");
             const newNetworking = Reflect.get(newState, "networking");
@@ -95,6 +96,7 @@ export async function handleVideos(
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
             newNetworking?.on("stateChange", networkStateChangeHandler);
         });
+        */
 
         ctx.guild!.queue.connection = connection;
 
