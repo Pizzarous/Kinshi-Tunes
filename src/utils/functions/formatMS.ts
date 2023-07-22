@@ -1,4 +1,4 @@
-import { lang } from "../../config/index.js";
+import { lang } from "../../config";
 import { format, formatDuration, intervalToDuration } from "date-fns";
 import * as locales from "date-fns/locale";
 
