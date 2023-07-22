@@ -33,6 +33,18 @@ $ npm start
 ## Disclaimers
 Disclaimers are listed on the [DISCLAIMERS.md](./DISCLAIMERS.md) file.
 
-## Developers
+## Project Contributors
+### This Fork Developers
 - [@Pizzarous](https://github.com/Pizzarous)
-- [@Fernot94](https://github.com/Fernot94)
+
+### Developers
+- [@mzrtamp](https://github.com/mzrtamp)
+- [@noxyzm](https://github.com/noxyzm)
+- [@Mednoob](https://github.com/Mednoob)
+
+### Translators
+- [Developers](#developers) (en)
+- [@21Z](https://github.com/21Z) (en)
+- [@lxndr-rl](https://github.com/lxndr-rl) (es)
+
+> © 2023 Clytage Development
