@@ -13,21 +13,21 @@
 ## General Setup
 1. Download and install [Node.js](https://nodejs.org) version `16.6.0` or higher
 2. Open the `.env_example` file and rename it to `.env`
-3. Install required and optional dependencies.
+3. Install required and optional dependencies. You still can use `npm` too.
 ```sh
-$ npm install
+$ pnpm install
 ```
 4. Compile the file
 ```sh
-$ npm run build
+$ pnpm run build
 ```
 5. If you want to save your disk space, let's prune the dev dependencies
 ```sh
-$ npm prune --production
+$ pnpm prune --production
 ```
 6. Finally, you can start the bot
 ```sh
-$ npm start
+$ pnpm start
 ```
 
 ## Disclaimers
