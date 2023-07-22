@@ -16,5 +16,3 @@ jobs:
   docker:
     uses: Pizzarous/SomewhatUpset/.github/workflows/docker-build.yml@main
     secrets: inherit
-
-    
