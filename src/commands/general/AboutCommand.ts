@@ -1,10 +1,10 @@
-import { CommandContext } from "../../structures/CommandContext";
-import { createEmbed } from "../../utils/functions/createEmbed";
-import { createTable } from "../../utils/functions/createTable";
-import { BaseCommand } from "../../structures/BaseCommand";
-import { formatMS } from "../../utils/functions/formatMS";
-import { Command } from "../../utils/decorators/Command";
-import i18n from "../../config";
+import { CommandContext } from "../../structures/CommandContext.js";
+import { createEmbed } from "../../utils/functions/createEmbed.js";
+import { createTable } from "../../utils/functions/createTable.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
+import { formatMS } from "../../utils/functions/formatMS.js";
+import { Command } from "../../utils/decorators/Command.js";
+import i18n from "../../config/index.js";
 import { version as DJSVersion } from "discord.js";
 import { readFileSync } from "node:fs";
 import { uptime } from "node:os";
@@ -39,7 +39,7 @@ export class AboutCommand extends BaseCommand {
             [i18n.__("commands.general.about.botVersionString"), pkg.version],
             [i18n.__("commands.general.about.commitString"), this.client.utils.getCommitHash("HEAD")],
             [""],
-            [i18n.__("commands.general.about.sourceCodeString"), "https://github.com/Pizzarous/SomewhatUpset"]
+            [i18n.__("commands.general.about.sourceCodeString"), "https://github.com/clytage/rawon"]
         ];
         const value = createTable(values);
 
