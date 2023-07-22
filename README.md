@@ -21,7 +21,7 @@ $ npm install
 ```sh
 $ npm run build
 ```
-5. If you want to save your disk spaces, let's prune the dev dependencies
+5. If you want to save your disk space, let's prune the dev dependencies
 ```sh
 $ npm prune --production
 ```
