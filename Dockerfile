@@ -10,6 +10,9 @@ COPY package.json pnpm-lock.yaml *.npmrc  ./
 RUN pnpm fetch
 
 # Install dependencies
+RUN pnpm install
+
+# Install dependencies
 RUN pnpm install --offline --frozen-lockfile
 
 # Copy Project files
