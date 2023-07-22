@@ -1,13 +1,13 @@
-import { parseHTMLElements } from "../../functions/parseHTMLElements";
-import { ButtonPagination } from "../../structures/ButtonPagination";
-import { CommandContext } from "../../../structures/CommandContext";
-import { ServerQueue } from "../../../structures/ServerQueue";
-import { createEmbed } from "../../functions/createEmbed";
-import { Rawon } from "../../../structures/Rawon";
-import { chunk } from "../../functions/chunk";
-import { Song } from "../../../typings";
-import i18n from "../../../config";
-import { play } from "./play";
+import { parseHTMLElements } from "../../functions/parseHTMLElements.js";
+import { ButtonPagination } from "../../structures/ButtonPagination.js";
+import { CommandContext } from "../../../structures/CommandContext.js";
+import { ServerQueue } from "../../../structures/ServerQueue.js";
+import { createEmbed } from "../../functions/createEmbed.js";
+import { Rawon } from "../../../structures/Rawon.js";
+import { chunk } from "../../functions/chunk.js";
+import { Song } from "../../../typings/index.js";
+import i18n from "../../../config/index.js";
+import { play } from "./play.js";
 import { escapeMarkdown, Message, StageChannel, TextChannel, VoiceChannel } from "discord.js";
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 
@@ -77,26 +77,6 @@ export async function handleVideos(
         }).on("debug", message => {
             client.logger.debug(message);
         });
-
-        /* FIX ISSUE WITH MUSIC STOPPING AT 58 SECONDS */
-        /*
-        connection.on("stateChange", (oldState, newState) => {
-            const oldNetworking = Reflect.get(oldState, "networking");
-            const newNetworking = Reflect.get(newState, "networking");
-
-            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-            const networkStateChangeHandler = (oldNetworkState: any, newNetworkState: any) => {
-                const newUdp = Reflect.get(newNetworkState, "udp");
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
-                clearInterval(newUdp?.keepAliveInterval);
-            }
-
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            oldNetworking?.off("stateChange", networkStateChangeHandler);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            newNetworking?.on("stateChange", networkStateChangeHandler);
-        });
-        */
 
         ctx.guild!.queue.connection = connection;
 
