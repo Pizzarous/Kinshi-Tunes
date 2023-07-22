@@ -1,4 +1,4 @@
-import { OperationManager } from "./OperationManager.js";
+import { OperationManager } from "./OperationManager";
 import { readFile, writeFile } from "fs/promises";
 
 export class JSONDataManager<T> {

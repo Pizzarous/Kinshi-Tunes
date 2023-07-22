@@ -1,4 +1,4 @@
-import { Promisable } from "../../typings/index.js";
+import { Promisable } from "../../typings";
 
 export class OperationManager {
     private _runningOperation!: boolean;

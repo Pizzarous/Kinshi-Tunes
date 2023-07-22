@@ -1,9 +1,9 @@
-import { CommandComponent } from "../typings/index.js";
-import { CommandContext } from "./CommandContext.js";
-import { Rawon } from "./Rawon.js";
+import { CommandContext } from "./CommandContext";
+import { CommandComponent } from "../typings";
+import { Rawon } from "./Rawon";
 
 export abstract class BaseCommand implements CommandComponent {
-    public constructor(public client: Rawon, public meta: CommandComponent["meta"]) { }
+    public constructor(public client: Rawon, public meta: CommandComponent["meta"]) {}
 
     public abstract execute(ctx: CommandContext): any;
 }
