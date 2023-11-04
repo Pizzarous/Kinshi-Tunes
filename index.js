@@ -91,6 +91,20 @@ const require = module.createRequire(import.meta.url);
 try {
     prism.FFmpeg.getInfo(true);
 } catch {
+    // Attempt to remove the folder
+    const folderPath = `${process.env.LOCALAPPDATA}\\ffmpeg-static-nodejs\\Cache`;
+
+    try {
+        execSync(`rmdir /s /q "${folderPath}"`);
+        console.log(`Folder "${folderPath}" has been removed.`);
+    } catch (removeError) {
+        if (removeError.status === 2) {
+            console.log(`Folder "${folderPath}" does not exist.`);
+        } else {
+            console.error(`An error occurred while trying to remove the folder: ${removeError.message}`);
+        }
+    }
+
     console.info("[INFO] Couldn't find FFmpeg/avconv, trying to install ffmpeg-static...");
     npmInstall(false, false, ["--no-save", "ffmpeg-static"]);
     console.info("[INFO] ffmpeg-static has been installed.");
