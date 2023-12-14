@@ -1,5 +1,10 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["github>clytage/renovate-config"],
-    "ignoreDeps": ["opusscript"]
+    "extends": ["github>stegripe/renovate-config"],
+    "packageRules": [
+        {
+            "matchPackageNames": ["opusscript"],
+            "allowedVersions": ">0.1"
+        }
+    ]
 }
