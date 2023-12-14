@@ -1,4 +1,4 @@
-# µ•Kinshi
+# Kinshi Tunes
 
 > A dedicated open-source music bot based on [@rawon](https://github.com/Clytage/rawon), forked for personal use and developement.
 
