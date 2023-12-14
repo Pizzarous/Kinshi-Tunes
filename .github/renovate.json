@@ -5,6 +5,10 @@
         {
             "matchPackageNames": ["opusscript"],
             "allowedVersions": ">0.1"
+        },
+        {
+            "matchPackageNames": ["got"],
+            "allowedVersions": "13.x"
         }
     ]
 }
