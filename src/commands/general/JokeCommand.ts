@@ -25,13 +25,17 @@ interface JokeApiResponse {
 export class JokeCommand extends BaseCommand {
 
     public async execute(ctx: CommandContext): Promise<void> {
-        const response = await axios.get<JokeApiResponse>("https://v2.jokeapi.dev/joke/Any");
-        const joke = response.data.type === "twopart" ? `${response.data.setup}\n\n${response.data.delivery}` : response.data.joke;
+        try {
+            const response = await axios.get<JokeApiResponse>("https://v2.jokeapi.dev/joke/Any");
+            const joke = response.data.type === "twopart" ? `${response.data.setup}\n\n${response.data.delivery}` : response.data.joke;
 
-        ctx.reply({
-            embeds: [createEmbed("info", `**${joke}**`)]
-        }).catch(e => {
-            this.client.logger.error("JOKE_CMD_ERR:", e)
-        });
+            ctx.reply({
+                embeds: [createEmbed("info", `**${joke}**`)]
+            }).catch(e => {
+                this.client.logger.error("JOKE_CMD_ERR:", e)
+            });
+        } catch (e) {
+            this.client.logger.error("JOKE_CMD_ERR:", e);
+        }
     }
 }
