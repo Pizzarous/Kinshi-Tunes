@@ -8,9 +8,7 @@
         },
         {
             "matchPackageNames": ["@swc/cli"],
-            "versioning": "lockFileMaintenance",
-            "updateTypes": ["patch"],
-            "enabled": true
+            "allowedVersions": "<=0.1.64"
         }
     ]
 }
