@@ -9,6 +9,6 @@ cd "$script_dir"/../../
 # Continue with the rest of your commands
 git reset --hard origin/main
 git pull --all
-pnpm install
-pnpm run build
-pnpm start
+npm install
+npm run build
+npm start
