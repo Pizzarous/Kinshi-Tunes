@@ -15,19 +15,19 @@
 2. **Configure Environment Variables:** Open `.env_example`, rename it to `.env`.
 3. **Install Dependencies:** Run the following command in your terminal.
     ```sh
-    $ npm install
+    $ pnpm install
     ```
 4. **Compile the Code:** Execute the build script.
     ```sh
-    $ npm run build
+    $ pnpm run build
     ```
 5. **Optimize Disk Space:** Remove unnecessary dev dependencies.
     ```sh
-    $ npm prune --production
+    $ pnpm prune --production
     ```
 6. **Start the Bot:** Launch the bot with the following command.
     ```sh
-    $ npm start
+    $ pnpm start
     ```
 
 ## Disclaimers
