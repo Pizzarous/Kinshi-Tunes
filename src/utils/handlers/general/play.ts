@@ -32,7 +32,7 @@ export async function play(guild: Guild, nextSong?: string, wasIdle?: boolean): 
                 queue.destroy();
                 void queue.textChannel
                     .send({ embeds: [createEmbed("info", `👋 **|** ${i18n.__("utils.generalHandler.leftVC")}`)] })
-                // Leaves after 10h if no commands
+                // Leaves after 3h if no commands
             }, 10800000);
 
         queue.client.debugLog.logData("info", "PLAY_HANDLER", `Queue ended for ${guild.name}(${guild.id})`);
