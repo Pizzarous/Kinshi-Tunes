@@ -5,6 +5,12 @@
         {
             "matchPackageNames": ["opusscript"],
             "allowedVersions": ">0.1"
+        },
+        {
+            "matchPackageNames": ["@swc/cli"],
+            "versioning": "lockFileMaintenance",
+            "updateTypes": ["patch"],
+            "enabled": true
         }
     ]
 }
