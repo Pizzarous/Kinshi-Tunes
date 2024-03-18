@@ -1,6 +1,14 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["github>stegripe/renovate-config"],
+  "packageRules": [
+      {
+          "matchPackageNames": ["opusscript"],
+          "allowedVersions": ">0.1"
+      },
+      {
+          "matchPackageNames": ["@swc/cli"],
+          "allowedVersions": "<=0.1.64"
+      }
   ]
 }
