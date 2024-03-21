@@ -59,6 +59,13 @@
                 "errorMessage": "You can't reboot me, silly!",
                 "description": "Restarts the bot."
             },
+            "hostaction": {
+                "leftMessage": "Initiating host action! I'll be back in a jiffy!",
+                "cancelMessage": "Cancelled host action!",
+                "errorMessage": "Uh-oh! You're not allowed to do that, silly goose!",
+                "invalidAction": "Oops! That's not a valid action. Try 'restart' or 'shutdown'.",
+                "description": "Gets the host PC to do some magic stuff."
+            },
             "invite": {
                 "clickURL": "**[Click here]({url})** to invite this bot to your server.",
                 "description": "Get the invite link for the bot",
