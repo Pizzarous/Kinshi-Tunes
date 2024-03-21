@@ -59,6 +59,13 @@
                 "errorMessage": "¡Ja! Nunca podrás hacer que me reinicie, ¡tonto!",
                 "description": "Reinicia al bot."
             },
+            "hostaction": {
+                "leftMessage": "¡Iniciando acción en el host! ¡Volveré en un abrir y cerrar de ojos!",
+                "cancelMessage": "¡Acción de host cancelada!",
+                "errorMessage": "¡Ups! ¡No tienes permiso para hacer eso, tonto!",
+                "invalidAction": "¡Vaya! Esa no es una acción válida. Intenta con 'reinicio' o 'apagado'.",
+                "description": "Hace que el PC anfitrión haga cosas mágicas."
+            },
             "invite": {
                 "clickURL": "**[Haga click]({url})** aquí para invitar a este bot a su servidor.",
                 "description": "Obtén el enlace de invitación para el bot",
