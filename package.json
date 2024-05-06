@@ -53,7 +53,7 @@
 		"printWidth": 120
 	},
 	"dependencies": {
-		"@discordjs/voice": "^0.16.1",
+		"@discordjs/voice": "^0.17.0",
 		"@swc/cli": "0.3.12",
 		"@swc/core": "1.5.3",
 		"axios": "^1.6.8",
