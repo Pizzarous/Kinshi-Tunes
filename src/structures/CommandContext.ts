@@ -81,6 +81,7 @@ export class CommandContext {
             );
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             (options as InteractionReplyOptions).components
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 ? (options as InteractionReplyOptions).components!.push(deletionBtn)
                 : ((options as InteractionReplyOptions).components = [deletionBtn]);
         }
