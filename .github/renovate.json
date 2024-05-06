@@ -5,10 +5,6 @@
       {
           "matchPackageNames": ["opusscript"],
           "allowedVersions": ">0.1"
-      },
-      {
-          "matchPackageNames": ["@swc/cli"],
-          "allowedVersions": "<=0.1.64"
       }
   ]
 }
