@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "packageRules": [
+      {
+          "matchPackageNames": ["opusscript"],
+          "allowedVersions": ">0.1"
+      }
+  ]
+}
