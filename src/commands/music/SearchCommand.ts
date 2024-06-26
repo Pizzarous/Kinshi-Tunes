@@ -67,7 +67,7 @@ export class SearchCommand extends BaseCommand {
                 if (!selection) return;
                 const disabledMenu = new StringSelectMenuBuilder()
                     .setDisabled(true)
-                    .setCustomId(selection.customId!)
+                    .setCustomId(selection.customId)
                     .addOptions({
                         label: "Nothing to select here",
                         description: "Nothing to select here",
