@@ -107,7 +107,7 @@ export class HelpCommand extends BaseCommand {
                 const selection = msg.components[0].components.find(x => x.type === ComponentType.StringSelect);
                 if (!selection) return;
                 const disabledMenu = new StringSelectMenuBuilder()
-                    .setCustomId(selection.customId)
+                    .setCustomId(selection.customId!)
                     .setDisabled(true)
                     .addOptions({
                         label: "Nothing to select here",

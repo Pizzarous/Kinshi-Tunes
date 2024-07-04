@@ -86,7 +86,7 @@ export class ModerationLogs {
         let ch: TextChannel | undefined;
 
         try {
-            const modlog = this.client.data.data?.[guild.id]?.modLog;
+            const modlog = this.client.data.data![guild.id]!.modLog;
             if (!modlog?.enable) throw new Error();
 
             const id = modlog.channel;
