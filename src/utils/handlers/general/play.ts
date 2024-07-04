@@ -68,7 +68,6 @@ export async function play(guild: Guild, nextSong?: string, wasIdle?: boolean): 
                     `Failed to be a speaker in ${guild.members.me?.voice.channel?.name ?? "Unknown"}(${guild.members.me?.voice.channel?.id ?? "ID UNKNOWN"
                     }) in guild ${guild.name}(${guild.id}). Reason: ${suppressed.error.message}`
                 );
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 queue?.player.emit("error", new AudioPlayerError(suppressed.error, resource));
                 return;
             }
@@ -97,7 +96,6 @@ export async function play(guild: Guild, nextSong?: string, wasIdle?: boolean): 
                     "PLAY_HANDLER",
                     `Failed to enter Ready state in guild ${guild.name}(${guild.id}) voice connection. Reason: ${err.message}`
                 );
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 queue.player.emit("error", new AudioPlayerError(err, resource));
             });
     }
