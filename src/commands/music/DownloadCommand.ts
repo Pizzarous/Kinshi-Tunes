@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { CommandContext } from "../../structures/CommandContext.js";
 import { createEmbed } from "../../utils/functions/createEmbed.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -15,7 +13,6 @@ import ytDlp from "yt-dlp-exec";
 
 ffmpeg.setFfmpegPath(ffmpegStatic);
 
-// Get the directory name of the current module
 const currentFilename = fileURLToPath(import.meta.url);
 const currentDir = path.dirname(currentFilename);
 
@@ -38,10 +35,7 @@ const currentDir = path.dirname(currentFilename);
 })
 export class DownloadCommand extends BaseCommand {
     public async execute(ctx: CommandContext): Promise<Message | undefined> {
-        console.log("DownloadCommand executed");
-
         if (ctx.isInteraction() && !ctx.deferred) {
-            console.log("Deferring reply");
             await ctx.deferReply();
         }
 
@@ -49,8 +43,15 @@ export class DownloadCommand extends BaseCommand {
         console.log("Original URL provided:", url);
 
         if (!url) {
-            console.log("No URL provided");
-            return ctx.reply({
+            console.error("No URL provided");
+            return ctx.isInteraction() ? ctx.followUp({
+                embeds: [
+                    createEmbed(
+                        "warn",
+                        i18n.__("commands.music.download.noUrlProvided")
+                    )
+                ]
+            }) : ctx.reply({
                 embeds: [
                     createEmbed(
                         "warn",
@@ -82,22 +83,20 @@ export class DownloadCommand extends BaseCommand {
             console.log("Sanitized title:", sanitizedTitle);
 
             // Send a message indicating the download attempt
-            await ctx.reply({
+            await (ctx.isInteraction() ? ctx.followUp({
                 content: i18n.__("commands.music.download.downloading", { title: sanitizedTitle })
-            });
-            console.log(`Attempting to download: ${title}`);
+            }) : ctx.reply({
+                content: i18n.__("commands.music.download.downloading", { title: sanitizedTitle })
+            }));
 
             // Create temp directory if it doesn't exist
             tempDir = path.join(currentDir, "temp");
             if (!fs.existsSync(tempDir)) {
                 fs.mkdirSync(tempDir);
-                console.log("Temp folder created");
             }
 
             tempFilePath = path.join(tempDir, `${sanitizedTitle}.webm`);
             mp3FilePath = path.join(tempDir, `${sanitizedTitle}.mp3`);
-            console.log("Temporary file path:", tempFilePath);
-            console.log("MP3 file path:", mp3FilePath);
 
             // Download the audio using yt-dlp
             console.log("Attempting to download audio using yt-dlp");
@@ -123,29 +122,39 @@ export class DownloadCommand extends BaseCommand {
                     .save(mp3FilePath);
             });
 
-            // Send the MP3 file as an attachment with a cute message
+            // Send the MP3 file as an attachment
             const attachment = new AttachmentBuilder(mp3FilePath);
-            await ctx.reply({
+            await (ctx.isInteraction() ? ctx.followUp({
                 content: i18n.__("commands.music.download.downloadCompleted"),
                 files: [attachment]
-            });
-            console.log("MP3 file sent as attachment with a message");
+            }) : ctx.reply({
+                content: i18n.__("commands.music.download.downloadCompleted"),
+                files: [attachment]
+            }));
 
             // Clean up the files after sending
             fs.unlinkSync(tempFilePath);
             fs.unlinkSync(mp3FilePath);
-            console.log("Temporary files deleted from disk");
+            console.log("Temporary files deleted");
 
         } catch (error) {
             console.error("Error downloading or processing the file:", error);
-            await ctx.reply({
+
+            await (ctx.isInteraction() ? ctx.followUp({
                 embeds: [
                     createEmbed(
                         "error",
                         i18n.__("commands.music.download.downloadFailed")
                     )
                 ]
-            });
+            }) : ctx.reply({
+                embeds: [
+                    createEmbed(
+                        "error",
+                        i18n.__("commands.music.download.downloadFailed")
+                    )
+                ]
+            }));
             return;
         } finally {
             // Ensure the temp directory is deleted, if it was created
@@ -157,7 +166,6 @@ export class DownloadCommand extends BaseCommand {
                         fs.unlinkSync(filePath); // Delete each file inside the temp directory
                     }
                     fs.rmdirSync(tempDir); // Delete the temp directory itself
-                    console.log("Temp folder and its contents deleted");
                 } catch (cleanupError) {
                     console.error("Error cleaning up temp folder:", cleanupError);
                 }
@@ -169,12 +177,11 @@ export class DownloadCommand extends BaseCommand {
     private static cleanUrl(url: string): string {
         try {
             const urlObj = new URL(url);
-            // Remove playlist parameters (&list, &index, &start_radio, etc.)
             urlObj.searchParams.delete('list');
             urlObj.searchParams.delete('index');
             urlObj.searchParams.delete('start_radio');
             urlObj.searchParams.delete('t');
-            // Return the cleaned URL as a string
+
             return urlObj.toString();
         } catch (error) {
             console.error("Error cleaning URL:", error);
@@ -183,9 +190,13 @@ export class DownloadCommand extends BaseCommand {
     }
 
     private static sanitizeFileName(fileName: string): string {
-        return fileName
-            .replace(/[<>:"/\\|?*]+/g, "_") // Replace invalid characters with underscores
-            .replace(/ +/g, "_")            // Replace spaces with underscores
-            .trim();                        // Remove leading/trailing whitespace
+        let sanitizedTitle = fileName
+            .replace(/[<>:"/\\|?*]+/g, "") // Remove invalid characters
+            .trim();
+
+        // Check if the sanitized title is empty
+        if (!sanitizedTitle) sanitizedTitle = "audio";
+
+        return sanitizedTitle;
     }
 }
