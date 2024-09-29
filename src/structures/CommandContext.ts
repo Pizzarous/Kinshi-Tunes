@@ -24,6 +24,25 @@ export class CommandContext {
         return Promise.resolve(undefined);
     }
 
+    // Edit the deferred reply (for slash commands)
+    public async editReply(
+        options: BaseMessageOptions | InteractionReplyOptions | MessagePayload | string
+    ): Promise<Message> {
+        if (this.isInteraction() && this.context instanceof CommandInteraction) {
+            return this.context.editReply(options);
+        }
+        throw new Error("editReply can only be used for interactions.");
+    }
+
+    public async followUp(
+        options: BaseMessageOptions | InteractionReplyOptions | MessagePayload | string
+    ): Promise<Message> {
+        if (this.isInteraction() && this.context instanceof CommandInteraction) {
+            return this.context.followUp(options);
+        }
+        throw new Error("followUp can only be used for interactions.");
+    }
+
     public async reply(
         options:
             | BaseMessageOptions

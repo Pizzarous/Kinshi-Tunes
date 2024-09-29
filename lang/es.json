@@ -268,7 +268,7 @@
                 "noUrlProvided": "No se proporcionó URL. Por favor, proporciona una URL válida para descargar la música.",
                 "downloading": "Intentando descargar **{{title}}**. ¡Por favor espera!",
                 "downloadCompleted": "Aquí tienes tu archivo encantador, fresco y listo! Disfruta de los ritmos!",
-                "downloadFailed": "No se pudo descargar la canción desde la URL proporcionada."
+                "downloadFailed": "No se pudo descargar la canción de la URL proporcionada. \nEsto puede deberse a una URL inválida o a que la canción es demasiado larga.\nPor favor, verifica la URL y vuelve a intentarlo."
             },
             "queue": {
                 "description": "Muestra la cola de reproducción"

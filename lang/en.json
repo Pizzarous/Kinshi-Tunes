@@ -268,7 +268,7 @@
                 "noUrlProvided": "No URL provided. Please provide a valid URL to download the music.",
                 "downloading": "Attempting to download **{{title}}**. Please wait!",
                 "downloadCompleted": "Here's your lovely file, fresh and ready! Enjoy the beats!",
-                "downloadFailed": "Failed to download the song from the provided URL."
+                "downloadFailed": "Failed to download the song from the provided URL. \nThis may be due an invalid URL or to the song being too long.\nPlease check the URL and try again."
             },
             "queue": {
                 "description": "Show the queue list"
