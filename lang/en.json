@@ -261,6 +261,15 @@
                 "slashQueryDescription": "Query to search",
                 "usage": "{prefix}play <query | url>"
             },
+            "download": {
+                "description": "Download some music",
+                "slashUrlDescription": "URL to download",
+                "usage": "{prefix}download <url>",
+                "noUrlProvided": "No URL provided. Please provide a valid URL to download the music.",
+                "downloading": "Attempting to download **{{title}}**. Please wait!",
+                "downloadCompleted": "Here's your lovely file, fresh and ready! Enjoy the beats!",
+                "downloadFailed": "Failed to download the song from the provided URL."
+            },
             "queue": {
                 "description": "Show the queue list"
             },
