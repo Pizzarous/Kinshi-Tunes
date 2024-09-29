@@ -261,6 +261,15 @@
                 "slashQueryDescription": "Canción a reproducir",
                 "usage": "{prefix}play <consulta / url>"
             },
+            "download": {
+                "description": "Descargar música",
+                "slashUrlDescription": "URL para descargar",
+                "usage": "{prefix}download <url>",
+                "noUrlProvided": "No se proporcionó URL. Por favor, proporciona una URL válida para descargar la música.",
+                "downloading": "Intentando descargar **{{title}}**. ¡Por favor espera!",
+                "downloadCompleted": "Aquí tienes tu archivo encantador, fresco y listo! Disfruta de los ritmos!",
+                "downloadFailed": "No se pudo descargar la canción desde la URL proporcionada."
+            },
             "queue": {
                 "description": "Muestra la cola de reproducción"
             },
