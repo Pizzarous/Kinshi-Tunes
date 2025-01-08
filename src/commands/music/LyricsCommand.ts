@@ -32,12 +32,12 @@ export class LyricsCommand extends BaseCommand {
             ctx.args.length >= 1
                 ? ctx.args.join(" ")
                 : ctx.options?.getString("query")
-                    ? ctx.options.getString("query")
-                    : (
+                  ? ctx.options.getString("query")
+                  : (
                         (
                             (ctx.guild?.queue?.player.state as AudioPlayerPlayingState).resource as
-                            | AudioResource
-                            | undefined
+                                | AudioResource
+                                | undefined
                         )?.metadata as QueueSong | undefined
                     )?.song.title;
         if (!query) {

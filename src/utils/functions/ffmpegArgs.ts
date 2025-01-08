@@ -15,25 +15,31 @@ export const filterArgs = {
     karaoke: "stereotools=mlev=0.1",
     vibrato: "vibrato=f=6.5",
     echo: "aecho=0.8:0.9:1000:0.3"
-}
+};
 
 export function ffmpegArgs(filters: Partial<Record<keyof typeof filterArgs, boolean>>): string[] {
     const keys = Object.keys(filters) as (keyof typeof filterArgs)[];
     return [
-        "-loglevel", "0",
-        "-ar", "48000",
-        "-ac", "2",
-        "-f", "opus",
-        "-acodec", "libopus",
-        ...(
-            keys.some(x => filters[x])
-                ? [
-                    "-af",
-                    keys.reduce<string[]>((p, c) => {
-                        if (filters[c]) p.push(filterArgs[c]);
-                        return p;
-                    }, []).join(",")
-                ] : []
-        )
-    ]
+        "-loglevel",
+        "0",
+        "-ar",
+        "48000",
+        "-ac",
+        "2",
+        "-f",
+        "opus",
+        "-acodec",
+        "libopus",
+        ...(keys.some(x => filters[x])
+            ? [
+                  "-af",
+                  keys
+                      .reduce<string[]>((p, c) => {
+                          if (filters[c]) p.push(filterArgs[c]);
+                          return p;
+                      }, [])
+                      .join(",")
+              ]
+            : [])
+    ];
 }

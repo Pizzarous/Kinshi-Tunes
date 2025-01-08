@@ -5,7 +5,15 @@ import { CommandContext } from "../../structures/CommandContext.js";
 import { createEmbed } from "../functions/createEmbed.js";
 import { Rawon } from "../../structures/Rawon.js";
 import i18n from "../../config/index.js";
-import { ApplicationCommandData, ApplicationCommandType, Collection, Guild, Message, Snowflake, TextChannel } from "discord.js";
+import {
+    ApplicationCommandData,
+    ApplicationCommandType,
+    Collection,
+    Guild,
+    Message,
+    Snowflake,
+    TextChannel
+} from "discord.js";
 import { promises as fs } from "node:fs";
 import { resolve } from "node:path";
 
@@ -15,7 +23,10 @@ export class CommandManager extends Collection<string, CommandComponent> {
     public readonly aliases = new Collection<string, string>();
     private readonly cooldowns = new Collection<string, Collection<Snowflake, number>>();
 
-    public constructor(public client: Rawon, private readonly path: string) {
+    public constructor(
+        public client: Rawon,
+        private readonly path: string
+    ) {
         super();
     }
 
@@ -27,16 +38,17 @@ export class CommandManager extends Collection<string, CommandComponent> {
             for (const category of categories) {
                 try {
                     const meta = (
-                        await import(
-                            pathStringToURLString(resolve(this.path, category, "category.meta.js"))
-                        ) as { default: CategoryMeta }
+                        (await import(pathStringToURLString(resolve(this.path, category, "category.meta.js")))) as {
+                            default: CategoryMeta;
+                        }
                     ).default;
 
                     this.categories.set(category, meta);
                     this.client.logger.info(`Registering ${category} category...`);
 
-                    const files = (await fs.readdir(resolve(this.path, category)))
-                        .filter(f => f !== "category.meta.js");
+                    const files = (await fs.readdir(resolve(this.path, category))).filter(
+                        f => f !== "category.meta.js"
+                    );
 
                     let disabledCount = 0;
 
@@ -48,8 +60,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
                             const path = pathStringToURLString(resolve(this.path, category, file));
                             const command = await this.client.utils.import<CommandComponent>(path, this.client);
 
-                            if (command === undefined)
-                                throw new Error(`File ${file} is not a valid command file.`);
+                            if (command === undefined) throw new Error(`File ${file} is not a valid command file.`);
 
                             command.meta = Object.assign(command.meta, { path, category });
                             if (Number(command.meta.aliases?.length) > 0) {
@@ -68,9 +79,9 @@ export class CommandManager extends Collection<string, CommandComponent> {
                                     {
                                         onError: (g, err) =>
                                             this.client.logger.error(
-                                                `Unable to register ${command.meta.name
-                                                } to message context for ${g?.id ?? "???"}, reason: ${err.message
-                                                }`
+                                                `Unable to register ${
+                                                    command.meta.name
+                                                } to message context for ${g?.id ?? "???"}, reason: ${err.message}`
                                             ),
                                         onRegistered: g =>
                                             this.client.logger.info(
@@ -92,7 +103,8 @@ export class CommandManager extends Collection<string, CommandComponent> {
                                     {
                                         onError: (g, err) =>
                                             this.client.logger.error(
-                                                `Unable to register ${command.meta.name} to user context for ${g?.id ?? "???"
+                                                `Unable to register ${command.meta.name} to user context for ${
+                                                    g?.id ?? "???"
                                                 }, reason: ${err.message}`
                                             ),
                                         onRegistered: g =>
@@ -125,7 +137,8 @@ export class CommandManager extends Collection<string, CommandComponent> {
                                 await this.registerCmd(command.meta.slash as ApplicationCommandData, {
                                     onError: (g, err) =>
                                         this.client.logger.error(
-                                            `Unable to register ${command.meta.name} to slash command for ${g?.id ?? "???"
+                                            `Unable to register ${command.meta.name} to slash command for ${
+                                                g?.id ?? "???"
                                             }, reason: ${err.message}`
                                         ),
                                     onRegistered: g =>
@@ -143,9 +156,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
                             );
                             if (command.meta.disable) disabledCount++;
                         } catch (err) {
-                            this.client.logger.error(
-                                `Error occured while loading ${file}: ${(err as Error).message}`
-                            );
+                            this.client.logger.error(`Error occured while loading ${file}: ${(err as Error).message}`);
                         }
                     }
 
@@ -156,9 +167,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
                         })
                     );
 
-                    this.client.logger.info(
-                        `Done loading ${files.length} commands in ${category} category.`
-                    );
+                    this.client.logger.info(`Done loading ${files.length} commands in ${category} category.`);
 
                     if (disabledCount > 0) {
                         this.client.logger.info(
@@ -168,11 +177,11 @@ export class CommandManager extends Collection<string, CommandComponent> {
                 } catch (err) {
                     this.client.logger.error("CMD_LOADER_ERR:", err);
                 } finally {
-                    this.client.logger.info(`Done registering ${category} category.`)
+                    this.client.logger.info(`Done registering ${category} category.`);
                 }
             }
         } catch (err) {
-            this.client.logger.error("CMD_LOADER_ERR:", err)
+            this.client.logger.error("CMD_LOADER_ERR:", err);
         } finally {
             this.client.logger.info("All categories has been registered.");
             this.client.logger.info(`Current bot language is ${this.client.config.lang.toUpperCase()}`);
@@ -243,8 +252,9 @@ export class CommandManager extends Collection<string, CommandComponent> {
             this.client.logger.info(
                 `${message.author.tag} [${message.author.id}] is using ${command.meta.name} command from ${command.meta
                     .category!} category ` +
-                `on #${(message.channel as TextChannel).name} [${message.channel.id}] in guild: ${message.guild!.name
-                } [${message.guild!.id}]`
+                    `on #${(message.channel as TextChannel).name} [${message.channel.id}] in guild: ${
+                        message.guild!.name
+                    } [${message.guild!.id}]`
             );
         }
     }

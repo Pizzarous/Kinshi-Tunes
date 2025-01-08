@@ -22,7 +22,7 @@ export class ReadyEvent extends BaseEvent {
                 }
             ],
             status: "dnd"
-        })
+        });
         await this.client.commands.load();
         this.client.logger.info(`Ready took ${formatMS(Date.now() - this.client.startTimestamp)}`);
 
@@ -30,7 +30,7 @@ export class ReadyEvent extends BaseEvent {
         this.client.logger.info(
             await this.formatString(
                 "{username} is ready to serve {userCount} users on {serverCount} guilds in " +
-                "{textChannelCount} text channels and {voiceChannelCount} voice channels."
+                    "{textChannelCount} text channels and {voiceChannelCount} voice channels."
             )
         );
     }
@@ -95,11 +95,11 @@ export class ReadyEvent extends BaseEvent {
         return this.client.user!.setPresence({
             activities: (activity as { name: string } | undefined)
                 ? [
-                    {
-                        name: activity.name,
-                        type: activity.typeNumber
-                    }
-                ]
+                      {
+                          name: activity.name,
+                          type: activity.typeNumber
+                      }
+                  ]
                 : [],
             status: this.client.config.presenceData.status[statusNumber]
         });

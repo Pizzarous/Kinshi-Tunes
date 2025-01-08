@@ -8,7 +8,7 @@ import prism from "prism-media";
 const { FFmpeg } = prism;
 
 export class ClientUtils {
-    public constructor(public readonly client: Rawon) { }
+    public constructor(public readonly client: Rawon) {}
 
     public async fetchMuteRole(guild: Guild): Promise<Role | null> {
         const id = this.client.data.data?.[guild.id]?.mute;
@@ -144,7 +144,7 @@ export class ClientUtils {
             const res = execSync(`git rev-parse${short ? " --short" : ""} ${ref}`);
             return res.toString().trim();
         } catch {
-            return "???"
+            return "???";
         }
     }
 }

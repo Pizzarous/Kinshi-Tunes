@@ -83,14 +83,13 @@ export class FilterCommand extends BaseCommand {
             disable: "disable",
             stats: "status",
             status: "status"
-        }
+        };
         const subcmd = mode[
-            (
-                ctx.options?.getSubcommand() ??
-                ctx.args[0] as string | undefined
-            )?.toLowerCase() as unknown as string
+            (ctx.options?.getSubcommand() ?? (ctx.args[0] as string | undefined))?.toLowerCase() as unknown as string
         ] as FilterSubCmd | undefined;
-        const filter = (ctx.options?.getString("filter") ?? ctx.args[subcmd ? 1 : 0] as string | undefined)?.toLowerCase() as keyof typeof filterArgs;
+        const filter = (
+            ctx.options?.getString("filter") ?? (ctx.args[subcmd ? 1 : 0] as string | undefined)
+        )?.toLowerCase() as keyof typeof filterArgs;
         if (subcmd === "enable" || subcmd === "disable") {
             if (!filterArgs[filter]) {
                 return ctx.reply({
@@ -101,10 +100,13 @@ export class FilterCommand extends BaseCommand {
             ctx.guild?.queue?.setFilter(filter, subcmd === "enable");
             return ctx.reply({
                 embeds: [
-                    createEmbed("info", i18n.__mf("commands.music.filter.filterSet", {
-                        filter,
-                        state: subcmd === "enable" ? "ENABLED" : "DISABLED"
-                    }))
+                    createEmbed(
+                        "info",
+                        i18n.__mf("commands.music.filter.filterSet", {
+                            filter,
+                            state: subcmd === "enable" ? "ENABLED" : "DISABLED"
+                        })
+                    )
                 ]
             });
         }
@@ -112,44 +114,47 @@ export class FilterCommand extends BaseCommand {
         if (filterArgs[filter]) {
             return ctx.reply({
                 embeds: [
-                    createEmbed("info", i18n.__mf("commands.music.filter.currentState", {
-                        filter,
-                        state: ctx.guild?.queue?.filters[filter] ? "ENABLED" : "DISABLED"
-                    }))
-                        .setFooter({
-                            text: i18n.__mf("commands.music.filter.embedFooter", {
-                                filter,
-                                opstate: ctx.guild?.queue?.filters[filter] ? "disable" : "enable",
-                                prefix: ctx.isCommand() ? "/" : this.client.config.mainPrefix
-                            })
+                    createEmbed(
+                        "info",
+                        i18n.__mf("commands.music.filter.currentState", {
+                            filter,
+                            state: ctx.guild?.queue?.filters[filter] ? "ENABLED" : "DISABLED"
                         })
+                    ).setFooter({
+                        text: i18n.__mf("commands.music.filter.embedFooter", {
+                            filter,
+                            opstate: ctx.guild?.queue?.filters[filter] ? "disable" : "enable",
+                            prefix: ctx.isCommand() ? "/" : this.client.config.mainPrefix
+                        })
+                    })
                 ]
             });
         }
 
-        const keys = Object.keys(filterArgs) as (keyof typeof filterArgs)[]
+        const keys = Object.keys(filterArgs) as (keyof typeof filterArgs)[];
         return ctx.reply({
             embeds: [
-                createEmbed("info")
-                    .addFields(
-                        {
-                            name: i18n.__("commands.music.filter.availableFilters"),
-                            value: keys
+                createEmbed("info").addFields(
+                    {
+                        name: i18n.__("commands.music.filter.availableFilters"),
+                        value:
+                            keys
                                 .filter(x => !ctx.guild?.queue?.filters[x])
                                 .map(x => `\`${x}\``)
                                 .join("\n") || "-",
-                            inline: true
-                        },
-                        {
-                            name: i18n.__("commands.music.filter.currentlyUsedFilters"),
-                            value: keys
+                        inline: true
+                    },
+                    {
+                        name: i18n.__("commands.music.filter.currentlyUsedFilters"),
+                        value:
+                            keys
                                 .filter(x => ctx.guild?.queue?.filters[x])
                                 .map(x => `\`${x}\``)
                                 .join("\n") || "-",
-                            inline: true
-                        }
-                    )
+                        inline: true
+                    }
+                )
             ]
-        })
+        });
     }
 }

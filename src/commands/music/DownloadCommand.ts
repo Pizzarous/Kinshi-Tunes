@@ -44,21 +44,13 @@ export class DownloadCommand extends BaseCommand {
 
         if (!url) {
             console.error("No URL provided");
-            return ctx.isInteraction() ? ctx.followUp({
-                embeds: [
-                    createEmbed(
-                        "warn",
-                        i18n.__("commands.music.download.noUrlProvided")
-                    )
-                ]
-            }) : ctx.reply({
-                embeds: [
-                    createEmbed(
-                        "warn",
-                        i18n.__("commands.music.download.noUrlProvided")
-                    )
-                ]
-            });
+            return ctx.isInteraction()
+                ? ctx.followUp({
+                      embeds: [createEmbed("warn", i18n.__("commands.music.download.noUrlProvided"))]
+                  })
+                : ctx.reply({
+                      embeds: [createEmbed("warn", i18n.__("commands.music.download.noUrlProvided"))]
+                  });
         }
 
         // Clean the URL to remove playlist parameters
@@ -83,11 +75,13 @@ export class DownloadCommand extends BaseCommand {
             console.log("Sanitized title:", sanitizedTitle);
 
             // Send a message indicating the download attempt
-            await (ctx.isInteraction() ? ctx.followUp({
-                content: i18n.__("commands.music.download.downloading", { title: sanitizedTitle })
-            }) : ctx.reply({
-                content: i18n.__("commands.music.download.downloading", { title: sanitizedTitle })
-            }));
+            await (ctx.isInteraction()
+                ? ctx.followUp({
+                      content: i18n.__("commands.music.download.downloading", { title: sanitizedTitle })
+                  })
+                : ctx.reply({
+                      content: i18n.__("commands.music.download.downloading", { title: sanitizedTitle })
+                  }));
 
             // Create temp directory if it doesn't exist
             tempDir = path.join(currentDir, "temp");
@@ -102,7 +96,7 @@ export class DownloadCommand extends BaseCommand {
             console.log("Attempting to download audio using yt-dlp");
             await ytDlp(url, {
                 output: tempFilePath,
-                format: 'bestaudio',
+                format: "bestaudio",
                 ffmpegLocation: ffmpegStatic
             });
             console.log("Download successful");
@@ -110,12 +104,12 @@ export class DownloadCommand extends BaseCommand {
             // Convert the file to MP3 using ffmpeg
             await new Promise<void>((resolve, reject) => {
                 ffmpeg(tempFilePath)
-                    .toFormat('mp3')
-                    .on('end', () => {
+                    .toFormat("mp3")
+                    .on("end", () => {
                         console.log("Conversion to MP3 successful");
                         resolve();
                     })
-                    .on('error', (err: Error) => {
+                    .on("error", (err: Error) => {
                         console.error("Error converting to MP3:", err);
                         reject(err);
                     })
@@ -124,37 +118,30 @@ export class DownloadCommand extends BaseCommand {
 
             // Send the MP3 file as an attachment
             const attachment = new AttachmentBuilder(mp3FilePath);
-            await (ctx.isInteraction() ? ctx.followUp({
-                content: i18n.__("commands.music.download.downloadCompleted"),
-                files: [attachment]
-            }) : ctx.reply({
-                content: i18n.__("commands.music.download.downloadCompleted"),
-                files: [attachment]
-            }));
+            await (ctx.isInteraction()
+                ? ctx.followUp({
+                      content: i18n.__("commands.music.download.downloadCompleted"),
+                      files: [attachment]
+                  })
+                : ctx.reply({
+                      content: i18n.__("commands.music.download.downloadCompleted"),
+                      files: [attachment]
+                  }));
 
             // Clean up the files after sending
             fs.unlinkSync(tempFilePath);
             fs.unlinkSync(mp3FilePath);
             console.log("Temporary files deleted");
-
         } catch (error) {
             console.error("Error downloading or processing the file:", error);
 
-            await (ctx.isInteraction() ? ctx.followUp({
-                embeds: [
-                    createEmbed(
-                        "error",
-                        i18n.__("commands.music.download.downloadFailed")
-                    )
-                ]
-            }) : ctx.reply({
-                embeds: [
-                    createEmbed(
-                        "error",
-                        i18n.__("commands.music.download.downloadFailed")
-                    )
-                ]
-            }));
+            await (ctx.isInteraction()
+                ? ctx.followUp({
+                      embeds: [createEmbed("error", i18n.__("commands.music.download.downloadFailed"))]
+                  })
+                : ctx.reply({
+                      embeds: [createEmbed("error", i18n.__("commands.music.download.downloadFailed"))]
+                  }));
             return;
         } finally {
             // Ensure the temp directory is deleted, if it was created
@@ -177,10 +164,10 @@ export class DownloadCommand extends BaseCommand {
     private static cleanUrl(url: string): string {
         try {
             const urlObj = new URL(url);
-            urlObj.searchParams.delete('list');
-            urlObj.searchParams.delete('index');
-            urlObj.searchParams.delete('start_radio');
-            urlObj.searchParams.delete('t');
+            urlObj.searchParams.delete("list");
+            urlObj.searchParams.delete("index");
+            urlObj.searchParams.delete("start_radio");
+            urlObj.searchParams.delete("t");
 
             return urlObj.toString();
         } catch (error) {

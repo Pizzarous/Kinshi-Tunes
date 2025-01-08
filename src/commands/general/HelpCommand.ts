@@ -4,7 +4,15 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { Command } from "../../utils/decorators/Command.js";
 import i18n from "../../config/index.js";
-import { ActionRowBuilder, ApplicationCommandOptionType, ComponentType, Message, SelectMenuComponentOptionData, StringSelectMenuBuilder, StringSelectMenuInteraction } from "discord.js";
+import {
+    ActionRowBuilder,
+    ApplicationCommandOptionType,
+    ComponentType,
+    Message,
+    SelectMenuComponentOptionData,
+    StringSelectMenuBuilder,
+    StringSelectMenuInteraction
+} from "discord.js";
 
 @Command<typeof HelpCommand>({
     aliases: ["h", "command", "commands", "cmd", "cmds"],
@@ -36,9 +44,7 @@ export class HelpCommand extends BaseCommand {
             iconURL: "https://cdn.clytage.org/images/information.png"
         });
 
-    private readonly infoEmbed = createEmbed("info").setThumbnail(
-        "https://cdn.clytage.org/images/question_mark.png"
-    );
+    private readonly infoEmbed = createEmbed("info").setThumbnail("https://cdn.clytage.org/images/question_mark.png");
 
     public async execute(ctx: CommandContext): Promise<Message | undefined> {
         if (ctx.isInteraction() && !ctx.deferred) await ctx.deferReply();
@@ -114,7 +120,9 @@ export class HelpCommand extends BaseCommand {
                         description: "Nothing to select here",
                         value: "Nothing to select here"
                     });
-                await msg.edit({ components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(disabledMenu)] });
+                await msg.edit({
+                    components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(disabledMenu)]
+                });
             }
         }
 

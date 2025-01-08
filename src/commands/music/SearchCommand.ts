@@ -7,7 +7,17 @@ import { BaseCommand } from "../../structures/BaseCommand.js";
 import { Command } from "../../utils/decorators/Command.js";
 import { Song } from "../../typings/index.js";
 import i18n from "../../config/index.js";
-import { CommandInteractionOptionResolver, Message, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction, ApplicationCommandOptionType, ComponentType, escapeMarkdown, SelectMenuComponentOptionData } from "discord.js";
+import {
+    CommandInteractionOptionResolver,
+    Message,
+    ActionRowBuilder,
+    StringSelectMenuBuilder,
+    StringSelectMenuInteraction,
+    ApplicationCommandOptionType,
+    ComponentType,
+    escapeMarkdown,
+    SelectMenuComponentOptionData
+} from "discord.js";
 
 @Command<typeof SearchCommand>({
     aliases: ["sc"],
@@ -144,7 +154,9 @@ export class SearchCommand extends BaseCommand {
             .awaitMessages({
                 errors: ["time"],
                 filter: m => {
-                    const nums = m.content.split(/\s*,\s*/).filter(x => Number(x) > 0 && Number(x) <= tracks.items.length);
+                    const nums = m.content
+                        .split(/\s*,\s*/)
+                        .filter(x => Number(x) > 0 && Number(x) <= tracks.items.length);
 
                     return (
                         m.author.id === ctx.author.id &&
@@ -180,7 +192,10 @@ export class SearchCommand extends BaseCommand {
             .sort((a, b) => Number(a) - Number(b));
         const newCtx = new CommandContext(ctx.context, []);
 
-        newCtx.additionalArgs.set("values", songs.map(x => tracks.items[Number(x) - 1].url));
+        newCtx.additionalArgs.set(
+            "values",
+            songs.map(x => tracks.items[Number(x) - 1].url)
+        );
         newCtx.additionalArgs.set("fromSearch", true);
         this.client.commands.get("play")!.execute(newCtx);
     }

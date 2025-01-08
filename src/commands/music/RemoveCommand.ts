@@ -34,9 +34,8 @@ export class RemoveCommand extends BaseCommand {
         const djRole = await this.client.utils.fetchDJRole(ctx.guild!);
         if (
             this.client.data.data?.[ctx.guild!.id]?.dj?.enable &&
-            (this.client.channels.cache.get(
-                ctx.guild?.queue?.connection?.joinConfig.channelId ?? ""
-            ) as VoiceChannel).members.size > 2 &&
+            (this.client.channels.cache.get(ctx.guild?.queue?.connection?.joinConfig.channelId ?? "") as VoiceChannel)
+                .members.size > 2 &&
             !ctx.member?.roles.cache.has(djRole?.id ?? "") &&
             !ctx.member?.permissions.has("ManageGuild")
         ) {
@@ -76,7 +75,8 @@ export class RemoveCommand extends BaseCommand {
                 const texts = await Promise.all(
                     v.map(
                         (song, index) =>
-                            `${isSkip ? i18n.__("commands.music.remove.songSkip") : ""}${i * 10 + (index + 1)
+                            `${isSkip ? i18n.__("commands.music.remove.songSkip") : ""}${
+                                i * 10 + (index + 1)
                             }.) ${escapeMarkdown(parseHTMLElements(song.song.title))}`
                     )
                 );

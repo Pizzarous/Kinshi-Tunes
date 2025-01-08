@@ -7,7 +7,10 @@ import { checkQuery } from "./GeneralUtil.js";
 import { Readable } from "node:stream";
 
 // @ts-expect-error play-dl is optional
-const { stream: pldlStream, video_basic_info } = await import("play-dl").catch(() => ({ stream: null, video_basic_info: null }));
+const { stream: pldlStream, video_basic_info } = await import("play-dl").catch(() => ({
+    stream: null,
+    video_basic_info: null
+}));
 
 export async function getStream(client: Rawon, url: string): Promise<Readable> {
     if (streamStrategy === "play-dl") {

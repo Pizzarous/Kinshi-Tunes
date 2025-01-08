@@ -5,7 +5,14 @@ import { LoopMode, QueueSong } from "../typings/index.js";
 import { play } from "../utils/handlers/GeneralUtil.js";
 import i18n from "../config/index.js";
 import { Rawon } from "./Rawon.js";
-import { AudioPlayer, AudioPlayerPlayingState, AudioPlayerStatus, AudioResource, createAudioPlayer, VoiceConnection } from "@discordjs/voice";
+import {
+    AudioPlayer,
+    AudioPlayerPlayingState,
+    AudioPlayerStatus,
+    AudioResource,
+    createAudioPlayer,
+    VoiceConnection
+} from "@discordjs/voice";
 import { TextChannel, Snowflake, GuildMember } from "discord.js";
 
 const nonEnum = { enumerable: false };
@@ -47,7 +54,8 @@ export class ServerQueue {
                 } else if (newState.status === AudioPlayerStatus.Idle) {
                     const song = (oldState as AudioPlayerPlayingState).resource.metadata as QueueSong;
                     this.client.logger.info(
-                        `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""} Track: "${song.song.title
+                        `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""} Track: "${
+                            song.song.title
                         }" on ${this.textChannel.guild.name} has ended.`
                     );
                     this.skipVoters = [];
@@ -60,12 +68,12 @@ export class ServerQueue {
                         this.shuffle && this.loopMode !== "SONG"
                             ? this.songs.random()?.key
                             : this.loopMode === "SONG"
-                                ? song.key
-                                : this.songs
+                              ? song.key
+                              : (this.songs
                                     .sortByIndex()
                                     .filter(x => x.index > song.index)
                                     .first()?.key ??
-                                (this.loopMode === "QUEUE" ? this.songs.sortByIndex().first()?.key ?? "" : "");
+                                (this.loopMode === "QUEUE" ? (this.songs.sortByIndex().first()?.key ?? "") : ""));
 
                     this.textChannel
                         .send({
@@ -127,7 +135,11 @@ export class ServerQueue {
 
         if (before !== state && this.player.state.status === AudioPlayerStatus.Playing) {
             this.playing = false;
-            void play(this.textChannel.guild, (this.player.state.resource as AudioResource<QueueSong>).metadata.key, true);
+            void play(
+                this.textChannel.guild,
+                (this.player.state.resource as AudioResource<QueueSong>).metadata.key,
+                true
+            );
         }
     }
 
@@ -223,7 +235,8 @@ export class ServerQueue {
 
     private sendStartPlayingMsg(newSong: QueueSong["song"]): void {
         this.client.logger.info(
-            `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""} Track: "${newSong.title}" on ${this.textChannel.guild.name
+            `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""} Track: "${newSong.title}" on ${
+                this.textChannel.guild.name
             } has started.`
         );
         this.textChannel

@@ -5,7 +5,11 @@ import { promises as fs } from "node:fs";
 import { resolve } from "node:path";
 
 export class EventsLoader {
-    public constructor(public client: Rawon, public path: string) { }
+    public constructor(
+        public client: Rawon,
+        public path: string
+    ) {}
+
     public load(): void {
         fs.readdir(resolve(this.path))
             .then(async events => {

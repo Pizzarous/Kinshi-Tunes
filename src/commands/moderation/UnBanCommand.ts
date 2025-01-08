@@ -55,7 +55,7 @@ export class UnBanCommand extends BaseCommand {
             .remove(
                 user.id,
                 ctx.options?.getString("reason") ??
-                (ctx.args.length ? ctx.args.join(" ") : i18n.__("commands.moderation.common.noReasonString"))
+                    (ctx.args.length ? ctx.args.join(" ") : i18n.__("commands.moderation.common.noReasonString"))
             )
             .catch(err => new Error(err as string | undefined));
         if (unban instanceof Error) {

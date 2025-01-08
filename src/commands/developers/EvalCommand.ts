@@ -20,10 +20,10 @@ export class EvalCommand extends BaseCommand {
         const msg = ctx;
         const client = this.client;
 
-        const code = ctx.args
-            .join(" ")
-            .replace(/```(?:[^\s]+\n)?(.*?)\n?```/gs, (_, a: string) => a);
-        const embed = createEmbed("info").addFields([{ name: i18n.__("commands.developers.eval.inputString"), value: `\`\`\`js\n${code}\`\`\`` }]);
+        const code = ctx.args.join(" ").replace(/```(?:[^\s]+\n)?(.*?)\n?```/gs, (_, a: string) => a);
+        const embed = createEmbed("info").addFields([
+            { name: i18n.__("commands.developers.eval.inputString"), value: `\`\`\`js\n${code}\`\`\`` }
+        ]);
 
         try {
             if (!code) {
@@ -34,8 +34,7 @@ export class EvalCommand extends BaseCommand {
 
             const isAsync = /--async\s*(--silent)?$/.test(code);
             const isSilent = /--silent\s*(--async)?$/.test(code);
-            const toExecute =
-                isAsync || isSilent ? code.replace(/--(async|silent)\s*(--(silent|async))?$/, "") : code;
+            const toExecute = isAsync || isSilent ? code.replace(/--(async|silent)\s*(--(silent|async))?$/, "") : code;
             const evaled = inspect(await eval(isAsync ? `(async () => {\n${toExecute}\n})()` : toExecute), {
                 depth: 0
             });
