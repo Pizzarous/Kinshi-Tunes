@@ -20,7 +20,7 @@ const levelColors: Record<LogLevel, string> = {
 };
 
 export class BaseLogger {
-    public constructor(public readonly color: boolean = true) { }
+    public constructor(public readonly color: boolean = true) {}
 
     protected log(messages: any[], level: LogLevel = "info"): void {
         const opening = this.color ? "" : levelColors[level];

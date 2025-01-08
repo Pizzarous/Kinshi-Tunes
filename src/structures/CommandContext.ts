@@ -1,6 +1,31 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition, no-nested-ternary */
 import { MessageInteractionAction } from "../typings/index.js";
-import { ActionRowBuilder, BaseInteraction, BaseMessageOptions, ButtonBuilder, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Collection, CommandInteraction, ContextMenuCommandInteraction, GuildMember, Interaction, InteractionReplyOptions, InteractionResponse, Message, MessageComponentInteraction, MessageMentions, MessagePayload, MessageReplyOptions, ModalSubmitFields, ModalSubmitInteraction, StringSelectMenuInteraction, TextBasedChannel, User } from "discord.js";
+import {
+    ActionRowBuilder,
+    BaseInteraction,
+    BaseMessageOptions,
+    ButtonBuilder,
+    ButtonInteraction,
+    ButtonStyle,
+    ChatInputCommandInteraction,
+    Collection,
+    CommandInteraction,
+    ContextMenuCommandInteraction,
+    GuildMember,
+    Interaction,
+    InteractionReplyOptions,
+    InteractionResponse,
+    Message,
+    MessageComponentInteraction,
+    MessageMentions,
+    MessagePayload,
+    MessageReplyOptions,
+    ModalSubmitFields,
+    ModalSubmitInteraction,
+    StringSelectMenuInteraction,
+    TextBasedChannel,
+    User
+} from "discord.js";
 
 export class CommandContext {
     public additionalArgs = new Collection<string, any>();
@@ -15,7 +40,7 @@ export class CommandContext {
             | Message
             | StringSelectMenuInteraction,
         public args: string[] = []
-    ) { }
+    ) {}
 
     public async deferReply(): Promise<InteractionResponse | undefined> {
         if (this.isInteraction()) {
@@ -100,8 +125,8 @@ export class CommandContext {
             );
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             (options as InteractionReplyOptions).components
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                ? (options as InteractionReplyOptions).components!.push(deletionBtn)
+                ? // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                  (options as InteractionReplyOptions).components!.push(deletionBtn)
                 : ((options as InteractionReplyOptions).components = [deletionBtn]);
         }
         if (this.isInteraction()) {

@@ -25,10 +25,10 @@ export class NowPlayingCommand extends BaseCommand {
         function getEmbed(): EmbedBuilder {
             const res = (
                 ctx.guild?.queue?.player.state as
-                | (AudioPlayerState & {
-                    resource: AudioResource | undefined;
-                })
-                | undefined
+                    | (AudioPlayerState & {
+                          resource: AudioResource | undefined;
+                      })
+                    | undefined
             )?.resource;
             const song = (res?.metadata as QueueSong | undefined)?.song;
 
@@ -39,7 +39,7 @@ export class NowPlayingCommand extends BaseCommand {
             const curr = ~~(res!.playbackDuration / 1000);
             embed.data.description += song
                 ? `**[${song.title}](${song.url})**\n` +
-                `${normalizeTime(curr)} ${createProgressBar(curr, song.duration)} ${normalizeTime(song.duration)}`
+                  `${normalizeTime(curr)} ${createProgressBar(curr, song.duration)} ${normalizeTime(song.duration)}`
                 : i18n.__("commands.music.nowplaying.emptyQueue");
 
             return embed;

@@ -58,7 +58,8 @@ export class InfractionsCommand extends BaseCommand {
                 const infracts = await Promise.all(
                     s.map(
                         (inf, i) =>
-                            `${n * 10 + (i + 1)}. ${formatTime(inf.on)} - ${inf.reason ?? i18n.__("commands.moderation.common.noReasonString")
+                            `${n * 10 + (i + 1)}. ${formatTime(inf.on)} - ${
+                                inf.reason ?? i18n.__("commands.moderation.common.noReasonString")
                             }`
                     )
                 );

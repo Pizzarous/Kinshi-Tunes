@@ -9,9 +9,7 @@ import { version as DJSVersion } from "discord.js";
 import { readFileSync } from "node:fs";
 import { uptime } from "node:os";
 
-const pkg: { version: string } = JSON.parse(
-    readFileSync(new URL("../../../package.json", import.meta.url)).toString()
-);
+const pkg: { version: string } = JSON.parse(readFileSync(new URL("../../../package.json", import.meta.url)).toString());
 
 @Command({
     aliases: ["information", "info", "botinfo", "stats"],

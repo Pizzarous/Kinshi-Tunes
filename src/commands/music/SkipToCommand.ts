@@ -50,9 +50,8 @@ export class SkipToCommand extends BaseCommand {
         const djRole = await this.client.utils.fetchDJRole(ctx.guild!);
         if (
             this.client.data.data?.[ctx.guild!.id]?.dj?.enable &&
-            (this.client.channels.cache.get(
-                ctx.guild?.queue?.connection?.joinConfig.channelId ?? ""
-            ) as VoiceChannel).members.size > 2 &&
+            (this.client.channels.cache.get(ctx.guild?.queue?.connection?.joinConfig.channelId ?? "") as VoiceChannel)
+                .members.size > 2 &&
             !ctx.member?.roles.cache.has(djRole?.id ?? "") &&
             !ctx.member?.permissions.has("ManageGuild")
         ) {

@@ -20,11 +20,11 @@ const toCapitalCase = (text: string): string => {
 
 const formatLocale = (locale: string | undefined): string => {
     if (!locale) return "en";
-    const parts = locale.toLowerCase().split('-');
+    const parts = locale.toLowerCase().split("-");
     if (parts.length === 2) {
         parts[1] = parts[1].toUpperCase();
     }
-    return parts.join('-');
+    return parts.join("-");
 };
 
 export const stayInVCAfterFinished = process.env.STAY_IN_VC_AFTER_FINISHED?.toLowerCase() === "yes";

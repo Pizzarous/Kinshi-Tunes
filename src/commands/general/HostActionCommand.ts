@@ -3,7 +3,7 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { Command } from "../../utils/decorators/Command.js";
 import i18n from "../../config/index.js";
-import { exec } from 'child_process';
+import { exec } from "child_process";
 import { ApplicationCommandOptionType } from "discord.js";
 
 @Command({
@@ -49,7 +49,7 @@ export class HostActionCommand extends BaseCommand {
         }
 
         if (!action || (action !== "restart" && action !== "shutdown" && action !== "cancel")) {
-            console.log(action)
+            console.log(action);
             ctx.reply({
                 embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.hostaction.invalidAction")}`)]
             }).catch(e => this.client.logger.error("HostAction_CMD_ERR:", e));
@@ -97,8 +97,6 @@ export class HostActionCommand extends BaseCommand {
             if (stdout) console.log(`stdout: ${stdout}`);
 
             if (stderr) console.error(`stderr: ${stderr}`);
-
         });
-
     }
 }

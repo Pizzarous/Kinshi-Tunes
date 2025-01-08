@@ -61,11 +61,12 @@ export class VoiceStateUpdateEvent extends BaseEvent {
         const botID = this.client.user?.id;
 
         // Leave the voice channel after 5 minutes if is alone
-        if ((oldVC?.members.size === 1) && queue.idle) {
+        if (oldVC?.members.size === 1 && queue.idle) {
             setTimeout(() => {
                 queue.destroy();
-                void queue.textChannel
-                    .send({ embeds: [createEmbed("info", `👋 **|** ${i18n.__("utils.generalHandler.leftVCAlone")}`)] })
+                void queue.textChannel.send({
+                    embeds: [createEmbed("info", `👋 **|** ${i18n.__("utils.generalHandler.leftVCAlone")}`)]
+                });
             }, 300000);
         }
 
@@ -75,7 +76,8 @@ export class VoiceStateUpdateEvent extends BaseEvent {
             queue.destroy();
             if (!isIdle) {
                 this.client.logger.info(
-                    `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""
+                    `${
+                        this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""
                     } Disconnected from the voice channel at ${newState.guild.name}, the queue was deleted.`
                 );
                 queue.textChannel
@@ -112,8 +114,10 @@ export class VoiceStateUpdateEvent extends BaseEvent {
                 } catch {
                     queue.destroy();
                     this.client.logger.info(
-                        `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""
-                        } Unable to re-configure networking on ${newState.guild.name
+                        `${
+                            this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""
+                        } Unable to re-configure networking on ${
+                            newState.guild.name
                         } voice channel, the queue was deleted.`
                     );
                     void msg.edit({
@@ -133,7 +137,8 @@ export class VoiceStateUpdateEvent extends BaseEvent {
                 if ("error" in suppress) {
                     queue.destroy();
                     this.client.logger.info(
-                        `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""
+                        `${
+                            this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""
                         } Unable to join as Speaker at ${newState.guild.name} stage channel, the queue was deleted.`
                     );
                     void queue.textChannel

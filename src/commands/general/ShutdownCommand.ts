@@ -15,7 +15,7 @@ import i18n from "../../config/index.js";
 })
 export class ShutdownCommand extends BaseCommand {
     public execute(ctx: CommandContext): void {
-        if ((!process.env.ADMIN_ID) || ctx.author.id !== process.env.ADMIN_ID) {
+        if (!process.env.ADMIN_ID || ctx.author.id !== process.env.ADMIN_ID) {
             ctx.reply({
                 embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.shutdown.errorMessage")}`)]
             }).catch(e => this.client.logger.error("SHUTDOWN_CMD_ERR:", e));

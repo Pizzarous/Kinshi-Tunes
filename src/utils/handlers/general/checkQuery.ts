@@ -27,7 +27,10 @@ export function checkQuery(string: string): QueryData {
     } else if (/youtube|youtu\.be/g.exec(url.hostname)) {
         result.sourceType = "youtube";
 
-        if (!/youtu\.be/g.exec(url.hostname) && url.pathname.startsWith("/playlist") || url.searchParams.has("list")) {
+        if (
+            (!/youtu\.be/g.exec(url.hostname) && url.pathname.startsWith("/playlist")) ||
+            url.searchParams.has("list")
+        ) {
             result.type = "playlist";
         } else if (
             (/youtube/g.exec(url.hostname) && url.pathname.startsWith("/watch")) ??
@@ -40,7 +43,7 @@ export function checkQuery(string: string): QueryData {
     } else if (/spotify/g.exec(url.hostname)) {
         result.sourceType = "spotify";
 
-        if (["/playlist", "/album"].some((path) => url.pathname.startsWith(path))) {
+        if (["/playlist", "/album"].some(path => url.pathname.startsWith(path))) {
             result.type = "playlist";
         } else if (url.pathname.startsWith("/track")) {
             result.type = "track";

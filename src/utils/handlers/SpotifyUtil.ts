@@ -7,7 +7,7 @@ export class SpotifyUtil {
     public baseURI = "https://api.spotify.com/v1";
     private token!: string;
 
-    public constructor(public client: Rawon) { }
+    public constructor(public client: Rawon) {}
 
     public async fetchToken(): Promise<number> {
         const { accessToken, accessTokenExpirationTimestampMs } = await this.client.request

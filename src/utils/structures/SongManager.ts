@@ -5,7 +5,10 @@ import { Collection, GuildMember, Snowflake, SnowflakeUtil } from "discord.js";
 export class SongManager extends Collection<Snowflake, QueueSong> {
     private id = 0;
 
-    public constructor(public readonly client: Rawon, public readonly guild: GuildMember["guild"]) {
+    public constructor(
+        public readonly client: Rawon,
+        public readonly guild: GuildMember["guild"]
+    ) {
         super();
     }
 
