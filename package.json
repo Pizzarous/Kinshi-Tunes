@@ -75,7 +75,7 @@
 	"devDependencies": {
 		"@clytage/eslint-config": "^3.0.1",
 		"@types/fluent-ffmpeg": "^2.1.26",
-		"@types/i18n": "0.13.10",
+		"@types/i18n": "0.13.12",
 		"@types/node": "22.10.5",
 		"@typescript-eslint/eslint-plugin": "6.18.1",
 		"@typescript-eslint/parser": "6.18.1",
