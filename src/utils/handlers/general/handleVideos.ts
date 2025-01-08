@@ -39,6 +39,7 @@ export async function handleVideos(
 
         return new ButtonPagination(msg, {
             author: ctx.author.id,
+            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
             edit: (i, e, p) => {
                 e.setDescription(`\`\`\`\n${p}\`\`\``)
                     .setAuthor({

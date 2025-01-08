@@ -65,7 +65,6 @@ export class InteractionCreateEvent extends BaseEvent {
 
         const context = new CommandContext(interaction);
         if (interaction.isUserContextMenuCommand()) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             const data = interaction.options.getUser("user") ?? interaction.options.getMessage("message");
             let dataType = ApplicationCommandType.User;
 

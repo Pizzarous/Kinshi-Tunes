@@ -1,4 +1,3 @@
-/* eslint-disable max-depth */
 import { CategoryMeta, CommandComponent, RegisterCmdOptions } from "../../typings/index.js";
 import { pathStringToURLString } from "../functions/pathStringToURLString.js";
 import { CommandContext } from "../../structures/CommandContext.js";
@@ -190,7 +189,6 @@ export class CommandManager extends Collection<string, CommandComponent> {
     }
 
     public handle(message: Message, pref: string): void {
-        // eslint-disable-next-line prefer-named-capture-group
         const prefix = pref === "{mention}" ? /<@(!)?\d*?>/.exec(message.content)![0] : pref;
         const args = message.content.substring(prefix.length).trim().split(/ +/);
         const cmd = args.shift()?.toLowerCase();
@@ -247,7 +245,6 @@ export class CommandManager extends Collection<string, CommandComponent> {
         } catch (e) {
             this.client.logger.error("COMMAND_HANDLER_ERR:", e);
         } finally {
-            // eslint-disable-next-line no-unsafe-finally
             if (command.meta.devOnly && !this.client.config.devs.includes(message.author.id)) return;
             this.client.logger.info(
                 `${message.author.tag} [${message.author.id}] is using ${command.meta.name} command from ${command.meta

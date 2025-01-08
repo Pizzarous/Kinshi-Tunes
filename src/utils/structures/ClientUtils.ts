@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { KinshiTunes } from "../../structures/KinshiTunes.js";
 import { Guild, Role, ChannelType } from "discord.js";
 import { execSync } from "node:child_process";

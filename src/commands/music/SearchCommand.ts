@@ -200,7 +200,6 @@ export class SearchCommand extends BaseCommand {
         this.client.commands.get("play")!.execute(newCtx);
     }
 
-    // eslint-disable-next-line class-methods-use-this
     private generateSelectMenu(tracks: Song[]): SelectMenuComponentOptionData[] {
         const emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
 

@@ -64,7 +64,6 @@ export class ServerQueue {
                     }
 
                     const nextS =
-                        // eslint-disable-next-line no-nested-ternary
                         this.shuffle && this.loopMode !== "SONG"
                             ? this.songs.random()?.key
                             : this.loopMode === "SONG"

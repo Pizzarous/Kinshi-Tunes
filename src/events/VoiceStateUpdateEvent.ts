@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import { createEmbed } from "../utils/functions/createEmbed.js";
 import { ServerQueue } from "../structures/ServerQueue.js";
 import { formatMS } from "../utils/functions/formatMS.js";
