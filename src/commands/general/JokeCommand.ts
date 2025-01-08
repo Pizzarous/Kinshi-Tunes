@@ -5,7 +5,7 @@ import { Command } from "../../utils/decorators/Command.js";
 import i18n from "../../config/index.js";
 import axios from "axios";
 
-interface JokeApiResponse {
+interface IJokeApiResponse {
     category: string;
     type: string;
     joke: string;
@@ -25,7 +25,7 @@ interface JokeApiResponse {
 export class JokeCommand extends BaseCommand {
     public async execute(ctx: CommandContext): Promise<void> {
         try {
-            const response = await axios.get<JokeApiResponse>("https://v2.jokeapi.dev/joke/Any");
+            const response = await axios.get<IJokeApiResponse>("https://v2.jokeapi.dev/joke/Any");
             const joke =
                 response.data.type === "twopart"
                     ? `${response.data.setup}\n\n${response.data.delivery}`

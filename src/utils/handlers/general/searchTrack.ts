@@ -138,7 +138,6 @@ export async function searchTrack(
             }
 
             case "spotify": {
-                // eslint-disable-next-line no-inner-declarations
                 function sortVideos(track: SpotifyTrack, videos: SearchResult<"video">): VideoCompact[] {
                     return videos.items.sort((a, b) => {
                         let aValue = 0;

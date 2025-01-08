@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition, no-nested-ternary */
 import { MessageInteractionAction } from "../typings/index.js";
 import {
     ActionRowBuilder,
@@ -97,8 +96,8 @@ export class CommandContext {
                     : "reply"
                 : "reply"
         ).catch(e => ({ error: e }));
-        if (!rep || "error" in rep) {
-            throw new Error(`Unable to reply context, because: ${rep ? (rep.error as Error).message : "Unknown"}`);
+        if ("error" in rep) {
+            throw new Error(`Unable to reply context, because: ${(rep.error as Error).message}`);
         }
 
         // @ts-expect-error-next-line
@@ -123,10 +122,8 @@ export class CommandContext {
                     `${(options as { askDeletion: { reference: string } }).askDeletion.reference}_delete-msg`
                 ).toString("base64")
             );
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             (options as InteractionReplyOptions).components
-                ? // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                  (options as InteractionReplyOptions).components!.push(deletionBtn)
+                ? (options as InteractionReplyOptions).components!.push(deletionBtn)
                 : ((options as InteractionReplyOptions).components = [deletionBtn]);
         }
         if (this.isInteraction()) {

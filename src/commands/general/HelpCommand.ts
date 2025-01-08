@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain, @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { CommandContext } from "../../structures/CommandContext.js";
 import { createEmbed } from "../../utils/functions/createEmbed.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -41,10 +41,10 @@ export class HelpCommand extends BaseCommand {
             text: i18n.__mf("commands.general.help.footerString", {
                 prefix: this.client.config.mainPrefix
             }),
-            iconURL: "https://cdn.clytage.org/images/information.png"
+            iconURL: "https://cdn.stegripe.org/images/information.png"
         });
 
-    private readonly infoEmbed = createEmbed("info").setThumbnail("https://cdn.clytage.org/images/question_mark.png");
+    private readonly infoEmbed = createEmbed("info").setThumbnail("https://cdn.stegripe.org/images/question_mark.png");
 
     public async execute(ctx: CommandContext): Promise<Message | undefined> {
         if (ctx.isInteraction() && !ctx.deferred) await ctx.deferReply();
@@ -169,7 +169,7 @@ export class HelpCommand extends BaseCommand {
                             text: i18n.__mf("commands.general.help.commandUsageFooter", {
                                 devOnly: command.meta.devOnly ? "(developer-only command)" : ""
                             }),
-                            iconURL: "https://cdn.clytage.org/images/information.png"
+                            iconURL: "https://cdn.stegripe.org/images/information.png"
                         })
                 ]
             },

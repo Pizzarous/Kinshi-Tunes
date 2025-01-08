@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, no-eval, prefer-named-capture-group */
 import { CommandContext } from "../../structures/CommandContext.js";
 import { createEmbed } from "../../utils/functions/createEmbed.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -17,9 +16,6 @@ import { inspect } from "node:util";
 })
 export class EvalCommand extends BaseCommand {
     public async execute(ctx: CommandContext): Promise<Message | undefined> {
-        const msg = ctx;
-        const client = this.client;
-
         const code = ctx.args.join(" ").replace(/```(?:[^\s]+\n)?(.*?)\n?```/gs, (_, a: string) => a);
         const embed = createEmbed("info").addFields([
             { name: i18n.__("commands.developers.eval.inputString"), value: `\`\`\`js\n${code}\`\`\`` }
@@ -66,7 +62,6 @@ export class EvalCommand extends BaseCommand {
         }
     }
 
-    // eslint-disable-next-line class-methods-use-this
     private clean(text: string): string {
         return text
             .replace(new RegExp(process.env.DISCORD_TOKEN!, "g"), "[REDACTED]")
@@ -76,11 +71,11 @@ export class EvalCommand extends BaseCommand {
 
     private async hastebin(text: string): Promise<string> {
         const result = await this.client.request
-            .post("https://bin.clytage.org/documents", {
+            .post({
                 body: text
             })
             .json<{ key: string }>();
 
-        return `https://bin.clytage.org/${result.key}`;
+        return `${result.key}`;
     }
 }

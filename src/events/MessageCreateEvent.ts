@@ -1,4 +1,3 @@
-/* eslint-disable prefer-named-capture-group */
 import { createEmbed } from "../utils/functions/createEmbed.js";
 import { BaseEvent } from "../structures/BaseEvent.js";
 import { Event } from "../utils/decorators/Event.js";

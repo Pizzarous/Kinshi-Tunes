@@ -100,6 +100,7 @@ export class RemoveCommand extends BaseCommand {
         if (!msg) return;
         void new ButtonPagination(msg, {
             author: ctx.author.id,
+            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
             edit: (i, e, p) => {
                 e.setDescription(getText(p)).setFooter({
                     text: `• ${i18n.__mf("reusable.pageFooter", {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { importURLToString } from "../utils/functions/importURLToString.js";
 import { DebugLogManager } from "../utils/structures/DebugLogManager.js";
 import { JSONDataManager } from "../utils/structures/JSONDataManager.js";
