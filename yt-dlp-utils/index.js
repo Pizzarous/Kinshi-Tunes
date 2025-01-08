@@ -17,7 +17,7 @@ function args(url, options) {
             return [
                 `--${(typeof v === "boolean") && !v ? "no-" : ""}${flag}`,
                 typeof v === "boolean" ? "" : v
-            ]
+            ];
         })
         .flat()
         .filter(Boolean);

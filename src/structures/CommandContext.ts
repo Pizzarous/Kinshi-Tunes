@@ -28,7 +28,7 @@ import {
 } from "discord.js";
 
 export class CommandContext {
-    public additionalArgs = new Collection<string, any>();
+    public additionalArgs = new Collection<string, unknown>();
     public channel: TextBasedChannel | null = this.context.channel;
     public guild = this.context.guild;
 

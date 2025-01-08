@@ -3,7 +3,7 @@ import { ButtonPagination } from "../../structures/ButtonPagination.js";
 import { CommandContext } from "../../../structures/CommandContext.js";
 import { ServerQueue } from "../../../structures/ServerQueue.js";
 import { createEmbed } from "../../functions/createEmbed.js";
-import { Rawon } from "../../../structures/Rawon.js";
+import { KinshiTunes } from "../../../structures/KinshiTunes.js";
 import { chunk } from "../../functions/chunk.js";
 import { Song } from "../../../typings/index.js";
 import i18n from "../../../config/index.js";
@@ -12,7 +12,7 @@ import { escapeMarkdown, Message, StageChannel, TextChannel, VoiceChannel } from
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 
 export async function handleVideos(
-    client: Rawon,
+    client: KinshiTunes,
     ctx: CommandContext,
     toQueue: Song[],
     voiceChannel: StageChannel | VoiceChannel

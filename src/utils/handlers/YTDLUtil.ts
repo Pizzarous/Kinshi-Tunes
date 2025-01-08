@@ -2,7 +2,7 @@
 import { BasicYoutubeVideoInfo } from "../../typings/index.js";
 import ytdl, { exec } from "../../../yt-dlp-utils/index.js";
 import { streamStrategy } from "../../config/index.js";
-import { Rawon } from "../../structures/Rawon.js";
+import { KinshiTunes } from "../../structures/KinshiTunes.js";
 import { checkQuery } from "./GeneralUtil.js";
 import { Readable } from "node:stream";
 
@@ -12,7 +12,7 @@ const { stream: pldlStream, video_basic_info } = await import("play-dl").catch((
     video_basic_info: null
 }));
 
-export async function getStream(client: Rawon, url: string): Promise<Readable> {
+export async function getStream(client: KinshiTunes, url: string): Promise<Readable> {
     if (streamStrategy === "play-dl") {
         const isSoundcloudUrl = checkQuery(url);
         if (isSoundcloudUrl.sourceType === "soundcloud") {

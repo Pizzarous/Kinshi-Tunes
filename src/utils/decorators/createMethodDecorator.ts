@@ -1,8 +1,8 @@
 import { FunctionType, MethodDecorator, Promisable } from "../../typings/index.js";
 
-export function createMethodDecorator<TC = any, Target extends FunctionType = FunctionType>(
+export function createMethodDecorator<TC = unknown, Target extends FunctionType = FunctionType>(
     func: (...args: Parameters<Target>) => Promisable<boolean | undefined>
-): MethodDecorator<TC, any> {
+): MethodDecorator<TC, unknown> {
     return (target, _, descriptor) => {
         const originalMethod = descriptor.value as Target;
 

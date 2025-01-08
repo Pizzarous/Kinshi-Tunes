@@ -1,5 +1,5 @@
 import { Song, SearchTrackResult, SpotifyTrack } from "../../../typings/index.js";
-import { Rawon } from "../../../structures/Rawon.js";
+import { KinshiTunes } from "../../../structures/KinshiTunes.js";
 import { checkQuery } from "./checkQuery.js";
 import { youtube } from "../YouTubeUtil.js";
 import { getInfo } from "../YTDLUtil.js";
@@ -7,7 +7,7 @@ import { Playlist, SearchResult, Video, VideoCompact } from "youtubei";
 import { URL } from "node:url";
 
 export async function searchTrack(
-    client: Rawon,
+    client: KinshiTunes,
     query: string,
     source: "soundcloud" | "youtube" | undefined = "youtube"
 ): Promise<SearchTrackResult> {

@@ -5,7 +5,7 @@ import { CommandManager } from "../utils/structures/CommandManager.js";
 import { ModerationLogs } from "../utils/structures/ModerationLogs.js";
 import { EventsLoader } from "../utils/structures/EventsLoader.js";
 import { ClientUtils } from "../utils/structures/ClientUtils.js";
-import { RawonLogger } from "../utils/structures/RawonLogger.js";
+import { Logger } from "../utils/structures/Logger.js";
 import { SpotifyUtil } from "../utils/handlers/SpotifyUtil.js";
 import { GuildData } from "../typings/index.js";
 import * as config from "../config/index.js";
@@ -14,13 +14,13 @@ import { Soundcloud } from "soundcloud.ts";
 import { resolve } from "node:path";
 import got from "got";
 
-export class Rawon extends Client {
+export class KinshiTunes extends Client {
     public startTimestamp = 0;
     public readonly config = config;
     public readonly commands = new CommandManager(this, resolve(importURLToString(import.meta.url), "..", "commands"));
     public readonly events = new EventsLoader(this, resolve(importURLToString(import.meta.url), "..", "events"));
     public readonly data = new JSONDataManager<Record<string, GuildData>>(resolve(process.cwd(), "data.json"));
-    public readonly logger = new RawonLogger({ prod: this.config.isProd });
+    public readonly logger = new Logger({ prod: this.config.isProd });
     public readonly debugLog = new DebugLogManager(this.config.debugMode, this.config.isProd);
     public readonly modlogs = new ModerationLogs(this);
     public readonly spotify = new SpotifyUtil(this);

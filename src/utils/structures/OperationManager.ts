@@ -2,8 +2,11 @@ import { Promisable } from "../../typings/index.js";
 
 export class OperationManager {
     private _runningOperation!: boolean;
-    private readonly operations: [(arg?: undefined) => void, (reason?: any) => void, () => Promisable<undefined>][] =
-        [];
+    private readonly operations: [
+        (arg?: undefined) => void,
+        (reason?: unknown) => void,
+        () => Promisable<undefined>
+    ][] = [];
 
     public constructor() {
         Object.defineProperty(this, "_runningOperation", {

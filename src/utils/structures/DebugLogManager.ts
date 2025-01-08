@@ -1,4 +1,4 @@
-import { BaseLogger, LogLevel } from "./RawonLogger.js";
+import { BaseLogger, LogLevel } from "./Logger.js";
 
 export class DebugLogManager extends BaseLogger {
     public constructor(
