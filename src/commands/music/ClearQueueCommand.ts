@@ -20,7 +20,6 @@ export class ClearQueueCommand extends BaseCommand {
     @sameVC
     @haveQueue
     public execute(ctx: CommandContext): void {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         ctx.guild?.queue?.clear(ctx.member!);
         ctx.reply({
             embeds: [createEmbed("success", `🗑️ **|** ${i18n.__("commands.music.clearQueue.clearedMessage")}`)]
