@@ -35,7 +35,7 @@ export async function searchTrack(
                 const newQueryData = checkQuery(scUrl.toString());
                 switch (newQueryData.type) {
                     case "track": {
-                        const track = await client.soundcloud.tracks.getV2(scUrl.toString());
+                        const track = await client.soundcloud.tracks.get(scUrl.toString());
 
                         result.items = [
                             {
@@ -50,7 +50,7 @@ export async function searchTrack(
                     }
 
                     case "playlist": {
-                        const playlist = await client.soundcloud.playlists.getV2(scUrl.toString());
+                        const playlist = await client.soundcloud.playlists.get(scUrl.toString());
                         const tracks = await Promise.all(
                             playlist.tracks.map(
                                 (track): Song => ({
@@ -78,7 +78,9 @@ export async function searchTrack(
                 switch (queryData.type) {
                     case "track": {
                         const track = await youtube.getVideo(
-                            /youtu\.be/g.exec(url.hostname) ? url.pathname.replace("/", "") : url.searchParams.get("v") ?? ''
+                            /youtu\.be/g.exec(url.hostname)
+                                ? url.pathname.replace("/", "")
+                                : (url.searchParams.get("v") ?? "")
                         );
 
                         if (track) {
@@ -119,7 +121,8 @@ export async function searchTrack(
                                 )
                             );
 
-                            if (songIndex) temp = parseInt(songIndex) < 101 ? tracks.splice(parseInt(songIndex) - 1, 1)[0] : null;
+                            if (songIndex)
+                                temp = parseInt(songIndex) < 101 ? tracks.splice(parseInt(songIndex) - 1, 1)[0] : null;
                             if (temp) tracks.unshift(temp);
 
                             result.items = tracks;
@@ -198,7 +201,7 @@ export async function searchTrack(
                             songs.map(async (x): Promise<void> => {
                                 let response = await youtube.search(
                                     x.track.external_ids?.isrc ??
-                                    `${x.track.artists.map(y => y.name).join(", ")}${x.track.name}`,
+                                        `${x.track.artists.map(y => y.name).join(", ")}${x.track.name}`,
                                     { type: "video" }
                                 );
                                 if (!response.items.length) {
@@ -251,7 +254,7 @@ export async function searchTrack(
         result.type = "selection";
 
         if (source === "soundcloud") {
-            const searchRes = await client.soundcloud.tracks.searchV2({
+            const searchRes = await client.soundcloud.tracks.search({
                 q: query
             });
             const tracks = await Promise.all(
@@ -269,9 +272,12 @@ export async function searchTrack(
             result.items = tracks;
         } else {
             // Check if it is a youtube link as a string
-            const queryContainsYoutubeUrl = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=))(?:[\w-]{10,12})/i.test(query);
-            const cleanQuery = query.split(query.includes('youtu.be') ? /[?&]/ : '&')[0];
-            const searchRes = (await youtube.search(queryContainsYoutubeUrl ? cleanQuery : query, { type: "video" }));
+            const queryContainsYoutubeUrl =
+                /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=))(?:[\w-]{10,12})/i.test(
+                    query
+                );
+            const cleanQuery = query.split(query.includes("youtu.be") ? /[?&]/ : "&")[0];
+            const searchRes = await youtube.search(queryContainsYoutubeUrl ? cleanQuery : query, { type: "video" });
 
             const tracks = await Promise.all(
                 searchRes.items.map(
