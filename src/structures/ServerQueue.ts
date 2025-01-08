@@ -4,7 +4,7 @@ import { filterArgs } from "../utils/functions/ffmpegArgs.js";
 import { LoopMode, QueueSong } from "../typings/index.js";
 import { play } from "../utils/handlers/GeneralUtil.js";
 import i18n from "../config/index.js";
-import { Rawon } from "./Rawon.js";
+import { KinshiTunes } from "./KinshiTunes.js";
 import {
     AudioPlayer,
     AudioPlayerPlayingState,
@@ -229,8 +229,8 @@ export class ServerQueue {
         return this.player.state.status === AudioPlayerStatus.Idle && this.songs.size === 0;
     }
 
-    public get client(): Rawon {
-        return this.textChannel.client as Rawon;
+    public get client(): KinshiTunes {
+        return this.textChannel.client as KinshiTunes;
     }
 
     private sendStartPlayingMsg(newSong: QueueSong["song"]): void {

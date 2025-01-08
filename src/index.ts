@@ -1,11 +1,11 @@
 import { enableRepl, isProd, shardingMode, shardsCount } from "./config/index.js";
 import { importURLToString } from "./utils/functions/importURLToString.js";
-import { RawonLogger } from "./utils/structures/RawonLogger.js";
+import { Logger } from "./utils/structures/Logger.js";
 import { ShardingManager } from "discord.js";
 import { resolve } from "node:path";
 import { start } from "node:repl";
 
-const log = new RawonLogger({ prod: isProd });
+const log = new Logger({ prod: isProd });
 
 const manager = new ShardingManager(resolve(importURLToString(import.meta.url), "bot.js"), {
     totalShards: shardsCount,
@@ -20,7 +20,7 @@ if (enableRepl) {
     });
 
     repl.context.shardManager = manager;
-    process.stdin.on("data", _ => repl.displayPrompt(true));
+    process.stdin.on("data", () => repl.displayPrompt(true));
     repl.on("exit", () => process.exit());
 }
 

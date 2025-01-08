@@ -233,13 +233,6 @@
                 "slashStatusFilterDescription": "The song filter that you want to check",
                 "specifyFilter": "Please specify the song filter"
             },
-            "lyrics": {
-                "apiError": "The API could not find the song **{song}**, because: `{message}`",
-                "description": "Show the lyrics from the song",
-                "noQuery": "There is nothing playing, or no arguments are provided.",
-                "slashDescription": "Song to search",
-                "usage": "{prefix}lyrics [song]"
-            },
             "nowplaying": {
                 "description": "Show the media player status",
                 "disableButton": "Previous buttons are no longer active and removed.",

@@ -3,7 +3,7 @@ import { CategoryMeta, CommandComponent, RegisterCmdOptions } from "../../typing
 import { pathStringToURLString } from "../functions/pathStringToURLString.js";
 import { CommandContext } from "../../structures/CommandContext.js";
 import { createEmbed } from "../functions/createEmbed.js";
-import { Rawon } from "../../structures/Rawon.js";
+import { KinshiTunes } from "../../structures/KinshiTunes.js";
 import i18n from "../../config/index.js";
 import {
     ApplicationCommandData,
@@ -24,7 +24,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
     private readonly cooldowns = new Collection<string, Collection<Snowflake, number>>();
 
     public constructor(
-        public client: Rawon,
+        public client: KinshiTunes,
         private readonly path: string
     ) {
         super();

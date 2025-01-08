@@ -1,12 +1,12 @@
 import { Song, QueueSong } from "../../typings/index.js";
-import { Rawon } from "../../structures/Rawon.js";
+import { KinshiTunes } from "../../structures/KinshiTunes.js";
 import { Collection, GuildMember, Snowflake, SnowflakeUtil } from "discord.js";
 
 export class SongManager extends Collection<Snowflake, QueueSong> {
     private id = 0;
 
     public constructor(
-        public readonly client: Rawon,
+        public readonly client: KinshiTunes,
         public readonly guild: GuildMember["guild"]
     ) {
         super();
@@ -26,7 +26,7 @@ export class SongManager extends Collection<Snowflake, QueueSong> {
     }
 
     public set(key: Snowflake, data: QueueSong): this {
-        (this.client as Rawon | undefined)?.debugLog.logData(
+        (this.client as KinshiTunes | undefined)?.debugLog.logData(
             "info",
             "SONG_MANAGER",
             `New value added to ${this.guild.name}(${this.guild.id}) song manager. Key: ${key}`
@@ -35,7 +35,7 @@ export class SongManager extends Collection<Snowflake, QueueSong> {
     }
 
     public delete(key: Snowflake): boolean {
-        (this.client as Rawon | undefined)?.debugLog.logData(
+        (this.client as KinshiTunes | undefined)?.debugLog.logData(
             "info",
             "SONG_MANAGER",
             `Value ${key} deleted from ${this.guild.name}(${this.guild.id}) song manager.`

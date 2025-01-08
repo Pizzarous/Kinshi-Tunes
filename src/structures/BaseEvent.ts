@@ -1,13 +1,13 @@
 import { Event } from "../typings/index.js";
-import { Rawon } from "./Rawon.js";
+import { KinshiTunes } from "./KinshiTunes.js";
 
 export abstract class BaseEvent implements Event {
     public constructor(
-        public client: Rawon,
+        public client: KinshiTunes,
         public readonly name: Event["name"]
     ) {}
 
-    public abstract execute(...args: any): any;
+    public abstract execute(...args: unknown[]): unknown;
 }
 
 export type ExtendedEventConstructor = new (...args: ConstructorParameters<typeof BaseEvent>) => BaseEvent;

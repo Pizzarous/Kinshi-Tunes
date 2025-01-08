@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { CommandContext } from "../structures/CommandContext.js";
 import { ServerQueue } from "../structures/ServerQueue.js";
-import { Rawon } from "../structures/Rawon.js";
+import { KinshiTunes } from "../structures/KinshiTunes.ts";
 import {
     ApplicationCommandOptionData,
     ApplicationCommandType,
@@ -43,7 +43,7 @@ export interface PaginationPayload {
     author: string;
 }
 
-export interface RawonLoggerOptions {
+export interface LoggerOptions {
     prod: boolean;
 }
 
@@ -65,11 +65,11 @@ export interface PresenceData {
 
 export interface Event {
     readonly name: keyof ClientEvents;
-    execute: (...args: any) => void;
+    execute: (...args: unknown) => void;
 }
 
 export interface CommandComponent {
-    execute: (context: CommandContext) => any;
+    execute: (context: CommandContext) => unknown;
     meta: {
         readonly category?: string;
         readonly path?: string;
@@ -94,18 +94,18 @@ export interface CategoryMeta {
 
 declare module "discord.js" {
     export interface Client extends OClient {
-        commands: Rawon["commands"];
-        request: Rawon["request"];
-        config: Rawon["config"];
-        logger: Rawon["logger"];
-        events: Rawon["events"];
+        commands: KinshiTunes["commands"];
+        request: KinshiTunes["request"];
+        config: KinshiTunes["config"];
+        logger: KinshiTunes["logger"];
+        events: KinshiTunes["events"];
 
         build: () => Promise<this>;
     }
 
     export interface Guild {
         queue?: ServerQueue;
-        client: Rawon;
+        client: KinshiTunes;
     }
 }
 
@@ -125,17 +125,6 @@ export interface QueueSong {
 }
 
 export type LoopMode = "OFF" | "QUEUE" | "SONG";
-
-export interface LyricsAPIResult<E extends boolean> {
-    synced: E extends true ? never : boolean | string;
-    album_art?: E extends true ? null : string;
-    message?: E extends true ? string : never;
-    artist?: E extends true ? null : string;
-    lyrics?: E extends true ? null : string;
-    song?: E extends true ? null : string;
-    url?: E extends true ? null : string;
-    error: E;
-}
 
 export interface SpotifyAccessTokenAPIResult {
     accessTokenExpirationTimestampMs: number;
@@ -210,8 +199,10 @@ export interface GuildData {
     mute?: string | null;
 }
 
-export type NonAbstractConstructor<Result = unknown> = new (...args: any[]) => Result;
-export type Constructor<Result = unknown> = NonAbstractConstructor<Result> | (abstract new (...args: any[]) => Result);
+export type NonAbstractConstructor<Result = unknown> = new (...args: unknown[]) => Result;
+export type Constructor<Result = unknown> =
+    | NonAbstractConstructor<Result>
+    | (abstract new (...args: unknown[]) => Result);
 
 export type MethodDecorator<Target, Result> = (
     target: Target,
@@ -220,9 +211,9 @@ export type MethodDecorator<Target, Result> = (
 ) => Result;
 export type ClassDecorator<Target extends Constructor, Result = unknown> = (target: Target) => Result;
 export type Promisable<Output> = Output | Promise<Output>;
-export type FunctionType<Args extends any[] = any[], Result = any> = (...args: Args) => Result;
+export type FunctionType<Args extends unknown[] = unknown[], Result = unknown> = (...args: Args) => Result;
 
 export interface RegisterCmdOptions {
-    onRegistered: (guild: Guild) => Promisable<any>;
-    onError: (guild: Guild | null, error: Error) => Promisable<any>;
+    onRegistered: (guild: Guild) => Promisable<unknown>;
+    onError: (guild: Guild | null, error: Error) => Promisable<unknown>;
 }

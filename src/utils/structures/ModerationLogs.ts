@@ -1,10 +1,10 @@
 import { createEmbed } from "../functions/createEmbed.js";
-import { Rawon } from "../../structures/Rawon.js";
+import { KinshiTunes } from "../../structures/KinshiTunes.js";
 import i18n from "../../config/index.js";
 import { ChannelType, Guild, GuildBan, TextChannel, User } from "discord.js";
 
 export class ModerationLogs {
-    public constructor(public readonly client: Rawon) {}
+    public constructor(public readonly client: KinshiTunes) {}
 
     public async handleWarn(options: { author: User; guild: Guild; reason: string | null; user: User }): Promise<void> {
         const ch = await this.getCh(options.guild);

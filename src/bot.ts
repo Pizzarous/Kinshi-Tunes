@@ -1,8 +1,8 @@
 import { NoStackError } from "./utils/structures/NoStackError.js";
 import { clientOptions } from "./config/index.js";
-import { Rawon } from "./structures/Rawon.js";
+import { KinshiTunes } from "./structures/KinshiTunes.js";
 
-const client = new Rawon(clientOptions);
+const client = new KinshiTunes(clientOptions);
 
 process
     .on("exit", code => client.logger.info(`NodeJS process exited with code ${code}`))

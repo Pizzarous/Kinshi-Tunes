@@ -1,4 +1,4 @@
-import { RawonLoggerOptions } from "../../typings/index.js";
+import { LoggerOptions } from "../../typings/index.js";
 import { format } from "date-fns";
 
 enum ANSIColorOpening {
@@ -22,7 +22,7 @@ const levelColors: Record<LogLevel, string> = {
 export class BaseLogger {
     public constructor(public readonly color: boolean = true) {}
 
-    protected log(messages: any[], level: LogLevel = "info"): void {
+    protected log(messages: unknown[], level: LogLevel = "info"): void {
         const opening = this.color ? "" : levelColors[level];
         const closing = this.color ? "" : ansiColorClosing;
         const formattedDate = format(Date.now(), "yyyy-MM-dd HH:mm:ss (x)");
@@ -32,25 +32,25 @@ export class BaseLogger {
     }
 }
 
-export class RawonLogger extends BaseLogger {
-    public constructor(public readonly options: RawonLoggerOptions) {
+export class Logger extends BaseLogger {
+    public constructor(public readonly options: LoggerOptions) {
         super(options.prod);
     }
 
-    public info(...messages: any[]): void {
+    public info(...messages: unknown[]): void {
         this.log(messages, "info");
     }
 
-    public debug(...messages: any[]): void {
+    public debug(...messages: unknown[]): void {
         if (this.options.prod) return;
         this.log(messages, "debug");
     }
 
-    public error(...messages: any[]): void {
+    public error(...messages: unknown[]): void {
         this.log(messages, "error");
     }
 
-    public warn(...messages: any[]): void {
+    public warn(...messages: unknown[]): void {
         this.log(messages, "warn");
     }
 }

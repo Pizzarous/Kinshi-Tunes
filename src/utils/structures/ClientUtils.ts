@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { Rawon } from "../../structures/Rawon.js";
+import { KinshiTunes } from "../../structures/KinshiTunes.js";
 import { Guild, Role, ChannelType } from "discord.js";
 import { execSync } from "node:child_process";
 import { parse } from "node:path";
@@ -8,7 +8,7 @@ import prism from "prism-media";
 const { FFmpeg } = prism;
 
 export class ClientUtils {
-    public constructor(public readonly client: Rawon) {}
+    public constructor(public readonly client: KinshiTunes) {}
 
     public async fetchMuteRole(guild: Guild): Promise<Role | null> {
         const id = this.client.data.data?.[guild.id]?.mute;
@@ -118,11 +118,11 @@ export class ClientUtils {
         return this.client.guilds.cache.filter(x => x.queue?.playing === true).size;
     }
 
-    public async import<T>(path: string, ...args: any[]): Promise<T | undefined> {
+    public async import<T>(path: string, ...args: unknown[]): Promise<T | undefined> {
         const file = await import(path).then(
-            m => (m as Record<string, (new (...argument: any[]) => T) | undefined>)[parse(path).name]
+            m => (m as Record<string, (new (...argument: unknown[]) => T) | undefined>)[parse(path).name]
         );
-        return file ? new file(...(args as unknown[])) : undefined;
+        return file ? new file(...args) : undefined;
     }
 
     public getFFmpegVersion(): string {

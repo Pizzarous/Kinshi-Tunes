@@ -1,12 +1,12 @@
 import { pathStringToURLString } from "../functions/pathStringToURLString.js";
-import { Rawon } from "../../structures/Rawon.js";
+import { KinshiTunes } from "../../structures/KinshiTunes.js";
 import { Event } from "../../typings/index.js";
 import { promises as fs } from "node:fs";
 import { resolve } from "node:path";
 
 export class EventsLoader {
     public constructor(
-        public client: Rawon,
+        public client: KinshiTunes,
         public path: string
     ) {}
 
