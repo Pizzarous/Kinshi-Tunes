@@ -14,20 +14,21 @@
 ## General Setup
 
 1. **Download and Install Node.js:** Ensure you have version `16.6.0` or higher. [Node.js Download](https://nodejs.org)
-2. **Configure Environment Variables:** Open `.env_example`, rename it to `.env`.
-3. **Install Dependencies:** Run the following command in your terminal.
+2. **Download and Install Python:** Ensure you have version `3.12.6`.
+3. **Configure Environment Variables:** Open `.env_example`, rename it to `.env`.
+4. **Install Dependencies:** Run the following command in your terminal.
     ```sh
     $ npm install
     ```
-4. **Compile the Code:** Execute the build script.
+5. **Compile the Code:** Execute the build script.
     ```sh
     $ npm run build
     ```
-5. **Optimize Disk Space:** Remove unnecessary dev dependencies.
+6. **Optimize Disk Space:** Remove unnecessary dev dependencies.
     ```sh
     $ npm prune --production
     ```
-6. **Start the Bot:** Launch the bot with the following command.
+7. **Start the Bot:** Launch the bot with the following command.
     ```sh
     $ npm start
     ```
