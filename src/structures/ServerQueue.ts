@@ -1,10 +1,3 @@
-import { SongManager } from "../utils/structures/SongManager.js";
-import { createEmbed } from "../utils/functions/createEmbed.js";
-import { filterArgs } from "../utils/functions/ffmpegArgs.js";
-import { LoopMode, QueueSong } from "../typings/index.js";
-import { play } from "../utils/handlers/GeneralUtil.js";
-import i18n from "../config/index.js";
-import { KinshiTunes } from "./KinshiTunes.js";
 import {
     AudioPlayer,
     AudioPlayerPlayingState,
@@ -13,7 +6,14 @@ import {
     createAudioPlayer,
     VoiceConnection
 } from "@discordjs/voice";
-import { TextChannel, Snowflake, GuildMember } from "discord.js";
+import { GuildMember, Snowflake, TextChannel } from "discord.js";
+import i18n from "../config/index.js";
+import { LoopMode, QueueSong } from "../typings/index.js";
+import { createEmbed } from "../utils/functions/createEmbed.js";
+import { filterArgs } from "../utils/functions/ffmpegArgs.js";
+import { play } from "../utils/handlers/GeneralUtil.js";
+import { SongManager } from "../utils/structures/SongManager.js";
+import { KinshiTunes } from "./KinshiTunes.js";
 
 const nonEnum = { enumerable: false };
 
@@ -27,6 +27,7 @@ export class ServerQueue {
     public loopMode: LoopMode = "OFF";
     public shuffle = false;
     public filters: Partial<Record<keyof typeof filterArgs, boolean>> = {};
+    public destroyTimeoutId: NodeJS.Timeout | null = null;
 
     private _volume = this.client.config.defaultVolume;
     private _lastVSUpdateMsg: Snowflake | null = null;
@@ -51,61 +52,64 @@ export class ServerQueue {
                     const newSong = ((this.player.state as AudioPlayerPlayingState).resource.metadata as QueueSong)
                         .song;
                     this.sendStartPlayingMsg(newSong);
+                    this.handleIdleState();
                 } else if (newState.status === AudioPlayerStatus.Idle) {
                     const song = (oldState as AudioPlayerPlayingState).resource.metadata as QueueSong;
-                    this.client.logger.info(
-                        `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""} Track: "${
-                            song.song.title
-                        }" on ${this.textChannel.guild.name} has ended.`
-                    );
-                    this.skipVoters = [];
-                    if (this.loopMode === "OFF") {
-                        this.songs.delete(song.key);
-                    }
+                    if (!this.destroyTimeoutId) {
+                        this.client.logger.info(
+                            `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""} Track: "${
+                                song.song.title
+                            }" on ${this.textChannel.guild.name} has ended.`
+                        );
+                        this.skipVoters = [];
+                        if (this.loopMode === "OFF") {
+                            this.songs.delete(song.key);
+                        }
 
-                    const nextS =
-                        this.shuffle && this.loopMode !== "SONG"
-                            ? this.songs.random()?.key
-                            : this.loopMode === "SONG"
-                              ? song.key
-                              : (this.songs
-                                    .sortByIndex()
-                                    .filter(x => x.index > song.index)
-                                    .first()?.key ??
-                                (this.loopMode === "QUEUE" ? (this.songs.sortByIndex().first()?.key ?? "") : ""));
+                        const nextS =
+                            this.shuffle && this.loopMode !== "SONG"
+                                ? this.songs.random()?.key
+                                : this.loopMode === "SONG"
+                                  ? song.key
+                                  : (this.songs
+                                        .sortByIndex()
+                                        .filter(x => x.index > song.index)
+                                        .first()?.key ??
+                                    (this.loopMode === "QUEUE" ? (this.songs.sortByIndex().first()?.key ?? "") : ""));
 
-                    this.textChannel
-                        .send({
-                            embeds: [
-                                createEmbed(
-                                    "info",
-                                    `⏹ **|** ${i18n.__mf("utils.generalHandler.stopPlaying", {
-                                        song: `[${song.song.title}](${song.song.url})`
-                                    })}`
-                                ).setThumbnail(song.song.thumbnail)
-                            ]
-                        })
-                        .then(m => (this.lastMusicMsg = m.id))
-                        .catch(e => this.client.logger.error("PLAY_ERR:", e))
-                        .finally(() => {
-                            play(this.textChannel.guild, nextS).catch(e => {
-                                this.textChannel
-                                    .send({
-                                        embeds: [
-                                            createEmbed(
-                                                "error",
-                                                i18n.__mf("utils.generalHandler.errorPlaying", {
-                                                    message: `\`${e as string}\``
-                                                }),
-                                                true
-                                            )
-                                        ]
-                                    })
-                                    .catch(er => this.client.logger.error("PLAY_ERR:", er));
-                                this.connection?.disconnect();
-                                return this.client.logger.error("PLAY_ERR:", e);
+                        this.textChannel
+                            .send({
+                                embeds: [
+                                    createEmbed(
+                                        "info",
+                                        `⏹ **|** ${i18n.__mf("utils.generalHandler.stopPlaying", {
+                                            song: `[${song.song.title}](${song.song.url})`
+                                        })}`
+                                    ).setThumbnail(song.song.thumbnail)
+                                ]
+                            })
+                            .then(m => (this.lastMusicMsg = m.id))
+                            .catch(e => this.client.logger.error("PLAY_ERR:", e))
+                            .finally(() => {
+                                play(this.textChannel.guild, nextS).catch(e => {
+                                    this.textChannel
+                                        .send({
+                                            embeds: [
+                                                createEmbed(
+                                                    "error",
+                                                    i18n.__mf("utils.generalHandler.errorPlaying", {
+                                                        message: `\`${e as string}\``
+                                                    }),
+                                                    true
+                                                )
+                                            ]
+                                        })
+                                        .catch(er => this.client.logger.error("PLAY_ERR:", er));
+                                    this.connection?.disconnect();
+                                    return this.client.logger.error("PLAY_ERR:", e);
+                                });
                             });
-                        });
+                    }
                 }
             })
             .on("error", err => {
@@ -126,6 +130,13 @@ export class ServerQueue {
             .on("debug", message => {
                 this.client.logger.debug(message);
             });
+    }
+
+    public handleIdleState(): void {
+        if (this.destroyTimeoutId) {
+            clearTimeout(this.destroyTimeoutId);
+            this.destroyTimeoutId = null;
+        }
     }
 
     public setFilter(filter: keyof typeof filterArgs, state: boolean): void {

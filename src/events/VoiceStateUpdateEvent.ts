@@ -1,12 +1,12 @@
-import { createEmbed } from "../utils/functions/createEmbed.js";
-import { ServerQueue } from "../structures/ServerQueue.js";
-import { formatMS } from "../utils/functions/formatMS.js";
-import { BaseEvent } from "../structures/BaseEvent.js";
-import { Event } from "../utils/decorators/Event.js";
-import { QueueSong } from "../typings/index.js";
-import i18n from "../config/index.js";
 import { AudioPlayerPausedState, entersState, VoiceConnectionStatus } from "@discordjs/voice";
-import { Message, StageChannel, VoiceState, VoiceChannel, ChannelType } from "discord.js";
+import { ChannelType, Message, StageChannel, VoiceChannel, VoiceState } from "discord.js";
+import i18n from "../config/index.js";
+import { BaseEvent } from "../structures/BaseEvent.js";
+import { ServerQueue } from "../structures/ServerQueue.js";
+import { QueueSong } from "../typings/index.js";
+import { Event } from "../utils/decorators/Event.js";
+import { createEmbed } from "../utils/functions/createEmbed.js";
+import { formatMS } from "../utils/functions/formatMS.js";
 
 @Event<typeof VoiceStateUpdateEvent>("voiceStateUpdate")
 export class VoiceStateUpdateEvent extends BaseEvent {
@@ -45,6 +45,9 @@ export class VoiceStateUpdateEvent extends BaseEvent {
 
         const queue = newState.guild.queue;
         if (!queue) return;
+        if (queue.destroyTimeoutId) {
+            return;
+        }
 
         const newVC = newState.channel;
         const oldVC = oldState.channel;
@@ -61,11 +64,13 @@ export class VoiceStateUpdateEvent extends BaseEvent {
 
         // Leave the voice channel after 5 minutes if is alone
         if (oldVC?.members.size === 1 && queue.idle) {
-            setTimeout(() => {
-                queue.destroy();
-                void queue.textChannel.send({
-                    embeds: [createEmbed("info", `👋 **|** ${i18n.__("utils.generalHandler.leftVCAlone")}`)]
-                });
+            queue.destroyTimeoutId = setTimeout(() => {
+                if (oldVC.members.size === 1 && queue.idle) {
+                    queue.destroy();
+                    void queue.textChannel.send({
+                        embeds: [createEmbed("info", `👋 **|** ${i18n.__("utils.generalHandler.leftVCAlone")}`)]
+                    });
+                }
             }, 300000);
         }
 
