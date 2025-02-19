@@ -1,7 +1,7 @@
-import prettier from 'eslint-plugin-prettier';
+import eslintCommentsPlugin from '@eslint-community/eslint-plugin-eslint-comments';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
-import eslintCommentsPlugin from 'eslint-plugin-eslint-comments';
+import prettier from 'eslint-plugin-prettier';
 
 export default [
     {
@@ -18,7 +18,7 @@ export default [
         plugins: {
             prettier: prettier,
             '@typescript-eslint': tseslint,
-            'eslint-comments': eslintCommentsPlugin
+            '@eslint-community/eslint-comments': eslintCommentsPlugin
         },
         languageOptions: {
             parser: tsparser,
@@ -89,8 +89,8 @@ export default [
             'prettier/prettier': 'error',
 
             // Comments
-            'eslint-comments/no-unused-disable': 'warn',         // Warn about unused eslint-disable
-            'eslint-comments/no-unlimited-disable': 'error'     // No eslint-disable without specific rules
+            '@eslint-community/eslint-comments/no-unused-disable': 'warn',         // Warn about unused eslint-disable
+            '@eslint-community/eslint-comments/no-unlimited-disable': 'error'     // No eslint-disable without specific rules
 
         }
     }
