@@ -352,6 +352,17 @@
                 "slashDescription": "New volume",
                 "usage": "{prefix}volume [new volume]",
                 "volumeLimit": "I can't set the volume above **`{maxVol}`**"
+            },
+            "move": {
+                "description": "Moves a song in the queue from one position to another",
+                "slashSourceDescription": "The position of the song to move",
+                "slashDestinationDescription": "The position to move the song to",
+                "noPermission": "You need the DJ role or 'Manage Server' permission to use this command when there are other users in the voice channel",
+                "invalidInput": "Please provide valid source and destination positions",
+                "invalidSource": "Invalid source position. Please specify a position between 1 and {length}",
+                "invalidDestination": "Invalid destination position. Please specify a position between 1 and {length}",
+                "cantMoveNowPlaying": "You cannot move the currently playing song. Use 'skip' instead",
+                "moveSuccess": "Moved **{song}** from position **{source}** to position **{destination}**"
             }
         }
     },

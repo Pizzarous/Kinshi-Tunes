@@ -1,11 +1,11 @@
-import { inVC, sameVC, validVC } from "../../utils/decorators/MusicUtil.js";
-import { CommandContext } from "../../structures/CommandContext.js";
-import { createEmbed } from "../../utils/functions/createEmbed.js";
-import { BaseCommand } from "../../structures/BaseCommand.js";
-import { Command } from "../../utils/decorators/Command.js";
 import i18n from "../../config/index.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
+import { CommandContext } from "../../structures/CommandContext.js";
+import { Command } from "../../utils/decorators/Command.js";
+import { inVC, sameVC, validVC } from "../../utils/decorators/MusicUtil.js";
+import { createEmbed } from "../../utils/functions/createEmbed.js";
 
-@Command({
+@Command<typeof LeaveCommand>({
     aliases: ["leave", "l", "quit", "q"],
     description: i18n.__("commands.music.leave.description"),
     name: "leave",

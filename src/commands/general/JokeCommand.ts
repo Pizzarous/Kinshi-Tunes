@@ -1,9 +1,9 @@
-import { CommandContext } from "../../structures/CommandContext.js";
-import { createEmbed } from "../../utils/functions/createEmbed.js";
-import { BaseCommand } from "../../structures/BaseCommand.js";
-import { Command } from "../../utils/decorators/Command.js";
-import i18n from "../../config/index.js";
 import axios from "axios";
+import i18n from "../../config/index.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
+import { CommandContext } from "../../structures/CommandContext.js";
+import { Command } from "../../utils/decorators/Command.js";
+import { createEmbed } from "../../utils/functions/createEmbed.js";
 
 interface IJokeApiResponse {
     category: string;
@@ -13,7 +13,7 @@ interface IJokeApiResponse {
     delivery: string;
 }
 
-@Command({
+@Command<typeof JokeCommand>({
     aliases: ["joke", "yoke"],
     description: i18n.__("commands.general.joke.description"),
     name: "joke",

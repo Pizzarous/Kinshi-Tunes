@@ -1,22 +1,22 @@
-import { CommandContext } from "../../structures/CommandContext.js";
-import { createEmbed } from "../../utils/functions/createEmbed.js";
-import { BaseCommand } from "../../structures/BaseCommand.js";
-import { Command } from "../../utils/decorators/Command.js";
-import i18n from "../../config/index.js";
-import { ApplicationCommandOptionType, Message, AttachmentBuilder } from "discord.js";
+import { ApplicationCommandOptionType, AttachmentBuilder, Message } from "discord.js";
+import ffmpegStatic from "ffmpeg-static";
+import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import ffmpeg from "fluent-ffmpeg";
-import ffmpegStatic from "ffmpeg-static";
 import ytDlp from "yt-dlp-exec";
+import i18n from "../../config/index.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
+import { CommandContext } from "../../structures/CommandContext.js";
+import { Command } from "../../utils/decorators/Command.js";
+import { createEmbed } from "../../utils/functions/createEmbed.js";
 
 ffmpeg.setFfmpegPath(ffmpegStatic);
 
 const currentFilename = fileURLToPath(import.meta.url);
 const currentDir = path.dirname(currentFilename);
 
-@Command({
+@Command<typeof DownloadCommand>({
     aliases: ["d", "download"],
     description: i18n.__("commands.music.download.description"),
     name: "download",

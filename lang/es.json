@@ -352,6 +352,17 @@
                 "slashDescription": "Nuevo volúmen",
                 "usage": "{prefix}volume [volumen]",
                 "volumeLimit": "No puedo establecer el volúmen por encima de **`{maxVol}`**"
+            },
+            "move": {
+                "description": "Mueve una canción en la cola de una posición a otra",
+                "slashSourceDescription": "La posición de la canción a mover",
+                "slashDestinationDescription": "La posición a la que mover la canción",
+                "noPermission": "Necesitas el rol de DJ o el permiso 'Administrar Servidor' para usar este comando cuando hay otros usuarios en el canal de voz",
+                "invalidInput": "Por favor, proporciona posiciones de origen y destino válidas",
+                "invalidSource": "Posición de origen inválida. Por favor, especifica una posición entre 1 y {length}",
+                "invalidDestination": "Posición de destino inválida. Por favor, especifica una posición entre 1 y {length}",
+                "cantMoveNowPlaying": "No puedes mover la canción que se está reproduciendo actualmente. Usa 'skip' en su lugar",
+                "moveSuccess": "Movida **{song}** de la posición **{source}** a la posición **{destination}**"
             }
         }
     },

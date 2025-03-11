@@ -1,14 +1,14 @@
-import { checkQuery, handleVideos, searchTrack } from "../../utils/handlers/GeneralUtil.js";
-import { inVC, sameVC, validVC } from "../../utils/decorators/MusicUtil.js";
-import { CommandContext } from "../../structures/CommandContext.js";
-import { createEmbed } from "../../utils/functions/createEmbed.js";
-import { BaseCommand } from "../../structures/BaseCommand.js";
-import { Command } from "../../utils/decorators/Command.js";
-import { Song } from "../../typings/index.js";
-import i18n from "../../config/index.js";
 import { ApplicationCommandOptionType, Message } from "discord.js";
+import i18n from "../../config/index.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
+import { CommandContext } from "../../structures/CommandContext.js";
+import { Song } from "../../typings/index.js";
+import { Command } from "../../utils/decorators/Command.js";
+import { inVC, sameVC, validVC } from "../../utils/decorators/MusicUtil.js";
+import { createEmbed } from "../../utils/functions/createEmbed.js";
+import { checkQuery, handleVideos, searchTrack } from "../../utils/handlers/GeneralUtil.js";
 
-@Command({
+@Command<typeof PlayCommand>({
     aliases: ["p", "add"],
     description: i18n.__("commands.music.play.description"),
     name: "play",

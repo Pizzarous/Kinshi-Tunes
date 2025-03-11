@@ -1,17 +1,17 @@
+import { AudioPlayerState, AudioResource } from "@discordjs/voice";
+import { ApplicationCommandOptionType, escapeMarkdown, VoiceChannel } from "discord.js";
+import i18n from "../../config/index.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
+import { CommandContext } from "../../structures/CommandContext.js";
+import { QueueSong } from "../../typings/index.js";
+import { Command } from "../../utils/decorators/Command.js";
+import { haveQueue, inVC, sameVC } from "../../utils/decorators/MusicUtil.js";
+import { chunk } from "../../utils/functions/chunk.js";
+import { createEmbed } from "../../utils/functions/createEmbed.js";
 import { parseHTMLElements } from "../../utils/functions/parseHTMLElements.js";
 import { ButtonPagination } from "../../utils/structures/ButtonPagination.js";
-import { haveQueue, inVC, sameVC } from "../../utils/decorators/MusicUtil.js";
-import { CommandContext } from "../../structures/CommandContext.js";
-import { createEmbed } from "../../utils/functions/createEmbed.js";
-import { BaseCommand } from "../../structures/BaseCommand.js";
-import { Command } from "../../utils/decorators/Command.js";
-import { chunk } from "../../utils/functions/chunk.js";
-import { QueueSong } from "../../typings/index.js";
-import i18n from "../../config/index.js";
-import { ApplicationCommandOptionType, escapeMarkdown, VoiceChannel } from "discord.js";
-import { AudioPlayerState, AudioResource } from "@discordjs/voice";
 
-@Command({
+@Command<typeof RemoveCommand>({
     description: i18n.__("commands.music.remove.description"),
     name: "remove",
     slash: {
