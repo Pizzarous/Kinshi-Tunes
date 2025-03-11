@@ -1,13 +1,13 @@
-import { haveQueue, inVC, sameVC } from "../../utils/decorators/MusicUtil.js";
-import { OperationManager } from "../../utils/structures/OperationManager.js";
-import { CommandContext } from "../../structures/CommandContext.js";
-import { createEmbed } from "../../utils/functions/createEmbed.js";
-import { BaseCommand } from "../../structures/BaseCommand.js";
-import { Command } from "../../utils/decorators/Command.js";
-import { QueueSong } from "../../typings/index.js";
-import i18n from "../../config/index.js";
 import { AudioPlayerPlayingState } from "@discordjs/voice";
 import { GuildMember } from "discord.js";
+import i18n from "../../config/index.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
+import { CommandContext } from "../../structures/CommandContext.js";
+import { QueueSong } from "../../typings/index.js";
+import { Command } from "../../utils/decorators/Command.js";
+import { haveQueue, inVC, sameVC } from "../../utils/decorators/MusicUtil.js";
+import { createEmbed } from "../../utils/functions/createEmbed.js";
+import { OperationManager } from "../../utils/structures/OperationManager.js";
 
 @Command<typeof SkipCommand>({
     aliases: ["s"],

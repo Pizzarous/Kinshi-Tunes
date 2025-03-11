@@ -1,15 +1,15 @@
-import { ButtonPagination } from "../../utils/structures/ButtonPagination.js";
-import { memberReqPerms } from "../../utils/decorators/CommonUtil.js";
+import { ApplicationCommandOptionType } from "discord.js";
+import i18n from "../../config/index.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";
+import { Command } from "../../utils/decorators/Command.js";
+import { memberReqPerms } from "../../utils/decorators/CommonUtil.js";
+import { chunk } from "../../utils/functions/chunk.js";
 import { createEmbed } from "../../utils/functions/createEmbed.js";
 import { formatTime } from "../../utils/functions/formatMS.js";
-import { BaseCommand } from "../../structures/BaseCommand.js";
-import { Command } from "../../utils/decorators/Command.js";
-import { chunk } from "../../utils/functions/chunk.js";
-import i18n from "../../config/index.js";
-import { ApplicationCommandOptionType } from "discord.js";
+import { ButtonPagination } from "../../utils/structures/ButtonPagination.js";
 
-@Command({
+@Command<typeof InfractionsCommand>({
     contextUser: "Show user infractions",
     description: i18n.__("commands.moderation.infractions.description"),
     name: "infractions",

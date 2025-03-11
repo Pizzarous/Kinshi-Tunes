@@ -1,10 +1,10 @@
-import { CommandContext } from "../../structures/CommandContext.js";
-import { createEmbed } from "../../utils/functions/createEmbed.js";
-import { BaseCommand } from "../../structures/BaseCommand.js";
-import { Command } from "../../utils/decorators/Command.js";
 import i18n from "../../config/index.js";
+import { BaseCommand } from "../../structures/BaseCommand.js";
+import { CommandContext } from "../../structures/CommandContext.js";
+import { Command } from "../../utils/decorators/Command.js";
+import { createEmbed } from "../../utils/functions/createEmbed.js";
 
-@Command({
+@Command<typeof ShutdownCommand>({
     aliases: ["shutdown", "bye", "terminate", "exit"],
     description: i18n.__("commands.general.shutdown.description"),
     name: "shutdown",
