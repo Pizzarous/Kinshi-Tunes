@@ -98,32 +98,34 @@ export class MoveCommand extends BaseCommand {
             return;
         }
 
-        // Move the song
+        // Get the song to move
         const songToMove = songs[sourceIndex];
 
-        // Remove song from its original position
-        ctx.guild!.queue!.songs.delete(songToMove.key);
+        // Store all songs to reindex them properly
+        const allSongs = [...songs];
 
-        // Recalculate indices for all songs based on the move operation
-        const updatedSongs = [...ctx.guild!.queue!.songs.sortByIndex().values()];
+        // Remove the song from its current position in our array
+        allSongs.splice(sourceIndex, 1);
 
-        // Re-add the song to the queue with its new index
-        let newIndex;
-        if (sourceIndex < destinationIndex) {
-            // Moving forward in the queue
-            newIndex = updatedSongs[destinationIndex - 1]?.index + 1 || 0;
-        } else {
-            // Moving backward in the queue
-            newIndex = updatedSongs[destinationIndex]?.index || 0;
-        }
+        // Insert the song at the destination position
+        allSongs.splice(destinationIndex, 0, songToMove);
 
-        // Update the song's index
-        songToMove.index = newIndex;
+        // Clear the current queue (except the currently playing song)
+        const currentlyPlaying = allSongs.shift(); // Remove the first song
 
-        // Add back to queue
-        ctx.guild!.queue!.songs.set(songToMove.key, songToMove);
+        // Delete all songs from the queue except currently playing
+        ctx.guild!.queue!.songs.forEach((song, key) => {
+            if (song.index !== currentlyPlaying?.index) {
+                ctx.guild!.queue!.songs.delete(key);
+            }
+        });
 
-        // Success message
+        // Add all songs back with proper indexes
+        allSongs.forEach((song, idx) => {
+            song.index = currentlyPlaying!.index + idx + 1;
+            ctx.guild!.queue!.songs.set(song.key, song);
+        });
+
         void ctx.reply({
             embeds: [
                 createEmbed(
