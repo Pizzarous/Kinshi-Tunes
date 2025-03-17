@@ -16,7 +16,7 @@ export class SpotifyUtil {
             const clientSecret = process.env.SPOTIFY_CLIENT_SECRET ?? "";
 
             if (!clientId || !clientSecret) {
-                console.warn("[WARN] Spotify credentials not configured. Spotify features will be disabled.");
+                this.client.logger.warn("Spotify credentials not configured. Spotify features will be disabled.");
                 return 60000; // Try again in a minute
             }
 
@@ -39,13 +39,13 @@ export class SpotifyUtil {
             }
 
             this.token = `Bearer ${response.access_token}`;
-            console.info("[INFO] Spotify token obtained successfully");
+            this.client.logger.info("Spotify token obtained successfully");
 
             // Default to 1 hour (3600 seconds) if expires_in isn't present
             const expiresIn = response.expires_in || 3600;
             return expiresIn * 1000 - 60000; // Subtract a minute for safety
         } catch (error) {
-            console.error("[ERROR] Failed to fetch Spotify token:", error);
+            console.error("Failed to fetch Spotify token:", error);
             return 60000; // Try again in a minute
         }
     }
@@ -55,12 +55,14 @@ export class SpotifyUtil {
             const tokenLifetime = await this.fetchToken();
             // Schedule the next renewal
             setTimeout(() => this.renew(), tokenLifetime);
-            console.info(`[INFO] Spotify token renewed, next renewal in ${Math.floor(tokenLifetime / 60000)} minutes`);
+            this.client.logger.info(
+                `Spotify token renewed, next renewal in ${Math.floor(tokenLifetime / 60000)} minutes`
+            );
         } catch (error) {
-            console.error("[ERROR] Error in Spotify token renewal:", error);
+            this.client.logger.error("Error in Spotify token renewal:", error);
             // Try again in a minute
             setTimeout(() => this.renew(), 60000);
-            console.warn("[WARN] Will retry Spotify token renewal in 1 minute");
+            this.client.logger.warn("Will retry Spotify token renewal in 1 minute");
         }
     }
 
