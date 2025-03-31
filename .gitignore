@@ -103,3 +103,4 @@ dist
 # Cache directories and files
 data.json
 scripts/
+play-dl-fix/

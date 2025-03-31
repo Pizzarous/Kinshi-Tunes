@@ -50,5 +50,6 @@ i18n.setLocale(lang);
 
 export const shardsCount: number | "auto" = "auto";
 export const shardingMode: ShardingManagerMode = "worker";
-export { default } from "i18n";
 export * from "./env.js";
+
+export { default } from "i18n";

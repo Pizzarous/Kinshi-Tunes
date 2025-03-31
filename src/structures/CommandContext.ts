@@ -52,7 +52,7 @@ export class CommandContext {
         if (this.isInteraction()) {
             return (this.context as CommandInteraction).deferReply();
         }
-        return Promise.resolve(undefined);
+        return undefined;
     }
 
     // Edit the deferred reply (for slash commands)

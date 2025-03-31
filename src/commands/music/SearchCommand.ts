@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     ActionRowBuilder,
     ApplicationCommandOptionType,
@@ -160,10 +159,10 @@ export class SearchCommand extends BaseCommand {
         const respond = await msg.channel
             .awaitMessages({
                 errors: ["time"],
-                filter: (ms: { content: string; author: { id: string } }) => {
+                filter: ms => {
                     const nums = ms.content
                         .split(/\s*,\s*/u)
-                        .filter((x: any) => Number(x) > 0 && Number(x) <= tracks.items.length);
+                        .filter(x => Number(x) > 0 && Number(x) <= tracks.items.length);
 
                     return (
                         ms.author.id === ctx.author.id &&
@@ -203,8 +202,8 @@ export class SearchCommand extends BaseCommand {
         const songs = respond
             .first()
             ?.content.split(/\s*,\s*/u)
-            .filter((x: any) => Number(x) > 0 && Number(x) <= tracks.items.length)
-            .sort((a: any, b: any) => Number(a) - Number(b)) as unknown as string[];
+            .filter(x => Number(x) > 0 && Number(x) <= tracks.items.length)
+            .sort((a, b) => Number(a) - Number(b)) as unknown as string[];
         const newCtx = new CommandContext(ctx.context, []);
 
         newCtx.additionalArgs.set(

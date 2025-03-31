@@ -50,8 +50,8 @@ export class EvalCommand extends BaseCommand {
                     embeds: [embed]
                 })
                 .catch((error: unknown) => this.client.logger.error("PROMISE_ERR:", error));
-        } catch (er) {
-            const cleaned = this.clean(String(er));
+        } catch (error_) {
+            const cleaned = this.clean(String(error_));
             const isTooLong = cleaned.length > 1_024;
             const error = isTooLong ? `${await this.hastebin(cleaned)}.js` : `\`\`\`js\n${cleaned}\`\`\``;
 

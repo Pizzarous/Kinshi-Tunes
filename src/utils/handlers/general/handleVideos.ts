@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { joinVoiceChannel } from "@discordjs/voice";
 import type { Message, StageChannel, TextChannel, VoiceChannel } from "discord.js";
@@ -43,7 +45,6 @@ export async function handleVideos(
 
         return new ButtonPagination(msg, {
             author: ctx.author.id,
-            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
             edit: (i, emb, page) => {
                 emb.setDescription(`\`\`\`\n${page}\`\`\``)
                     .setAuthor({
@@ -113,8 +114,8 @@ export async function handleVideos(
                     )
                 ]
             })
-            .catch((error: unknown) => {
-                client.logger.error("PLAY_CMD_ERR:", error);
+            .catch((error_: unknown) => {
+                client.logger.error("PLAY_CMD_ERR:", error_);
             });
         return;
     }

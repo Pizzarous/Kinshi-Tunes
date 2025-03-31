@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { AudioPlayerState, AudioResource } from "@discordjs/voice";
 import { ApplicationCommandOptionType, escapeMarkdown, VoiceChannel } from "discord.js";
 import i18n from "../../config/index.js";
@@ -101,7 +102,6 @@ export class RemoveCommand extends BaseCommand {
         if (!msg) return;
         void new ButtonPagination(msg, {
             author: ctx.author.id,
-            // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
             edit: (i, emb, page) => {
                 emb.setDescription(`\`\`\`\n${page}\`\`\``).setFooter({
                     text: `• ${i18n.__mf("reusable.pageFooter", {

@@ -179,10 +179,6 @@ export type SpotifyTrack = {
     id: string;
 };
 
-export type SpotifyArtist = {
-    tracks: SpotifyTrack[];
-};
-
 export type GuildData = {
     dj?: {
         enable: boolean;

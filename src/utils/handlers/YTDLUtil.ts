@@ -8,7 +8,6 @@ import { checkQuery } from "./GeneralUtil.js";
 
 type Unpromisify<T> = T extends Promise<infer U> ? U : T;
 
-// @ts-expect-error play-dl is optional
 const { stream: pldlStream, video_basic_info } = await import("../../../play-dl-importer/index.js")
     .then(x => x.default)
     .catch(() => ({ stream: null, video_basic_info: null }));
