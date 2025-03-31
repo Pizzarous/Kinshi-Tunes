@@ -75,7 +75,7 @@ export class FilterCommand extends BaseCommand {
     @inVC
     @validVC
     @sameVC
-    public execute(ctx: CommandContext): Promise<Message> {
+    public async execute(ctx: CommandContext): Promise<Message> {
         const mode: Record<string, FilterSubCmd> = {
             on: "enable",
             off: "disable",
@@ -118,12 +118,12 @@ export class FilterCommand extends BaseCommand {
                         "info",
                         i18n.__mf("commands.music.filter.currentState", {
                             filter,
-                            state: ctx.guild?.queue?.filters[filter] ? "ENABLED" : "DISABLED"
+                            state: ctx.guild?.queue?.filters[filter] === true ? "ENABLED" : "DISABLED"
                         })
                     ).setFooter({
                         text: i18n.__mf("commands.music.filter.embedFooter", {
                             filter,
-                            opstate: ctx.guild?.queue?.filters[filter] ? "disable" : "enable",
+                            opstate: ctx.guild?.queue?.filters[filter] === true ? "disable" : "enable",
                             prefix: ctx.isCommand() ? "/" : this.client.config.mainPrefix
                         })
                     })
@@ -139,7 +139,7 @@ export class FilterCommand extends BaseCommand {
                         name: i18n.__("commands.music.filter.availableFilters"),
                         value:
                             keys
-                                .filter(x => !ctx.guild?.queue?.filters[x])
+                                .filter(x => ctx.guild?.queue?.filters[x] !== true)
                                 .map(x => `\`${x}\``)
                                 .join("\n") || "-",
                         inline: true

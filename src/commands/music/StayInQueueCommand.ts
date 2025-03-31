@@ -45,27 +45,28 @@ export class StayInQueueCommand extends BaseCommand {
 
         const newState = ctx.options?.getString("state") ?? (ctx.args[0] as string | undefined);
 
-        if (!newState) {
+        if ((newState?.length ?? 0) === 0) {
             return ctx.reply({
                 embeds: [
                     createEmbed(
                         "info",
                         `🔊 **|** ${i18n.__mf("commands.music.stayInQueue.actualState", {
-                            state: `\`${ctx.guild?.queue?.stayInVC ? "ENABLED" : "DISABLED"}\``
+                            state: `\`${ctx.guild?.queue?.stayInVC === true ? "ENABLED" : "DISABLED"}\``
                         })}`
                     )
                 ]
             });
         }
 
-        ctx.guild!.queue!.stayInVC = newState === "enable";
+        (ctx.guild?.queue as unknown as NonNullable<NonNullable<typeof ctx.guild>["queue"]>).stayInVC =
+            newState === "enable";
 
         return ctx.reply({
             embeds: [
                 createEmbed(
                     "success",
                     `🔊 **|** ${i18n.__mf("commands.music.stayInQueue.newState", {
-                        state: `\`${ctx.guild?.queue?.stayInVC ? "ENABLED" : "DISABLED"}\``
+                        state: `\`${ctx.guild?.queue?.stayInVC === true ? "ENABLED" : "DISABLED"}\``
                     })}`,
                     true
                 )

@@ -1,10 +1,11 @@
-import { Song, SearchTrackResult, SpotifyTrack } from "../../../typings/index.js";
-import { KinshiTunes } from "../../../structures/KinshiTunes.js";
-import { checkQuery } from "./checkQuery.js";
-import { youtube } from "../YouTubeUtil.js";
-import { getInfo } from "../YTDLUtil.js";
-import { Playlist, SearchResult, Video, VideoCompact } from "youtubei";
 import { URL } from "node:url";
+import type { SearchResult, Video, VideoCompact } from "youtubei";
+import { Playlist } from "youtubei";
+import type { KinshiTunes } from "../../../structures/KinshiTunes.js";
+import type { SearchTrackResult, Song, SpotifyTrack } from "../../../typings/index.js";
+import { getInfo } from "../YTDLUtil.js";
+import { youtube } from "../YouTubeUtil.js";
+import { checkQuery } from "./checkQuery.js";
 
 export async function searchTrack(
     client: KinshiTunes,
@@ -35,7 +36,7 @@ export async function searchTrack(
                 const newQueryData = checkQuery(scUrl.toString());
                 switch (newQueryData.type) {
                     case "track": {
-                        const track = await client.soundcloud.tracks.get(scUrl.toString());
+                        const track = await client.soundcloud.tracks.getV2(scUrl.toString());
 
                         result.items = [
                             {
@@ -50,7 +51,7 @@ export async function searchTrack(
                     }
 
                     case "playlist": {
-                        const playlist = await client.soundcloud.playlists.get(scUrl.toString());
+                        const playlist = await client.soundcloud.playlists.getV2(scUrl.toString());
                         const tracks = await Promise.all(
                             playlist.tracks.map(
                                 (track): Song => ({
@@ -78,7 +79,7 @@ export async function searchTrack(
                 switch (queryData.type) {
                     case "track": {
                         const track = await youtube.getVideo(
-                            /youtu\.be/g.exec(url.hostname)
+                            /youtu\.be/gu.test(url.hostname)
                                 ? url.pathname.replace("/", "")
                                 : (url.searchParams.get("v") ?? "")
                         );
@@ -121,8 +122,11 @@ export async function searchTrack(
                                 )
                             );
 
-                            if (songIndex)
-                                temp = parseInt(songIndex) < 101 ? tracks.splice(parseInt(songIndex) - 1, 1)[0] : null;
+                            if ((songIndex?.length ?? 0) > 0)
+                                temp =
+                                    Number.parseInt(songIndex ?? "", 10) < 101
+                                        ? tracks.splice(Number.parseInt(songIndex ?? "", 10) - 1, 1)[0]
+                                        : null;
                             if (temp) tracks.unshift(temp);
 
                             result.items = tracks;
@@ -142,18 +146,20 @@ export async function searchTrack(
                     return videos.items.sort((a, b) => {
                         let aValue = 0;
                         let bValue = 0;
-                        const aDurationDiff = a.duration ? a.duration - track.duration_ms : null;
-                        const bDurationDiff = b.duration ? b.duration - track.duration_ms : null;
+                        const aDurationDiff = (a.duration ?? 0) > 0 ? (a.duration ?? 0) - track.duration_ms : null;
+                        const bDurationDiff = (b.duration ?? 0) > 0 ? (b.duration ?? 0) - track.duration_ms : null;
 
                         if (a.title.toLowerCase().includes(track.name.toLowerCase())) aValue--;
                         if (track.artists.some(x => a.channel?.name.toLowerCase().includes(x.name))) aValue--;
-                        if (a.channel?.name.endsWith("- Topic")) aValue -= 2;
-                        if (aDurationDiff ? aDurationDiff <= 5000 && aDurationDiff >= -5000 : false) aValue -= 2;
+                        if (a.channel?.name.endsWith("- Topic") === true) aValue -= 2;
+                        if (aDurationDiff === null ? false : aDurationDiff <= 5_000 && aDurationDiff >= -5_000)
+                            aValue -= 2;
 
                         if (b.title.toLowerCase().includes(track.name.toLowerCase())) bValue++;
                         if (track.artists.some(x => b.channel?.name.toLowerCase().includes(x.name))) bValue++;
-                        if (b.channel?.name.endsWith(" - Topic")) bValue += 2;
-                        if (bDurationDiff ? bDurationDiff <= 5000 && bDurationDiff >= -5000 : false) bValue += 2;
+                        if (b.channel?.name.endsWith(" - Topic") === true) bValue += 2;
+                        if (bDurationDiff === null ? false : bDurationDiff <= 5_000 && bDurationDiff >= -5_000)
+                            bValue += 2;
 
                         return aValue + bValue;
                     });
@@ -170,13 +176,13 @@ export async function searchTrack(
                                 type: "video"
                             }
                         );
-                        if (!response.items.length) {
+                        if (response.items.length === 0) {
                             response = await youtube.search(`${songData.artists[0].name} - ${songData.name}`, {
                                 type: "video"
                             });
                         }
                         const track = sortVideos(songData, response);
-                        if (track.length) {
+                        if (track.length > 0) {
                             result.items = [
                                 {
                                     duration: track[0].duration ?? 0,
@@ -203,14 +209,14 @@ export async function searchTrack(
                                         `${x.track.artists.map(y => y.name).join(", ")}${x.track.name}`,
                                     { type: "video" }
                                 );
-                                if (!response.items.length) {
+                                if (response.items.length === 0) {
                                     response = await youtube.search(
                                         `${x.track.artists.map(y => y.name).join(", ")}${x.track.name}`,
                                         { type: "video" }
                                     );
                                 }
                                 const track = sortVideos(x.track, response);
-                                if (track.length) {
+                                if (track.length > 0) {
                                     result.items.push({
                                         duration: track[0].duration ?? 0,
                                         id: track[0].id,
@@ -234,7 +240,7 @@ export async function searchTrack(
             }
 
             default: {
-                const info = await getInfo(url.toString()).catch(() => undefined);
+                const info = await getInfo(url.toString()).catch(() => void 0);
 
                 result.items = [
                     {
@@ -253,7 +259,7 @@ export async function searchTrack(
         result.type = "selection";
 
         if (source === "soundcloud") {
-            const searchRes = await client.soundcloud.tracks.search({
+            const searchRes = await client.soundcloud.tracks.searchV2({
                 q: query
             });
             const tracks = await Promise.all(

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { KinshiTunes } from "../../structures/KinshiTunes.js";
-import { SpotifyAlbum, SpotifyPlaylist, SpotifyTrack } from "../../typings/index.js";
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+import { setTimeout } from "node:timers";
+import type { KinshiTunes } from "../../structures/KinshiTunes.js";
+import type { SpotifyAlbum, SpotifyPlaylist, SpotifyTrack } from "../../typings/index.js";
 
 export class SpotifyUtil {
     public spotifyRegex = /(?:https:\/\/open\.spotify\.com\/|spotify:)(?:.+)?(track|playlist|album)[/:]([A-Za-z0-9]+)/;
@@ -126,7 +128,6 @@ export class SpotifyUtil {
             next = nextPlaylistResponse.next;
             playlistResponse.tracks.items.push(...nextPlaylistResponse.items);
         }
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         return playlistResponse.tracks.items.filter(spotifyTrack => spotifyTrack.track);
     }
 

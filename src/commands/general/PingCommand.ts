@@ -26,7 +26,7 @@ export class PingCommand extends BaseCommand {
             .setColor(this.searchHex(wsLatency))
             .setAuthor({
                 name: "🏓 PONG",
-                iconURL: this.client.user!.displayAvatarURL()
+                iconURL: this.client.user?.displayAvatarURL()
             })
             .addFields(
                 {
@@ -46,11 +46,13 @@ export class PingCommand extends BaseCommand {
                 }
             )
             .setFooter({
-                text: i18n.__mf("commands.general.ping.footerString", { user: this.client.user!.tag }),
-                iconURL: this.client.user!.displayAvatarURL()
+                text: i18n.__mf("commands.general.ping.footerString", { user: this.client.user?.tag }),
+                iconURL: this.client.user?.displayAvatarURL()
             })
             .setTimestamp();
-        msg.edit({ content: " ", embeds: [embed] }).catch(e => this.client.logger.error("PROMISE_ERR:", e));
+        await msg
+            .edit({ content: " ", embeds: [embed] })
+            .catch((error: unknown) => this.client.logger.error("PROMISE_ERR:", error));
     }
 
     private searchHex(ms: number | string): ColorResolvable {
@@ -64,9 +66,9 @@ export class PingCommand extends BaseCommand {
 
         const defaultColor = "Red";
 
-        const min = listColorHex.map(e => e[0]);
-        const max = listColorHex.map(e => e[1]);
-        const hex = listColorHex.map(e => e[2]);
+        const min = listColorHex.map(el => el[0]);
+        const max = listColorHex.map(el => el[1]);
+        const hex = listColorHex.map(el => el[2]);
         let ret: number | string = "#000000";
 
         for (let i = 0; i < listColorHex.length; i++) {

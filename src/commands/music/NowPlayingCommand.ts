@@ -32,11 +32,12 @@ export class NowPlayingCommand extends BaseCommand {
             )?.resource;
             const song = (res?.metadata as QueueSong | undefined)?.song;
 
-            const embed = createEmbed("info", `${ctx.guild?.queue?.playing ? "▶" : "⏸"} **|** `).setThumbnail(
-                song?.thumbnail ?? "https://cdn.stegripe.org/images/icon.png"
-            );
+            const embed = createEmbed(
+                "info",
+                `${ctx.guild?.queue?.playing === true ? "▶" : "⏸"} **|** `
+            ).setThumbnail(song?.thumbnail ?? "https://cdn.stegripe.org/images/icon.png");
 
-            const curr = ~~((res?.playbackDuration ?? 0) / 1000);
+            const curr = Math.trunc((res?.playbackDuration ?? 0) / 1_000);
             embed.data.description += song
                 ? `**[${song.title}](${song.url})**\n` +
                   `${normalizeTime(curr)} ${createProgressBar(curr, song.duration)} ${normalizeTime(song.duration)}`
@@ -72,7 +73,7 @@ export class NowPlayingCommand extends BaseCommand {
         const collector = msg.createMessageComponentCollector({
             componentType: ComponentType.Button,
             filter: i => i.isButton() && i.user.id === ctx.author.id,
-            idle: 30000
+            idle: 30_000
         });
 
         collector
@@ -82,7 +83,7 @@ export class NowPlayingCommand extends BaseCommand {
 
                 switch (i.customId) {
                     case "TOGGLE_STATE_BUTTON": {
-                        cmdName = ctx.guild?.queue?.playing ? "pause" : "resume";
+                        cmdName = ctx.guild?.queue?.playing === true ? "pause" : "resume";
                         break;
                     }
 
@@ -100,6 +101,9 @@ export class NowPlayingCommand extends BaseCommand {
                         cmdName = "stop";
                         break;
                     }
+
+                    default:
+                        break;
                 }
                 await this.client.commands.get(cmdName)?.execute(newCtx);
 

@@ -1,8 +1,3 @@
-import { CommandContext } from "../structures/CommandContext.js";
-import { createEmbed } from "../utils/functions/createEmbed.js";
-import { BaseEvent } from "../structures/BaseEvent.js";
-import { Event } from "../utils/decorators/Event.js";
-import i18n from "../config/index.js";
 import {
     ApplicationCommandType,
     BitFieldResolvable,
@@ -12,6 +7,11 @@ import {
     PermissionsString,
     TextChannel
 } from "discord.js";
+import i18n from "../config/index.js";
+import { BaseEvent } from "../structures/BaseEvent.js";
+import { CommandContext } from "../structures/CommandContext.js";
+import { Event } from "../utils/decorators/Event.js";
+import { createEmbed } from "../utils/functions/createEmbed.js";
 
 @Event("interactionCreate")
 export class InteractionCreateEvent extends BaseEvent {
@@ -56,7 +56,7 @@ export class InteractionCreateEvent extends BaseEvent {
                     });
                 } else {
                     const msg = await interaction.channel?.messages.fetch(interaction.message.id).catch(() => null);
-                    if (msg?.deletable) {
+                    if (msg?.deletable === true) {
                         void msg.delete();
                     }
                 }
@@ -65,7 +65,7 @@ export class InteractionCreateEvent extends BaseEvent {
 
         const context = new CommandContext(interaction);
         if (interaction.isUserContextMenuCommand()) {
-            const data = interaction.options.getUser("user") ?? interaction.options.getMessage("message");
+            const data = interaction.options.getUser("user") ?? interaction.options.get("message")?.message;
             let dataType = ApplicationCommandType.User;
 
             if (data instanceof Message) {
@@ -86,7 +86,7 @@ export class InteractionCreateEvent extends BaseEvent {
         if (interaction.isCommand()) {
             const cmd = this.client.commands
                 .filter(x => x.meta.slash !== undefined)
-                .find(x => x.meta.slash!.name === interaction.commandName);
+                .find(x => x.meta.slash?.name === interaction.commandName);
             if (cmd) {
                 void cmd.execute(context);
             }

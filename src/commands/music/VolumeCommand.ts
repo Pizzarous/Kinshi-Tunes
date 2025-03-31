@@ -36,9 +36,9 @@ export class VolumeCommand extends BaseCommand {
     @sameVC
     public async execute(ctx: CommandContext): Promise<Message | undefined> {
         const volume = Number(ctx.args[0] ?? ctx.options?.get("volume", false)?.value);
-        const current = ctx.guild!.queue!.volume;
+        const current = ctx.guild?.queue?.volume ?? Number.NaN;
 
-        if (isNaN(volume)) {
+        if (Number.isNaN(volume)) {
             const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
                 new ButtonBuilder().setCustomId("10").setLabel("10%").setStyle(ButtonStyle.Primary),
                 new ButtonBuilder().setCustomId("25").setLabel("25%").setStyle(ButtonStyle.Primary),
@@ -62,7 +62,7 @@ export class VolumeCommand extends BaseCommand {
             const collector = msg.createMessageComponentCollector({
                 componentType: ComponentType.Button,
                 filter: i => i.isButton() && i.user.id === ctx.author.id,
-                idle: 30000
+                idle: 30_000
             });
 
             collector
@@ -84,7 +84,7 @@ export class VolumeCommand extends BaseCommand {
                     });
                 })
                 .on("end", () => {
-                    const cur = ctx.guild!.queue!.volume;
+                    const cur = ctx.guild?.queue?.volume ?? 0;
                     void msg.edit({
                         embeds: [
                             createEmbed(
@@ -100,7 +100,7 @@ export class VolumeCommand extends BaseCommand {
             return;
         }
         if (volume <= 0) {
-            return ctx.reply({
+            await ctx.reply({
                 embeds: [
                     createEmbed(
                         "warn",
@@ -110,9 +110,10 @@ export class VolumeCommand extends BaseCommand {
                     )
                 ]
             });
+            return;
         }
         if (volume > 100) {
-            return ctx.reply({
+            await ctx.reply({
                 embeds: [
                     createEmbed(
                         "error",
@@ -123,10 +124,11 @@ export class VolumeCommand extends BaseCommand {
                     )
                 ]
             });
+            return;
         }
 
-        ctx.guild!.queue!.volume = volume;
-        return ctx.reply({
+        (ctx.guild?.queue as unknown as NonNullable<NonNullable<typeof ctx.guild>["queue"]>).volume = volume;
+        await ctx.reply({
             embeds: [
                 createEmbed(
                     "success",

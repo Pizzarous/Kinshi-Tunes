@@ -1,6 +1,7 @@
-import { Song, QueueSong } from "../../typings/index.js";
-import { KinshiTunes } from "../../structures/KinshiTunes.js";
-import { Collection, GuildMember, Snowflake, SnowflakeUtil } from "discord.js";
+import type { GuildMember, Snowflake } from "discord.js";
+import { Collection, SnowflakeUtil } from "discord.js";
+import type { KinshiTunes } from "../../structures/KinshiTunes.js";
+import type { QueueSong, Song } from "../../typings/index.js";
 
 export class SongManager extends Collection<Snowflake, QueueSong> {
     private id = 0;

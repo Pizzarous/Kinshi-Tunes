@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { ApplicationCommandOptionType } from "discord.js";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -29,7 +30,7 @@ export class InfractionsCommand extends BaseCommand {
     @memberReqPerms(["ManageGuild"], i18n.__("commands.moderation.warn.userNoPermission"))
     public async execute(ctx: CommandContext): Promise<void> {
         const user =
-            ctx.guild?.members.resolve(ctx.args.shift()?.replace(/[^0-9]/g, "") ?? "")?.user ??
+            ctx.guild?.members.resolve(ctx.args.shift()?.replace(/\D/gu, "") ?? "")?.user ??
             ctx.options?.getUser("member", false) ??
             ctx.author;
         const embed = createEmbed("info").setAuthor({
@@ -40,13 +41,14 @@ export class InfractionsCommand extends BaseCommand {
         let infractions: { on: number; reason: string | null }[];
 
         try {
-            infractions = this.client.data.data![ctx.guild!.id].infractions[user.id];
-            if (!(infractions as typeof infractions | undefined)) throw new Error();
+            const temp = this.client.data.data?.[ctx.guild?.id ?? ""]?.infractions[user.id];
+            if (!temp) throw new Error("...");
+            infractions = temp;
         } catch {
             infractions = [];
         }
 
-        if (!infractions.length) {
+        if (infractions.length === 0) {
             await ctx.reply({
                 embeds: [embed.setDescription(i18n.__("commands.moderation.infractions.noInfractions"))]
             });
@@ -54,11 +56,11 @@ export class InfractionsCommand extends BaseCommand {
         }
 
         const pages = await Promise.all(
-            chunk(infractions, 10).map(async (s, n) => {
+            chunk(infractions, 10).map(async (st, ind) => {
                 const infracts = await Promise.all(
-                    s.map(
+                    st.map(
                         (inf, i) =>
-                            `${n * 10 + (i + 1)}. ${formatTime(inf.on)} - ${
+                            `${ind * 10 + (i + 1)}. ${formatTime(inf.on)} - ${
                                 inf.reason ?? i18n.__("commands.moderation.common.noReasonString")
                             }`
                     )
@@ -78,10 +80,10 @@ export class InfractionsCommand extends BaseCommand {
             ]
         });
 
-        return new ButtonPagination(msg, {
+        await new ButtonPagination(msg, {
             author: ctx.author.id,
-            edit: (i, e, p) =>
-                e.setDescription(p).setFooter({
+            edit: (i, emb, page) =>
+                emb.setDescription(page).setFooter({
                     text: i18n.__mf("reusable.pageFooter", {
                         actual: i + 1,
                         total: pages.length

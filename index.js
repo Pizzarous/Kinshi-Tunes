@@ -1,10 +1,13 @@
-import { downloadExecutable } from "./yt-dlp-utils/index.js";
-import { existsSync, readFileSync, writeFileSync, rmSync } from "node:fs";
+/* eslint-disable node/no-sync */
 import { execSync } from "node:child_process";
-import { resolve } from "node:path";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { Server } from "node:http";
-import module from "node:module";
+import nodePath from "node:path";
+import process from "node:process";
+import got from "got";
 import prism from "prism-media";
+import { extract } from "zip-lib";
+import { downloadExecutable } from "./yt-dlp-utils/index.js";
 
 const ensureEnv = arr => arr.every(x => process.env[x] !== undefined);
 
@@ -36,7 +39,7 @@ const isGitHub = ensureEnv([
 
 function npmInstall(deleteDir = false, forceInstall = false, additionalArgs = []) {
     if (deleteDir) {
-        const modulesPath = resolve(process.cwd(), "node_modules");
+        const modulesPath = nodePath.resolve(process.cwd(), "node_modules");
 
         if (existsSync(modulesPath)) {
             rmSync(modulesPath, {
@@ -50,7 +53,7 @@ function npmInstall(deleteDir = false, forceInstall = false, additionalArgs = []
 }
 
 if (isGlitch) {
-    const gitIgnorePath = resolve(process.cwd(), ".gitignore");
+    const gitIgnorePath = nodePath.resolve(process.cwd(), ".gitignore");
     try {
         const data = readFileSync(gitIgnorePath, "utf8").toString();
         if (data.includes("dev.env")) {
@@ -65,7 +68,7 @@ if (isGlitch) {
         console.info("[INFO] Trying to re-install modules...");
         npmInstall();
         console.info("[INFO] Modules successfully re-installed.");
-    } catch (err) {
+    } catch {
         console.info("[INFO] Failed to re-install modules, trying to delete node_modules and re-install...");
         try {
             npmInstall(true);
@@ -85,8 +88,6 @@ if (isGlitch) {
 if (isGitHub) {
     console.warn("[WARN] Running this bot using GitHub is not recommended.");
 }
-
-const require = module.createRequire(import.meta.url);
 
 try {
     prism.FFmpeg.getInfo(true);
@@ -114,7 +115,7 @@ if (isGlitch || isReplit) {
     new Server((req, res) => {
         const now = new Date().toLocaleString("en-US");
         res.end(`OK (200) - ${now}`);
-    }).listen(Number(process.env.PORT || 3000) || 3000);
+    }).listen(Number(process.env.PORT || 3_000) || 3_000);
 
     console.info(`[INFO] ${isGlitch ? "Glitch" : "Replit"} environment detected, trying to compile...`);
     execSync(`npm run compile`);
@@ -123,14 +124,28 @@ if (isGlitch || isReplit) {
 
 const streamStrategy = process.env.STREAM_STRATEGY;
 if (streamStrategy !== "play-dl") await downloadExecutable();
-if (streamStrategy === "play-dl") {
-    try {
-        require("play-dl");
-    } catch {
-        console.info("[INFO] Installing play-dl...");
-        npmInstall(false, false, ["play-dl"]);
-        console.info("[INFO] Play-dl has been installed.");
-    }
+if (streamStrategy === "play-dl" && !existsSync(nodePath.resolve(process.cwd(), "play-dl-fix"))) {
+    console.log("[INFO] Downloading play-dl fix...");
+    writeFileSync(
+        nodePath.resolve(process.cwd(), "temp.zip"),
+        await got.get("https://github.com/YuzuZensai/play-dl-test/archive/2bfbfe6decd68261747ba55800319f9906f12b03.zip").buffer(),
+        { mode: 0o777 }
+    );
+
+    console.log("[INFO] Extracting play-dl fix...");
+    mkdirSync(nodePath.resolve(process.cwd(), "play-dl-fix"), { recursive: true });
+    await extract(nodePath.resolve(process.cwd(), "temp.zip"), nodePath.resolve(process.cwd(), "play-dl-fix"), { overwrite: true });
+
+    const dirs = readdirSync(nodePath.resolve(process.cwd(), "play-dl-fix"));
+    cpSync(nodePath.resolve(process.cwd(), "play-dl-fix", dirs[0]), nodePath.resolve(process.cwd(), "play-dl-fix"), { force: true, recursive: true });
+    rmSync(nodePath.resolve(process.cwd(), "play-dl-fix", dirs[0]), { force: true, recursive: true });
+    rmSync(nodePath.resolve(process.cwd(), "temp.zip"), { force: true });
+
+    console.log("[INFO] Installing packages for play-dl...");
+    execSync("cd play-dl-fix && npm install");
+
+    console.log("[INFO] Compiling play-dl...");
+    execSync("cd play-dl-fix && npm run build");
 }
 console.info("[INFO] Starting the bot...");
 
