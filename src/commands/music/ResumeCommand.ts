@@ -19,12 +19,12 @@ export class ResumeCommand extends BaseCommand {
     @haveQueue
     @sameVC
     public execute(ctx: CommandContext): Promise<Message> | undefined {
-        if (ctx.guild?.queue?.playing) {
+        if (ctx.guild?.queue?.playing === true) {
             return ctx.reply({
                 embeds: [createEmbed("warn", i18n.__("commands.music.resume.alreadyResume"))]
             });
         }
-        ctx.guild!.queue!.playing = true;
+        (ctx.guild?.queue as unknown as NonNullable<NonNullable<typeof ctx.guild>["queue"]>).playing = true;
 
         return ctx.reply({
             embeds: [createEmbed("success", `▶ **|** ${i18n.__("commands.music.resume.resumeMessage")}`)]

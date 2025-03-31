@@ -1,4 +1,5 @@
-import { BaseLogger, LogLevel } from "./Logger.js";
+import type { LogLevel } from "./Logger.js";
+import { BaseLogger } from "./Logger.js";
 
 export class DebugLogManager extends BaseLogger {
     public constructor(

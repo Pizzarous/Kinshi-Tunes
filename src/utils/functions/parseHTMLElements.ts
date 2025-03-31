@@ -19,7 +19,7 @@ export function parseHTMLElements(text: string): string {
     });
 
     for (const key of sortedElements) {
-        res = res.replace(new RegExp(escapedHTMLElements[key], "g"), key);
+        res = res.replaceAll(new RegExp(escapedHTMLElements[key], "gu"), key);
     }
 
     return res;

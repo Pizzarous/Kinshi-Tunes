@@ -1,75 +1,77 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
 /* eslint-disable @typescript-eslint/naming-convention */
-import { CommandContext } from "../structures/CommandContext.js";
-import { ServerQueue } from "../structures/ServerQueue.js";
-import { KinshiTunes } from "../structures/KinshiTunes.ts";
-import {
+import type {
     ApplicationCommandOptionData,
     ApplicationCommandType,
     ClientEvents,
     ClientPresenceStatus,
-    Client as OClient,
     Collection,
+    EmbedBuilder,
     GuildMember,
-    Guild,
-    EmbedBuilder
+    Client as OClient,
+    Guild as OG
 } from "discord.js";
+import type { CommandContext } from "../structures/CommandContext.js";
+import type { KinshiTunes } from "../structures/KinshiTunes.js";
+import type { ServerQueue } from "../structures/ServerQueue.js";
 
 export type MessageInteractionAction = "editReply" | "followUp" | "reply";
 
-export interface QueryData {
+export type QueryData = {
     sourceType?: "query" | "soundcloud" | "spotify" | "unknown" | "youtube";
     type?: "playlist" | "track" | "unknown";
     isURL: boolean;
-}
+};
 
-export interface BasicYoutubeVideoInfo {
+export type BasicYoutubeVideoInfo = {
     thumbnails?: { url: string; width: number; height: number }[];
     duration: number;
     title: string;
     url: string;
     id: string;
-}
+};
 
-export interface SearchTrackResult {
+export type SearchTrackResult = {
     type?: "results" | "selection";
     items: Song[];
-}
+};
 
-export interface PaginationPayload {
-    edit: (index: number, embed: EmbedBuilder, page: string) => unknown;
+export type PaginationPayload = {
+    edit(index: number, embed: EmbedBuilder, page: string): unknown;
     embed: EmbedBuilder;
     content?: string;
     pages: string[];
     author: string;
-}
+};
 
-export interface LoggerOptions {
+export type LoggerOptions = {
     prod: boolean;
-}
+};
 
-export interface SlashOption {
+export type SlashOption = {
     options?: ApplicationCommandOptionData[];
     type?: ApplicationCommandType;
     defaultPermission?: boolean;
     description?: string;
     name?: string;
-}
+};
 
 export type EnvActivityTypes = "Competing" | "Listening" | "Playing" | "Watching";
 
-export interface PresenceData {
+export type PresenceData = {
     activities: { name: string; type: EnvActivityTypes }[];
     status: ClientPresenceStatus[];
     interval: number;
-}
+};
 
-export interface Event {
+export type Event = {
     readonly name: keyof ClientEvents;
-    execute: (...args: unknown) => void;
-}
+    execute(...args: any): void;
+};
 
-export interface CommandComponent {
-    execute: (context: CommandContext) => unknown;
+export type CommandComponent = {
+    execute(context: CommandContext): any;
     meta: {
         readonly category?: string;
         readonly path?: string;
@@ -84,13 +86,13 @@ export interface CommandComponent {
         usage?: string;
         name: string;
     };
-}
+};
 
-export interface CategoryMeta {
+export type CategoryMeta = {
     cmds: Collection<string, CommandComponent>;
     hide: boolean;
     name: string;
-}
+};
 
 declare module "discord.js" {
     export interface Client extends OClient {
@@ -100,70 +102,71 @@ declare module "discord.js" {
         logger: KinshiTunes["logger"];
         events: KinshiTunes["events"];
 
-        build: () => Promise<this>;
+        build(): Promise<this>;
     }
 
-    export interface Guild {
+    export interface Guild extends OG {
         queue?: ServerQueue;
         client: KinshiTunes;
     }
 }
 
-export interface Song {
+export type Song = {
     thumbnail: string;
     duration: number;
     title: string;
     url: string;
     id: string;
-}
+};
 
-export interface QueueSong {
+export type QueueSong = {
     requester: GuildMember;
     index: number;
     song: Song;
     key: string;
-}
+};
 
 export type LoopMode = "OFF" | "QUEUE" | "SONG";
 
-export interface SpotifyAccessTokenAPIResult {
+export type SpotifyAccessTokenAPIResult = {
     accessTokenExpirationTimestampMs: number;
     accessToken?: string;
     isAnonymous: boolean;
     clientId: string;
-}
+};
 
-export interface ExternalUrls {
+export type ExternalUrls = {
     spotify: string;
-}
+};
 
-export interface ArtistsEntity {
+export type ArtistsEntity = {
     external_urls: ExternalUrls;
     href: string;
     name: string;
     type: string;
     uri: string;
     id: string;
-}
+};
 
-export interface SpotifyArtist {
+export type SpotifyArtist = {
     name: string;
-}
+    tracks: SpotifyTrack[];
+};
 
-interface SpotifyData<T> {
+type SpotifyData<T> = {
     name: string;
     tracks: {
         items: T[];
         previous: string | null;
         next: string | null;
     };
-}
+};
 
 export type SpotifyAlbum = SpotifyData<SpotifyTrack>;
 
 export type SpotifyPlaylist = SpotifyData<{ track: SpotifyTrack }>;
 
-export interface SpotifyTrack {
+export type SpotifyTrack = {
     artists: ArtistsEntity[];
     duration_ms: number;
     external_ids?: {
@@ -174,13 +177,13 @@ export interface SpotifyTrack {
     };
     name: string;
     id: string;
-}
+};
 
-export interface SpotifyArtist {
+export type SpotifyArtist = {
     tracks: SpotifyTrack[];
-}
+};
 
-export interface GuildData {
+export type GuildData = {
     dj?: {
         enable: boolean;
         role: string | null;
@@ -197,12 +200,10 @@ export interface GuildData {
         channel: string | null;
     };
     mute?: string | null;
-}
+};
 
-export type NonAbstractConstructor<Result = unknown> = new (...args: unknown[]) => Result;
-export type Constructor<Result = unknown> =
-    | NonAbstractConstructor<Result>
-    | (abstract new (...args: unknown[]) => Result);
+export type NonAbstractConstructor<Result = unknown> = new (...args: any[]) => Result;
+export type Constructor<Result = unknown> = NonAbstractConstructor<Result> | (abstract new (...args: any[]) => Result);
 
 export type MethodDecorator<Target, Result> = (
     target: Target,
@@ -211,9 +212,9 @@ export type MethodDecorator<Target, Result> = (
 ) => Result;
 export type ClassDecorator<Target extends Constructor, Result = unknown> = (target: Target) => Result;
 export type Promisable<Output> = Output | Promise<Output>;
-export type FunctionType<Args extends unknown[] = unknown[], Result = unknown> = (...args: Args) => Result;
+export type FunctionType<Args extends any[] = any[], Result = any> = (...args: Args) => Result;
 
-export interface RegisterCmdOptions {
-    onRegistered: (guild: Guild) => Promisable<unknown>;
-    onError: (guild: Guild | null, error: Error) => Promisable<unknown>;
-}
+export type RegisterCmdOptions = {
+    onRegistered(guild: OG): Promisable<any>;
+    onError(guild: OG | null, error: Error): Promisable<any>;
+};

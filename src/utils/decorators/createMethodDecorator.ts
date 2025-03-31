@@ -1,8 +1,9 @@
-import { FunctionType, MethodDecorator, Promisable } from "../../typings/index.js";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { FunctionType, MethodDecorator, Promisable } from "../../typings/index.js";
 
-export function createMethodDecorator<TC = unknown, Target extends FunctionType = FunctionType>(
+export function createMethodDecorator<TC = any, Target extends FunctionType = FunctionType>(
     func: (...args: Parameters<Target>) => Promisable<boolean | undefined>
-): MethodDecorator<TC, unknown> {
+): MethodDecorator<TC, any> {
     return (target, _, descriptor) => {
         const originalMethod = descriptor.value as Target;
 
@@ -11,7 +12,7 @@ export function createMethodDecorator<TC = unknown, Target extends FunctionType 
             const res = await func(...args);
             if (res === false) return;
 
-            return originalMethod.apply(this, args);
+            originalMethod.apply(this, args);
         };
     };
 }

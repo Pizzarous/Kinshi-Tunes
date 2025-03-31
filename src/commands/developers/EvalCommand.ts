@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import process from "node:process";
 import { inspect } from "node:util";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -15,22 +15,23 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
     usage: i18n.__("commands.developers.eval.usage")
 })
 export class EvalCommand extends BaseCommand {
-    public async execute(ctx: CommandContext): Promise<Message | undefined> {
-        const code = ctx.args.join(" ").replace(/```(?:[^\s]+\n)?(.*?)\n?```/gs, (_, a: string) => a);
+    public async execute(ctx: CommandContext): Promise<void> {
+        const code = ctx.args.join(" ").replaceAll(/```(?:\S+\n)?(.*?)\n?```/gsu, (_, a: string) => a);
         const embed = createEmbed("info").addFields([
             { name: i18n.__("commands.developers.eval.inputString"), value: `\`\`\`js\n${code}\`\`\`` }
         ]);
 
         try {
             if (!code) {
-                return await ctx.send({
+                await ctx.send({
                     embeds: [createEmbed("error", i18n.__("commands.developers.eval.noCode"), true)]
                 });
+                return;
             }
 
-            const isAsync = /--async\s*(--silent)?$/.test(code);
-            const isSilent = /--silent\s*(--async)?$/.test(code);
-            const toExecute = isAsync || isSilent ? code.replace(/--(async|silent)\s*(--(silent|async))?$/, "") : code;
+            const isAsync = /--async\s*(--silent)?$/u.test(code);
+            const isSilent = /--silent\s*(--async)?$/u.test(code);
+            const toExecute = isAsync || isSilent ? code.replace(/--(async|silent)\s*(--(silent|async))?$/u, "") : code;
             const evaled = inspect(await eval(isAsync ? `(async () => {\n${toExecute}\n})()` : toExecute), {
                 depth: 0
             });
@@ -38,35 +39,39 @@ export class EvalCommand extends BaseCommand {
             if (isSilent) return;
 
             const cleaned = this.clean(evaled);
-            const output = cleaned.length > 1024 ? `${await this.hastebin(cleaned)}.js` : `\`\`\`js\n${cleaned}\`\`\``;
+            const output = cleaned.length > 1_024 ? `${await this.hastebin(cleaned)}.js` : `\`\`\`js\n${cleaned}\`\`\``;
 
             embed.addFields([{ name: i18n.__("commands.developers.eval.outputString"), value: output }]);
-            ctx.send({
-                askDeletion: {
-                    reference: ctx.author.id
-                },
-                embeds: [embed]
-            }).catch(e => this.client.logger.error("PROMISE_ERR:", e));
-        } catch (e) {
-            const cleaned = this.clean(String(e));
-            const isTooLong = cleaned.length > 1024;
+            await ctx
+                .send({
+                    askDeletion: {
+                        reference: ctx.author.id
+                    },
+                    embeds: [embed]
+                })
+                .catch((error: unknown) => this.client.logger.error("PROMISE_ERR:", error));
+        } catch (er) {
+            const cleaned = this.clean(String(er));
+            const isTooLong = cleaned.length > 1_024;
             const error = isTooLong ? `${await this.hastebin(cleaned)}.js` : `\`\`\`js\n${cleaned}\`\`\``;
 
             embed.setColor("Red").addFields([{ name: i18n.__("commands.developers.eval.errorString"), value: error }]);
-            ctx.send({
-                askDeletion: {
-                    reference: ctx.author.id
-                },
-                embeds: [embed]
-            }).catch(er => this.client.logger.error("PROMISE_ERR:", er));
+            await ctx
+                .send({
+                    askDeletion: {
+                        reference: ctx.author.id
+                    },
+                    embeds: [embed]
+                })
+                .catch((err: unknown) => this.client.logger.error("PROMISE_ERR:", err));
         }
     }
 
     private clean(text: string): string {
         return text
-            .replace(new RegExp(process.env.DISCORD_TOKEN!, "g"), "[REDACTED]")
-            .replace(/`/g, `\`${String.fromCharCode(8203)}`)
-            .replace(/@/g, `@${String.fromCharCode(8203)}`);
+            .replaceAll(new RegExp(process.env.DISCORD_TOKEN ?? "thereshouldbetokenhere", "gu"), "[REDACTED]")
+            .replaceAll("`", `\`${String.fromCodePoint(8_203)}`)
+            .replaceAll("@", `@${String.fromCodePoint(8_203)}`);
     }
 
     private async hastebin(text: string): Promise<string> {

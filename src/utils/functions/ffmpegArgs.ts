@@ -35,9 +35,9 @@ export function ffmpegArgs(filters: Partial<Record<keyof typeof filterArgs, bool
             ? [
                   "-af",
                   keys
-                      .reduce<string[]>((p, c) => {
-                          if (filters[c]) p.push(filterArgs[c]);
-                          return p;
+                      .reduce<string[]>((pr, cu) => {
+                          if (filters[cu] === true) pr.push(filterArgs[cu]);
+                          return pr;
                       }, [])
                       .join(",")
               ]

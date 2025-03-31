@@ -1,13 +1,7 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import {
-    AudioPlayer,
-    AudioPlayerPlayingState,
-    AudioPlayerStatus,
-    AudioResource,
-    createAudioPlayer,
-    VoiceConnection
-} from "@discordjs/voice";
+/* eslint-disable @typescript-eslint/no-floating-promises */
+import type { AudioPlayer, AudioPlayerPlayingState, AudioResource, VoiceConnection } from "@discordjs/voice";
+import { AudioPlayerStatus, createAudioPlayer } from "@discordjs/voice";
 import type { GuildMember, Snowflake, TextChannel } from "discord.js";
 import { clearTimeout } from "node:timers";
 import i18n from "../config/index.js";

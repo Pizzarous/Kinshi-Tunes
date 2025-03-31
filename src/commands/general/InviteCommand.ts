@@ -47,10 +47,10 @@ export class InviteCommand extends BaseCommand {
                         name: i18n.__mf("commands.general.invite.inviteTitle", {
                             bot: this.client.user?.username
                         }),
-                        iconURL: this.client.user!.displayAvatarURL()
+                        iconURL: this.client.user?.displayAvatarURL()
                     })
                 ]
             })
-            .catch(e => this.client.logger.error("PLAY_CMD_ERR:", e));
+            .catch((error: unknown) => this.client.logger.error("PLAY_CMD_ERR:", error));
     }
 }

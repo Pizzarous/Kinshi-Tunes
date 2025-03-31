@@ -1,6 +1,7 @@
-import { CommandComponent } from "../typings/index.js";
-import { CommandContext } from "./CommandContext.js";
-import { KinshiTunes } from "./KinshiTunes.js";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { CommandComponent } from "../typings/index.js";
+import type { CommandContext } from "./CommandContext.js";
+import type { KinshiTunes } from "./KinshiTunes.js";
 
 export abstract class BaseCommand implements CommandComponent {
     public constructor(
@@ -8,7 +9,7 @@ export abstract class BaseCommand implements CommandComponent {
         public meta: CommandComponent["meta"]
     ) {}
 
-    public abstract execute(ctx: CommandContext): unknown;
+    public abstract execute(ctx: CommandContext): any;
 }
 
 export type ExtendedCommandConstructor = new (...args: ConstructorParameters<typeof BaseCommand>) => BaseCommand;

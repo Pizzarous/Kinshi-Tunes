@@ -1,8 +1,11 @@
-import { KinshiTunes } from "../../structures/KinshiTunes.js";
-import { Guild, Role, ChannelType } from "discord.js";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { Guild, Role } from "discord.js";
+import { ChannelType } from "discord.js";
+import { Buffer } from "node:buffer";
 import { execSync } from "node:child_process";
-import { parse } from "node:path";
+import nodePath from "node:path";
 import prism from "prism-media";
+import type { KinshiTunes } from "../../structures/KinshiTunes.js";
 
 const { FFmpeg } = prism;
 
@@ -11,12 +14,12 @@ export class ClientUtils {
 
     public async fetchMuteRole(guild: Guild): Promise<Role | null> {
         const id = this.client.data.data?.[guild.id]?.mute;
-        return id ? guild.roles.fetch(id).catch(() => null) : null;
+        return (id?.length ?? 0) > 0 ? guild.roles.fetch(id ?? "").catch(() => null) : null;
     }
 
     public async fetchDJRole(guild: Guild): Promise<Role | null> {
         const data = this.client.data.data?.[guild.id]?.dj;
-        if (data?.enable && data.role) return guild.roles.fetch(data.role);
+        if (data?.enable === true && (data.role?.length ?? 0) > 0) return guild.roles.fetch(data.role ?? "");
 
         return null;
     }
@@ -36,7 +39,7 @@ export class ClientUtils {
             const shardUsers = await this.client.shard.broadcastEval(c => c.users.cache.map(x => x.id));
 
             for (const users of shardUsers) {
-                arr = arr.concat(users);
+                arr = [...arr, ...users];
             }
         } else {
             arr = this.client.users.cache.map(x => x.id);
@@ -50,17 +53,17 @@ export class ClientUtils {
 
         if (this.client.shard) {
             const shardChannels = await this.client.shard.broadcastEval(
-                (c, t) =>
+                (c, ty) =>
                     c.channels.cache
                         .filter(ch => {
-                            if (t.textOnly) {
+                            if (ty.textOnly) {
                                 return (
-                                    ch.type === t.types.GuildText ||
-                                    ch.type === t.types.PublicThread ||
-                                    ch.type === t.types.PrivateThread
+                                    ch.type === ty.types.GuildText ||
+                                    ch.type === ty.types.PublicThread ||
+                                    ch.type === ty.types.PrivateThread
                                 );
-                            } else if (t.voiceOnly) {
-                                return ch.type === t.types.GuildVoice;
+                            } else if (ty.voiceOnly) {
+                                return ch.type === ty.types.GuildVoice;
                             }
 
                             return true;
@@ -72,7 +75,7 @@ export class ClientUtils {
             );
 
             for (const channels of shardChannels) {
-                arr = arr.concat(channels);
+                arr = [...arr, ...channels];
             }
         } else {
             arr = this.client.channels.cache
@@ -117,11 +120,11 @@ export class ClientUtils {
         return this.client.guilds.cache.filter(x => x.queue?.playing === true).size;
     }
 
-    public async import<T>(path: string, ...args: unknown[]): Promise<T | undefined> {
+    public async import<T>(path: string, ...args: any[]): Promise<T | undefined> {
         const file = await import(path).then(
-            m => (m as Record<string, (new (...argument: unknown[]) => T) | undefined>)[parse(path).name]
+            mod => (mod as Record<string, (new (...argument: any[]) => T) | undefined>)[nodePath.parse(path).name]
         );
-        return file ? new file(...args) : undefined;
+        return file ? new file(...(args as unknown[])) : undefined;
     }
 
     public getFFmpegVersion(): string {
@@ -129,9 +132,9 @@ export class ClientUtils {
             const ffmpeg = FFmpeg.getInfo();
             return (
                 ffmpeg.version
-                    .split(/_|-| /)
-                    .find(x => /[0-9.]/.test(x))
-                    ?.replace(/[^0-9.]/g, "") ?? "Unknown"
+                    .split(/[ _-]/u)
+                    .find(x => /[\d.]/u.test(x))
+                    ?.replace(/[^\d.]/gu, "") ?? "Unknown"
             );
         } catch {
             return "Unknown";

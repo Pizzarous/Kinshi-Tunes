@@ -18,12 +18,14 @@ export class StopCommand extends BaseCommand {
     @inVC
     @validVC
     @sameVC
-    public execute(ctx: CommandContext): void {
+    public async execute(ctx: CommandContext): Promise<void> {
         ctx.guild?.queue?.stop();
-        ctx.guild!.queue!.lastMusicMsg = null;
+        (ctx.guild?.queue as unknown as NonNullable<NonNullable<typeof ctx.guild>["queue"]>).lastMusicMsg = null;
 
-        ctx.reply({
-            embeds: [createEmbed("success", `⏹ **|** ${i18n.__("commands.music.stop.stoppedMessage")}`)]
-        }).catch(e => this.client.logger.error("STOP_CMD_ERR:", e));
+        await ctx
+            .reply({
+                embeds: [createEmbed("success", `⏹ **|** ${i18n.__("commands.music.stop.stoppedMessage")}`)]
+            })
+            .catch((error: unknown) => this.client.logger.error("STOP_CMD_ERR:", error));
     }
 }

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { KinshiTunes } from "../../structures/KinshiTunes.js";
-import { SpotifyAlbum, SpotifyPlaylist, SpotifyTrack } from "../../typings/index.js";
+import { setTimeout } from "node:timers";
+import type { KinshiTunes } from "../../structures/KinshiTunes.js";
+import type { SpotifyAlbum, SpotifyPlaylist, SpotifyTrack } from "../../typings/index.js";
 
 export class SpotifyUtil {
     public spotifyRegex = /(?:https:\/\/open\.spotify\.com\/|spotify:)(?:.+)?(track|playlist|album)[/:]([A-Za-z0-9]+)/;
