@@ -41,7 +41,7 @@
         "@swc/core": "1.11.13",
         "axios": "^1.6.8",
         "date-fns": "4.1.0",
-        "discord.js": "14.18.0",
+        "discord.js": "14.21.0",
         "dotenv": "17.2.0",
         "ffmpeg-static": "^5.2.0",
         "fluent-ffmpeg": "^2.1.3",
