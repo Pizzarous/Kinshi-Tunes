@@ -52,7 +52,7 @@
         "soundcloud.ts": "^0.6.0",
         "tslib": "2.8.1",
         "tweetnacl": "1.0.3",
-        "youtubei": "1.6.7",
+        "youtubei": "1.7.0",
         "zip-lib": "^1.0.4",
         "yt-dlp-exec": "^1.0.2"
     },
