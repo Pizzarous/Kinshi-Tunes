@@ -60,7 +60,7 @@
         "@eslint-community/eslint-plugin-eslint-comments": "^4.0.0",
         "@types/fluent-ffmpeg": "^2.1.26",
         "@types/i18n": "0.13.12",
-        "@types/node": "22.16.5",
+        "@types/node": "22.17.1",
         "@typescript-eslint/eslint-plugin": "^8.19.1",
         "@typescript-eslint/parser": "^8.19.1",
         "eslint": "9.31.0",
