@@ -1,5 +1,7 @@
-/* eslint-disable promise/prefer-await-to-then */
+/* eslint-disable typescript/use-unknown-in-catch-callback-variable */
 /* eslint-disable promise/prefer-await-to-callbacks */
+/* eslint-disable promise/prefer-await-to-then */
+/* eslint-disable typescript/strict-boolean-expressions */
 import process from "node:process";
 import { setTimeout } from "node:timers";
 import i18n from "../../config/index.js";
@@ -19,10 +21,10 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 })
 export class RestartCommand extends BaseCommand {
     public execute(ctx: CommandContext): void {
-        if (Boolean(process.env.ADMIN_ID) || ctx.author.id !== process.env.ADMIN_ID) {
+        if (!process.env.ADMIN_ID || ctx.author.id !== process.env.ADMIN_ID) {
             ctx.reply({
                 embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.restart.errorMessage")}`)]
-            }).catch((error: unknown) => this.client.logger.error("RESTART_CMD_ERR:", error));
+            }).catch(error => this.client.logger.error("RESTART_CMD_ERR:", error));
             return;
         }
 
@@ -30,7 +32,7 @@ export class RestartCommand extends BaseCommand {
 
         ctx.reply({
             embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.general.restart.leftMessage")}`)]
-        }).catch((error: unknown) => this.client.logger.error("RESTART_CMD_ERR:", error));
+        }).catch(error => this.client.logger.error("RESTART_CMD_ERR:", error));
 
         setTimeout(() => {
             process.exit(0);
