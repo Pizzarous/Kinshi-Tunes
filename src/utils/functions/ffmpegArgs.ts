@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 export const filterArgs = {
     bassboost: "bass=g=7.5",
     nightcore: "aresample=48000,asetrate=48000*1.25",

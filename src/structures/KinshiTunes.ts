@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import path from "node:path";
+import process from "node:process";
 import type { ClientOptions } from "discord.js";
 import { Client } from "discord.js";
 import got from "got";
-import path from "node:path";
-import process from "node:process";
 import { Soundcloud } from "soundcloud.ts";
 import * as config from "../config/index.js";
 import type { GuildData } from "../typings/index.js";
@@ -50,7 +49,9 @@ export class KinshiTunes extends Client {
                     this.debugLog.logData("info", "GOT_REQUEST", [
                         ["URL", options.url?.toString() ?? "[???]"],
                         ["Method", options.method],
+                        // eslint-disable-next-line unicorn/text-encoding-identifier-case
                         ["Encoding", options.encoding ?? "UTF-8"],
+                        // eslint-disable-next-line typescript/strict-boolean-expressions
                         ["Agent", options.agent.http ? "HTTP" : "HTTPS"]
                     ]);
                 }

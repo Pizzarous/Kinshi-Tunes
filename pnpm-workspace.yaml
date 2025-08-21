@@ -1,0 +1,7 @@
+ignoredBuiltDependencies:
+  - yt-dlp-exec
+
+onlyBuiltDependencies:
+  - '@swc/core'
+  - ffmpeg-static
+  - protobufjs

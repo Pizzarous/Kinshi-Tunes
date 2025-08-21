@@ -1,9 +1,13 @@
+/* eslint-disable unicorn/prefer-string-replace-all */
+/* eslint-disable typescript/strict-boolean-expressions */
+/* eslint-disable node/no-sync */
+/* eslint-disable consistent-return */
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath, URL } from "node:url";
 import { ApplicationCommandOptionType, AttachmentBuilder, Message } from "discord.js";
 import ffmpegStatic from "ffmpeg-static";
 import ffmpeg from "fluent-ffmpeg";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import ytDlp from "yt-dlp-exec";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -11,7 +15,7 @@ import { CommandContext } from "../../structures/CommandContext.js";
 import { Command } from "../../utils/decorators/Command.js";
 import { createEmbed } from "../../utils/functions/createEmbed.js";
 
-ffmpeg.setFfmpegPath(ffmpegStatic);
+ffmpeg.setFfmpegPath(ffmpegStatic as unknown as string);
 
 const currentFilename = fileURLToPath(import.meta.url);
 const currentDir = path.dirname(currentFilename);
@@ -57,9 +61,9 @@ export class DownloadCommand extends BaseCommand {
         url = DownloadCommand.cleanUrl(url);
         console.log("Cleaned URL:", url);
 
-        let tempDir: string = "";
-        let tempFilePath: string;
-        let mp3FilePath: string;
+        let tempDir = "";
+        let tempFilePath = "";
+        let mp3FilePath = "";
 
         try {
             // Extract video metadata to get the title
@@ -97,7 +101,7 @@ export class DownloadCommand extends BaseCommand {
             await ytDlp(url, {
                 output: tempFilePath,
                 format: "bestaudio",
-                ffmpegLocation: ffmpegStatic
+                ffmpegLocation: ffmpegStatic as unknown as string
             });
             console.log("Download successful");
 
@@ -178,7 +182,7 @@ export class DownloadCommand extends BaseCommand {
 
     private static sanitizeFileName(fileName: string): string {
         let sanitizedTitle = fileName
-            .replace(/[<>:"/\\|?*]+/g, "") // Remove invalid characters
+            .replace(/[<>:"/\\|?*]+/gu, "") // Remove invalid characters
             .trim();
 
         // Check if the sanitized title is empty

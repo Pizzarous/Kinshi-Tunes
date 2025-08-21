@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/filename-case */
 import { platform } from "node:os";
 import { URL } from "node:url";
 

@@ -1,3 +1,5 @@
+/* eslint-disable promise/prefer-await-to-then */
+/* eslint-disable promise/prefer-await-to-callbacks */
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";
@@ -20,9 +22,10 @@ export class ClearQueueCommand extends BaseCommand {
     @sameVC
     @haveQueue
     public execute(ctx: CommandContext): void {
-        ctx.guild?.queue?.clear(ctx.member!);
+        ctx.guild?.queue?.clear();
+
         ctx.reply({
             embeds: [createEmbed("success", `🗑️ **|** ${i18n.__("commands.music.clearQueue.clearedMessage")}`)]
-        }).catch(e => this.client.logger.error("CLEARQUEUE_CMD_ERR:", e));
+        }).catch((error: unknown) => this.client.logger.error("CLEARQUEUE_CMD_ERR:", error));
     }
 }

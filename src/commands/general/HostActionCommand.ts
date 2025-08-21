@@ -1,4 +1,7 @@
-import { exec } from "child_process";
+/* eslint-disable promise/prefer-await-to-callbacks */
+/* eslint-disable promise/prefer-await-to-then */
+import { exec } from "node:child_process";
+import process from "node:process";
 import { ApplicationCommandOptionType } from "discord.js";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -38,21 +41,21 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 })
 export class HostActionCommand extends BaseCommand {
     public execute(ctx: CommandContext): void {
-        const isAdmin = process.env.ADMIN_ID && ctx.author.id === process.env.ADMIN_ID;
+        const isAdmin = Boolean(process.env.ADMIN_ID) && ctx.author.id === process.env.ADMIN_ID;
         const action = ctx.isInteraction() ? ctx.options?.getString("action") : ctx.args[0];
 
         if (!isAdmin) {
             ctx.reply({
                 embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.hostaction.errorMessage")}`)]
-            }).catch(e => this.client.logger.error("HostAction_CMD_ERR:", e));
+            }).catch((error: unknown) => this.client.logger.error("HostAction_CMD_ERR:", error));
             return;
         }
 
-        if (!action || (action !== "restart" && action !== "shutdown" && action !== "cancel")) {
+        if (action !== "restart" && action !== "shutdown" && action !== "cancel") {
             console.log(action);
             ctx.reply({
                 embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.hostaction.invalidAction")}`)]
-            }).catch(e => this.client.logger.error("HostAction_CMD_ERR:", e));
+            }).catch((error: unknown) => this.client.logger.error("HostAction_CMD_ERR:", error));
             return;
         }
 
@@ -69,13 +72,15 @@ export class HostActionCommand extends BaseCommand {
             case "cancel":
                 successMessageKey = "cancelMessage";
                 break;
+            default:
+                break;
         }
 
         ctx.reply({
             embeds: [createEmbed("success", `👋 **|** ${i18n.__(`commands.general.hostaction.${successMessageKey}`)}`)]
-        }).catch(e => this.client.logger.error("HostAction_CMD_ERR:", e));
+        }).catch((error: unknown) => this.client.logger.error("HostAction_CMD_ERR:", error));
 
-        let cmd;
+        let cmd = "";
         switch (action) {
             case "restart":
                 cmd = `shutdown /r /t ${timeout}`;
@@ -86,11 +91,13 @@ export class HostActionCommand extends BaseCommand {
             case "cancel":
                 cmd = "shutdown /a";
                 break;
+            default:
+                break;
         }
 
         exec(cmd, (error, stdout, stderr) => {
             if (error) {
-                console.error(`Failed to perform host action (${action}): `, error);
+                console.error(`Failed to perform host action (${action}):`, error);
                 return;
             }
 

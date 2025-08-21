@@ -11,12 +11,7 @@ import { downloadExecutable } from "./yt-dlp-utils/index.js";
 
 const ensureEnv = arr => arr.every(x => process.env[x] !== undefined);
 
-const isGlitch = ensureEnv([
-    "PROJECT_DOMAIN",
-    "PROJECT_INVITE_TOKEN",
-    "API_SERVER_EXTERNAL",
-    "PROJECT_REMIX_CHAIN"
-]);
+const isGlitch = ensureEnv(["PROJECT_DOMAIN", "PROJECT_INVITE_TOKEN", "API_SERVER_EXTERNAL", "PROJECT_REMIX_CHAIN"]);
 
 const isReplit = ensureEnv([
     "REPLIT_DB_URL",
@@ -49,7 +44,9 @@ function npmInstall(deleteDir = false, forceInstall = false, additionalArgs = []
         }
     }
 
-    execSync(`npm install${isGlitch ? " --only=prod" : ""}${forceInstall ? " --force" : ""} ${additionalArgs.join(" ")}`);
+    execSync(
+        `pnpm install${isGlitch ? " --only=prod" : ""}${forceInstall ? " --force" : ""} ${additionalArgs.join(" ")}`
+    );
 }
 
 if (isGlitch) {
@@ -74,7 +71,9 @@ if (isGlitch) {
             npmInstall(true);
             console.info("[INFO] Modules successfully re-installed.");
         } catch {
-            console.info("[INFO] Failed to re-install modules, trying to delete node_modules and install modules forcefully...");
+            console.info(
+                "[INFO] Failed to re-install modules, trying to delete node_modules and install modules forcefully..."
+            );
             try {
                 npmInstall(true, true);
                 console.info("[INFO] Modules successfully re-installed.");
@@ -118,7 +117,7 @@ if (isGlitch || isReplit) {
     }).listen(Number(process.env.PORT || 3_000) || 3_000);
 
     console.info(`[INFO] ${isGlitch ? "Glitch" : "Replit"} environment detected, trying to compile...`);
-    execSync(`npm run compile`);
+    execSync(`pnpm run compile`);
     console.info("[INFO] Compiled.");
 }
 
@@ -128,24 +127,31 @@ if (streamStrategy === "play-dl" && !existsSync(nodePath.resolve(process.cwd(), 
     console.log("[INFO] Downloading play-dl fix...");
     writeFileSync(
         nodePath.resolve(process.cwd(), "temp.zip"),
-        await got.get("https://github.com/YuzuZensai/play-dl-test/archive/2bfbfe6decd68261747ba55800319f9906f12b03.zip").buffer(),
+        await got
+            .get("https://github.com/YuzuZensai/play-dl-test/archive/2bfbfe6decd68261747ba55800319f9906f12b03.zip")
+            .buffer(),
         { mode: 0o777 }
     );
 
     console.log("[INFO] Extracting play-dl fix...");
     mkdirSync(nodePath.resolve(process.cwd(), "play-dl-fix"), { recursive: true });
-    await extract(nodePath.resolve(process.cwd(), "temp.zip"), nodePath.resolve(process.cwd(), "play-dl-fix"), { overwrite: true });
+    await extract(nodePath.resolve(process.cwd(), "temp.zip"), nodePath.resolve(process.cwd(), "play-dl-fix"), {
+        overwrite: true
+    });
 
     const dirs = readdirSync(nodePath.resolve(process.cwd(), "play-dl-fix"));
-    cpSync(nodePath.resolve(process.cwd(), "play-dl-fix", dirs[0]), nodePath.resolve(process.cwd(), "play-dl-fix"), { force: true, recursive: true });
+    cpSync(nodePath.resolve(process.cwd(), "play-dl-fix", dirs[0]), nodePath.resolve(process.cwd(), "play-dl-fix"), {
+        force: true,
+        recursive: true
+    });
     rmSync(nodePath.resolve(process.cwd(), "play-dl-fix", dirs[0]), { force: true, recursive: true });
     rmSync(nodePath.resolve(process.cwd(), "temp.zip"), { force: true });
 
     console.log("[INFO] Installing packages for play-dl...");
-    execSync("cd play-dl-fix && npm install");
+    execSync("cd play-dl-fix && pnpm install");
 
     console.log("[INFO] Compiling play-dl...");
-    execSync("cd play-dl-fix && npm run build");
+    execSync("cd play-dl-fix && pnpm run build");
 }
 console.info("[INFO] Starting the bot...");
 

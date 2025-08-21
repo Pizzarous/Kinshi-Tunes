@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Guild, Role } from "discord.js";
-import { ChannelType } from "discord.js";
 import { Buffer } from "node:buffer";
 import { execSync } from "node:child_process";
 import nodePath from "node:path";
+import type { Guild, Role } from "discord.js";
+import { ChannelType } from "discord.js";
 import prism from "prism-media";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";
 
@@ -14,6 +13,7 @@ export class ClientUtils {
 
     public async fetchMuteRole(guild: Guild): Promise<Role | null> {
         const id = this.client.data.data?.[guild.id]?.mute;
+        // eslint-disable-next-line promise/prefer-await-to-then
         return (id?.length ?? 0) > 0 ? guild.roles.fetch(id ?? "").catch(() => null) : null;
     }
 
@@ -143,6 +143,7 @@ export class ClientUtils {
 
     public getCommitHash(ref: string, short = true): string {
         try {
+            // eslint-disable-next-line node/no-sync
             const res = execSync(`git rev-parse${short ? " --short" : ""} ${ref}`);
             return res.toString().trim();
         } catch {
