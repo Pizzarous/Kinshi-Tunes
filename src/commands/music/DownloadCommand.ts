@@ -1,21 +1,23 @@
+/* eslint-disable unicorn/prefer-string-slice */
+/* eslint-disable node/prefer-global/url */
+/* eslint-disable typescript/no-inferrable-types */
+/* eslint-disable require-unicode-regexp */
+/* eslint-disable unicorn/better-regex */
 /* eslint-disable unicorn/prefer-string-replace-all */
 /* eslint-disable typescript/strict-boolean-expressions */
 /* eslint-disable node/no-sync */
 /* eslint-disable consistent-return */
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath, URL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { ApplicationCommandOptionType, AttachmentBuilder, Message } from "discord.js";
 import ffmpegStatic from "ffmpeg-static";
-import ffmpeg from "fluent-ffmpeg";
-import ytDlp from "yt-dlp-exec";
+import { youtubeDl } from "youtube-dl-exec";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";
 import { Command } from "../../utils/decorators/Command.js";
 import { createEmbed } from "../../utils/functions/createEmbed.js";
-
-ffmpeg.setFfmpegPath(ffmpegStatic as unknown as string);
 
 const currentFilename = fileURLToPath(import.meta.url);
 const currentDir = path.dirname(currentFilename);
@@ -61,17 +63,23 @@ export class DownloadCommand extends BaseCommand {
         url = DownloadCommand.cleanUrl(url);
         console.log("Cleaned URL:", url);
 
-        let tempDir = "";
-        let tempFilePath = "";
-        let mp3FilePath = "";
+        let tempDir: string = "";
+        let mp3FilePath: string;
 
         try {
             // Extract video metadata to get the title
-            console.log("Extracting video metadata using yt-dlp");
-            const metadata = await ytDlp(url, {
-                dumpSingleJson: true
+            console.log("Extracting video metadata using youtube-dl");
+            const metadata = await youtubeDl(url, {
+                dumpSingleJson: true,
+                noCheckCertificates: true,
+                noWarnings: true
             });
-            const title = metadata.title || "audio";
+
+            const title =
+                typeof metadata === "object" && metadata !== null && "fulltitle" in metadata
+                    ? ((metadata as { fulltitle?: string }).fulltitle ?? "audio")
+                    : "audio";
+
             console.log("Video title:", title);
 
             // Sanitize the title to create valid file names
@@ -90,35 +98,34 @@ export class DownloadCommand extends BaseCommand {
             // Create temp directory if it doesn't exist
             tempDir = path.join(currentDir, "temp");
             if (!fs.existsSync(tempDir)) {
-                fs.mkdirSync(tempDir);
+                fs.mkdirSync(tempDir, { recursive: true });
             }
 
-            tempFilePath = path.join(tempDir, `${sanitizedTitle}.webm`);
             mp3FilePath = path.join(tempDir, `${sanitizedTitle}.mp3`);
 
-            // Download the audio using yt-dlp
-            console.log("Attempting to download audio using yt-dlp");
-            await ytDlp(url, {
-                output: tempFilePath,
-                format: "bestaudio",
-                ffmpegLocation: ffmpegStatic as unknown as string
+            // Download and convert to MP3 directly using youtube-dl
+            console.log("Downloading and converting to MP3 using youtube-dl");
+            await youtubeDl(url, {
+                extractAudio: true,
+                audioFormat: "mp3",
+                audioQuality: 192, // Good quality MP3
+                output: path.join(tempDir, `${sanitizedTitle}.%(ext)s`),
+                ffmpegLocation: String(ffmpegStatic),
+                noCheckCertificates: true,
+                noWarnings: true,
+                restrictFilenames: true, // Helps avoid filename issues
+                addHeader: [
+                    "referer:youtube.com",
+                    "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                ]
             });
-            console.log("Download successful");
 
-            // Convert the file to MP3 using ffmpeg
-            await new Promise<void>((resolve, reject) => {
-                ffmpeg(tempFilePath)
-                    .toFormat("mp3")
-                    .on("end", () => {
-                        console.log("Conversion to MP3 successful");
-                        resolve();
-                    })
-                    .on("error", (err: Error) => {
-                        console.error("Error converting to MP3:", err);
-                        reject(err);
-                    })
-                    .save(mp3FilePath);
-            });
+            console.log("Download and conversion successful");
+
+            // Check if the file was created
+            if (!fs.existsSync(mp3FilePath)) {
+                throw new Error(`MP3 file not found at ${mp3FilePath}`);
+            }
 
             // Send the MP3 file as an attachment
             const attachment = new AttachmentBuilder(mp3FilePath);
@@ -132,8 +139,7 @@ export class DownloadCommand extends BaseCommand {
                       files: [attachment]
                   }));
 
-            // Clean up the files after sending
-            fs.unlinkSync(tempFilePath);
+            // Clean up the file after sending
             fs.unlinkSync(mp3FilePath);
             console.log("Temporary files deleted");
         } catch (error) {
@@ -148,15 +154,20 @@ export class DownloadCommand extends BaseCommand {
                   }));
             return;
         } finally {
-            // Ensure the temp directory is deleted, if it was created
+            // Ensure the temp directory is cleaned up
             if (tempDir && fs.existsSync(tempDir)) {
                 try {
                     const files = fs.readdirSync(tempDir);
                     for (const file of files) {
                         const filePath = path.join(tempDir, file);
-                        fs.unlinkSync(filePath); // Delete each file inside the temp directory
+                        if (fs.existsSync(filePath)) {
+                            fs.unlinkSync(filePath);
+                        }
                     }
-                    fs.rmdirSync(tempDir); // Delete the temp directory itself
+                    // Only remove directory if it's empty
+                    if (fs.readdirSync(tempDir).length === 0) {
+                        fs.rmdirSync(tempDir);
+                    }
                 } catch (cleanupError) {
                     console.error("Error cleaning up temp folder:", cleanupError);
                 }
@@ -182,8 +193,10 @@ export class DownloadCommand extends BaseCommand {
 
     private static sanitizeFileName(fileName: string): string {
         let sanitizedTitle = fileName
-            .replace(/[<>:"/\\|?*]+/gu, "") // Remove invalid characters
-            .trim();
+            .replace(/[<>:"/\\|?*]+/g, "") // Remove invalid characters
+            .replace(/[^\w\s.-]/g, "") // Keep only word characters, spaces, dots, and hyphens
+            .trim()
+            .substring(0, 80); // Shorter length to avoid issues
 
         // Check if the sanitized title is empty
         if (!sanitizedTitle) sanitizedTitle = "audio";
