@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-floating-promises */
-import type { ApplicationCommandData, Guild, Message, Snowflake, TextChannel } from "discord.js";
-import { ApplicationCommandType, Collection } from "discord.js";
+/* eslint-disable promise/no-nesting */
+/* eslint-disable no-await-in-loop */
 import { promises as fs } from "node:fs";
 import nodePath from "node:path";
 import { setTimeout } from "node:timers";
+import type { ApplicationCommandData, Guild, Message, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandType, Collection } from "discord.js";
 import i18n from "../../config/index.js";
 import { CommandContext } from "../../structures/CommandContext.js";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";
@@ -189,6 +189,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
     }
 
     public handle(message: Message, pref: string): void {
+        // eslint-disable-next-line prefer-named-capture-group
         const prefix = pref === "{mention}" ? (/<@(!)?\d*?>/u.exec(message.content) as string[])[0] : pref;
         const args = message.content.slice(prefix.length).trim().split(/ +/u);
         const cmd = args.shift()?.toLowerCase();
@@ -254,6 +255,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
         } catch (error) {
             this.client.logger.error("COMMAND_HANDLER_ERR:", error);
         } finally {
+            // eslint-disable-next-line no-unsafe-finally
             if (command.meta.devOnly === true && !this.client.config.devs.includes(message.author.id)) return;
             this.client.logger.info(
                 `${message.author.tag} [${message.author.id}] is using ${command.meta.name} command from ${

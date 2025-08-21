@@ -1,8 +1,8 @@
-import { version as DJSVersion } from "discord.js";
 import { readFileSync } from "node:fs";
 import { uptime } from "node:os";
 import process from "node:process";
 import { URL } from "node:url";
+import { version as DJSVersion } from "discord.js";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";

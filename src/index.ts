@@ -1,7 +1,7 @@
-import { ShardingManager } from "discord.js";
 import nodePath from "node:path";
 import process from "node:process";
 import { start } from "node:repl";
+import { ShardingManager } from "discord.js";
 import { enableRepl, isProd, shardingMode, shardsCount } from "./config/index.js";
 import { importURLToString } from "./utils/functions/importURLToString.js";
 import { Logger } from "./utils/structures/Logger.js";

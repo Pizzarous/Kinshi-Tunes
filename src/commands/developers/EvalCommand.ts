@@ -1,3 +1,6 @@
+/* eslint-disable unicorn/catch-error-name */
+/* eslint-disable no-eval */
+/* eslint-disable prefer-named-capture-group */
 import process from "node:process";
 import { inspect } from "node:util";
 import i18n from "../../config/index.js";
@@ -81,6 +84,6 @@ export class EvalCommand extends BaseCommand {
             })
             .json<{ key: string }>();
 
-        return `${result.key}`;
+        return result.key;
     }
 }

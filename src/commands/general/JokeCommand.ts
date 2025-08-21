@@ -1,3 +1,5 @@
+/* eslint-disable promise/prefer-await-to-then */
+/* eslint-disable promise/prefer-await-to-callbacks */
 import axios from "axios";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -5,13 +7,13 @@ import { CommandContext } from "../../structures/CommandContext.js";
 import { Command } from "../../utils/decorators/Command.js";
 import { createEmbed } from "../../utils/functions/createEmbed.js";
 
-interface IJokeApiResponse {
+type IJokeApiResponse = {
     category: string;
     type: string;
     joke: string;
     setup: string;
     delivery: string;
-}
+};
 
 @Command<typeof JokeCommand>({
     aliases: ["joke", "yoke"],
@@ -33,11 +35,11 @@ export class JokeCommand extends BaseCommand {
 
             ctx.reply({
                 embeds: [createEmbed("info", `**${joke}**`)]
-            }).catch(e => {
-                this.client.logger.error("JOKE_CMD_ERR:", e);
+            }).catch((error: unknown) => {
+                this.client.logger.error("JOKE_CMD_ERR:", error);
             });
-        } catch (e) {
-            this.client.logger.error("JOKE_CMD_ERR:", e);
+        } catch (error) {
+            this.client.logger.error("JOKE_CMD_ERR:", error);
         }
     }
 }

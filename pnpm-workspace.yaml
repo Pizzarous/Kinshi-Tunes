@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+    - "@swc/core"
+    - es5-ext
+    - ffmpeg-static
+    - protobufjs
+    - youtube-dl-exec

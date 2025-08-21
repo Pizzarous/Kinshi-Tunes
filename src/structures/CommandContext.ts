@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Buffer } from "node:buffer";
 import type {
     BaseMessageOptions,
     ChatInputCommandInteraction,
@@ -27,7 +27,6 @@ import {
     MessageComponentInteraction,
     ModalSubmitInteraction
 } from "discord.js";
-import { Buffer } from "node:buffer";
 import type { MessageInteractionAction } from "../typings/index.js";
 
 export class CommandContext {
@@ -107,6 +106,7 @@ export class CommandContext {
         }
 
         // @ts-expect-error-next-line
+        // eslint-disable-next-line typescript/no-unsafe-return
         return rep instanceof Message ? rep : new Message(this.context.client, rep);
     }
 
@@ -146,6 +146,7 @@ export class CommandContext {
             throw new Error("Cannot send ephemeral message in a non-interaction context.");
         }
         if (typeof options === "string") {
+            // eslint-disable-next-line no-param-reassign
             options = { content: options };
         }
 

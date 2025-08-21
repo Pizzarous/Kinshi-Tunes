@@ -6,10 +6,10 @@
 
 ## Features
 
-- **Interaction Support:** Engage with the bot.
-- **Configurable and Easy to Use:** Customize the bot according to your needs.
-- **Basic Music and Moderation Commands:** Enjoy essential functionalities.
-- **Production-Ready Project:** Set up the bot without coding.
+-   **Interaction Support:** Engage with the bot.
+-   **Configurable and Easy to Use:** Customize the bot according to your needs.
+-   **Basic Music and Moderation Commands:** Enjoy essential functionalities.
+-   **Production-Ready Project:** Set up the bot without coding.
 
 ## General Setup
 
@@ -18,19 +18,19 @@
 3. **Configure Environment Variables:** Open `.env_example`, rename it to `.env`.
 4. **Install Dependencies:** Run the following command in your terminal.
     ```sh
-    $ npm install
+    $ pnpm install
     ```
 5. **Compile the Code:** Execute the build script.
     ```sh
-    $ npm run build
+    $ pnpm run build
     ```
 6. **Optimize Disk Space:** Remove unnecessary dev dependencies.
     ```sh
-    $ npm prune --production
+    $ pnpm prune --production
     ```
 7. **Start the Bot:** Launch the bot with the following command.
     ```sh
-    $ npm start
+    $ pnpm start
     ```
 
 ## Disclaimers

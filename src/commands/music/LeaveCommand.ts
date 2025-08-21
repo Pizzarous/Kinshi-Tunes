@@ -1,3 +1,5 @@
+/* eslint-disable promise/prefer-await-to-callbacks */
+/* eslint-disable promise/prefer-await-to-then */
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";
@@ -23,6 +25,6 @@ export class LeaveCommand extends BaseCommand {
 
         ctx.reply({
             embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.music.leave.leftMessage")}`)]
-        }).catch(e => this.client.logger.error("LEAVE_CMD_ERR:", e));
+        }).catch((error: unknown) => this.client.logger.error("LEAVE_CMD_ERR:", error));
     }
 }

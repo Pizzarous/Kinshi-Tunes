@@ -1,3 +1,5 @@
+import type EventEmitter from "node:events";
+import { clearTimeout, setTimeout } from "node:timers";
 import {
     AudioPlayerError,
     createAudioResource,
@@ -7,8 +9,6 @@ import {
 } from "@discordjs/voice";
 import type { Guild } from "discord.js";
 import { ChannelType } from "discord.js";
-import type EventEmitter from "node:events";
-import { clearTimeout, setTimeout } from "node:timers";
 import prism from "prism-media";
 import i18n from "../../../config/index.js";
 import { createEmbed } from "../../functions/createEmbed.js";
@@ -48,7 +48,7 @@ export async function play(guild: Guild, nextSong?: string, wasIdle?: boolean): 
                           return 0;
                       });
                   // Leaves after 3h if no commands
-              }, 10800000);
+              }, 10_800_000);
 
         queue.client.debugLog.logData("info", "PLAY_HANDLER", `Queue ended for ${guild.name}(${guild.id})`);
         return;

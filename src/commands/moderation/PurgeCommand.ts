@@ -1,5 +1,5 @@
-import { ApplicationCommandOptionType, Message, TextChannel } from "discord.js";
 import { setTimeout } from "node:timers";
+import { ApplicationCommandOptionType, Message, TextChannel } from "discord.js";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";

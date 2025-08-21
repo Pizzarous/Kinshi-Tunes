@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { CommandComponent } from "../typings/index.js";
 import type { CommandContext } from "./CommandContext.js";
 import type { KinshiTunes } from "./KinshiTunes.js";
