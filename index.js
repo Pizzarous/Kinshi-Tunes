@@ -117,7 +117,7 @@ if (isGlitch || isReplit) {
     }).listen(Number(process.env.PORT || 3_000) || 3_000);
 
     console.info(`[INFO] ${isGlitch ? "Glitch" : "Replit"} environment detected, trying to compile...`);
-    execSync(`pnpm run compile`);
+    execSync(`npm run compile`);
     console.info("[INFO] Compiled.");
 }
 
@@ -148,10 +148,10 @@ if (streamStrategy === "play-dl" && !existsSync(nodePath.resolve(process.cwd(), 
     rmSync(nodePath.resolve(process.cwd(), "temp.zip"), { force: true });
 
     console.log("[INFO] Installing packages for play-dl...");
-    execSync("cd play-dl-fix && pnpm install");
+    execSync("cd play-dl-fix && npm install");
 
     console.log("[INFO] Compiling play-dl...");
-    execSync("cd play-dl-fix && pnpm run build");
+    execSync("cd play-dl-fix && npm run build");
 }
 console.info("[INFO] Starting the bot...");
 
