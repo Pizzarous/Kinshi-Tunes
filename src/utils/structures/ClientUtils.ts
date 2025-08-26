@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Guild, Role } from "discord.js";
-import { ChannelType } from "discord.js";
 import { Buffer } from "node:buffer";
 import { execSync } from "node:child_process";
 import nodePath from "node:path";
+import type { Guild, Role } from "discord.js";
+import { ChannelType } from "discord.js";
 import prism from "prism-media";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";
 

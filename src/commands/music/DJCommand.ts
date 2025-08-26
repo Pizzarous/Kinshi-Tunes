@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { ApplicationCommandOptionType } from "discord.js";
 import i18n from "../../config/index.js";

@@ -1,5 +1,5 @@
-import { ActivityType, Presence } from "discord.js";
 import { setInterval } from "node:timers";
+import { ActivityType, Presence } from "discord.js";
 import i18n from "../config/index.js";
 import { BaseEvent } from "../structures/BaseEvent.js";
 import { EnvActivityTypes } from "../typings/index.js";

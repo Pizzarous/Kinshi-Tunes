@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import path from "node:path";
+import process from "node:process";
 import type { ClientOptions } from "discord.js";
 import { Client } from "discord.js";
 import got from "got";
-import path from "node:path";
-import process from "node:process";
 import { Soundcloud } from "soundcloud.ts";
 import * as config from "../config/index.js";
 import type { GuildData } from "../typings/index.js";

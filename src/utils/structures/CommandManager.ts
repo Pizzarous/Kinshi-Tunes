@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import type { ApplicationCommandData, Guild, Message, Snowflake, TextChannel } from "discord.js";
-import { ApplicationCommandType, Collection } from "discord.js";
 import { promises as fs } from "node:fs";
 import nodePath from "node:path";
 import { setTimeout } from "node:timers";
+import type { ApplicationCommandData, Guild, Message, Snowflake, TextChannel } from "discord.js";
+import { ApplicationCommandType, Collection } from "discord.js";
 import i18n from "../../config/index.js";
 import { CommandContext } from "../../structures/CommandContext.js";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";

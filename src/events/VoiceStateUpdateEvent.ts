@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
+import { clearTimeout, setTimeout } from "node:timers";
 import { AudioPlayerPausedState, entersState, VoiceConnectionStatus } from "@discordjs/voice";
 import { ChannelType, Message, StageChannel, VoiceChannel, VoiceState } from "discord.js";
-import { clearTimeout, setTimeout } from "node:timers";
 import i18n from "../config/index.js";
 import { BaseEvent } from "../structures/BaseEvent.js";
 import { ServerQueue } from "../structures/ServerQueue.js";
@@ -74,7 +74,7 @@ export class VoiceStateUpdateEvent extends BaseEvent {
                         embeds: [createEmbed("info", `👋 **|** ${i18n.__("utils.generalHandler.leftVCAlone")}`)]
                     });
                 }
-            }, 300000);
+            }, 300_000);
         }
 
         if (oldMember?.id === botID && oldID === queueVC.id && newID === undefined) {

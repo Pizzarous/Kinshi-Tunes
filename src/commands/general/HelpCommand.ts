@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
+import { Buffer } from "node:buffer";
 import {
     ActionRowBuilder,
     ApplicationCommandOptionType,
@@ -7,7 +8,6 @@ import {
     StringSelectMenuBuilder,
     StringSelectMenuInteraction
 } from "discord.js";
-import { Buffer } from "node:buffer";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";

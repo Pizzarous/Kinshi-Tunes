@@ -6,10 +6,10 @@
 
 ## Features
 
-- **Interaction Support:** Engage with the bot.
-- **Configurable and Easy to Use:** Customize the bot according to your needs.
-- **Basic Music and Moderation Commands:** Enjoy essential functionalities.
-- **Production-Ready Project:** Set up the bot without coding.
+-   **Interaction Support:** Engage with the bot.
+-   **Configurable and Easy to Use:** Customize the bot according to your needs.
+-   **Basic Music and Moderation Commands:** Enjoy essential functionalities.
+-   **Production-Ready Project:** Set up the bot without coding.
 
 ## General Setup
 

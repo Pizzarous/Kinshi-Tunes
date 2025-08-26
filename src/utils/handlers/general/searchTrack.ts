@@ -96,7 +96,7 @@ export async function searchTrack(
                                     url: `https://youtube.com/watch?v=${track.id}`
                                 }
                             ];
-                            console.log("Track: ", track.title);
+                            console.log("Track:", track.title);
                         }
                         break;
                     }
@@ -278,10 +278,10 @@ export async function searchTrack(
         } else {
             // Check if it is a youtube link as a string
             const queryContainsYoutubeUrl =
-                /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=))(?:[\w-]{10,12})/i.test(
+                /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=))[\w-]{10,12}/iu.test(
                     query
                 );
-            const cleanQuery = query.split(query.includes("youtu.be") ? /[?&]/ : "&")[0];
+            const cleanQuery = query.split(query.includes("youtu.be") ? /[&?]/u : "&")[0];
             const searchRes = await youtube.search(queryContainsYoutubeUrl ? cleanQuery : query, { type: "video" });
 
             const tracks = await Promise.all(

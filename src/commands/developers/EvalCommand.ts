@@ -81,6 +81,6 @@ export class EvalCommand extends BaseCommand {
             })
             .json<{ key: string }>();
 
-        return `${result.key}`;
+        return result.key;
     }
 }

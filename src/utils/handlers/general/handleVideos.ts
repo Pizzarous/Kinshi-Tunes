@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { joinVoiceChannel } from "@discordjs/voice";
 import type { Message, StageChannel, TextChannel, VoiceChannel } from "discord.js";
@@ -114,6 +113,7 @@ export async function handleVideos(
                     )
                 ]
             })
+
             .catch((error_: unknown) => {
                 client.logger.error("PLAY_CMD_ERR:", error_);
             });

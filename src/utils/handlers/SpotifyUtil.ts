@@ -1,88 +1,98 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
+import { Buffer } from "node:buffer";
 import { setTimeout } from "node:timers";
+import { clientId, clientSecret } from "../../config/env.js";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";
 import type { SpotifyAlbum, SpotifyPlaylist, SpotifyTrack } from "../../typings/index.js";
 
 export class SpotifyUtil {
-    public spotifyRegex = /(?:https:\/\/open\.spotify\.com\/|spotify:)(?:.+)?(track|playlist|album)[/:]([A-Za-z0-9]+)/;
+    public spotifyRegex =
+        /(?:https:\/\/open\.spotify\.com\/|spotify:)(?:.+)?(?<type>track|playlist|album)[/:](?<id>[\dA-Za-z]+)/u;
     public baseURI = "https://api.spotify.com/v1";
     private token!: string;
 
     public constructor(public client: KinshiTunes) {}
 
-    public async fetchToken(): Promise<number> {
-        try {
-            // Get credentials from your config
-            const clientId = process.env.SPOTIFY_CLIENT_ID ?? "";
-            const clientSecret = process.env.SPOTIFY_CLIENT_SECRET ?? "";
-
-            if (!clientId || !clientSecret) {
-                this.client.logger.warn("Spotify credentials not configured. Spotify features will be disabled.");
-                return 60000; // Try again in a minute
-            }
-
-            // Use the client_credentials flow
-            const response = await this.client.request
-                .post("https://accounts.spotify.com/api/token", {
-                    form: {
-                        grant_type: "client_credentials",
-                        client_id: clientId,
-                        client_secret: clientSecret
-                    },
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    }
-                })
-                .json<{ access_token: string; expires_in: number }>();
-
-            if (!response.access_token) {
-                throw new Error("Failed to obtain Spotify access token");
-            }
-
-            this.token = `Bearer ${response.access_token}`;
-            this.client.logger.info("Spotify token obtained successfully");
-
-            // Default to 1 hour (3600 seconds) if expires_in isn't present
-            const expiresIn = response.expires_in || 3600;
-            return expiresIn * 1000 - 60000; // Subtract a minute for safety
-        } catch (error) {
-            console.error("Failed to fetch Spotify token:", error);
-            return 60000; // Try again in a minute
+    public async fetchTokenWithRetries(retries: number = 3): Promise<number> {
+        if (!clientId || !clientSecret) {
+            throw new Error("[SpotifyUtil] Missing Spotify credentials in environment variables.");
         }
+        const authString = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
+
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                const tokenData: unknown = await this.client.request
+                    .post("https://accounts.spotify.com/api/token", {
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            Authorization: `Basic ${authString}`
+                        },
+                        body: "grant_type=client_credentials"
+                    })
+                    .json();
+
+                if (typeof tokenData !== "object" || tokenData === null) {
+                    throw new TypeError("[SpotifyUtil] Invalid token data");
+                }
+                const tokenDataObj = tokenData as Record<string, unknown>;
+                if (typeof tokenDataObj.access_token !== "string" || typeof tokenDataObj.expires_in !== "number") {
+                    throw new TypeError("[SpotifyUtil] Invalid token data format");
+                }
+
+                const tokenResponse = {
+                    accessToken: tokenDataObj.access_token,
+                    expiresIn: tokenDataObj.expires_in
+                };
+
+                const { accessToken, expiresIn } = tokenResponse;
+                if (!accessToken || accessToken.length === 0) {
+                    throw new Error("[SpotifyUtil] Could not fetch Spotify token.");
+                }
+                this.token = `Bearer ${accessToken}`;
+                const expiresInMs = expiresIn * 1_000;
+                return expiresInMs - 300_000;
+            } catch (error) {
+                if (attempt === retries) {
+                    this.client.logger.error(
+                        `[SpotifyUtil] Failed to fetch Spotify token after ${retries} attempts: `,
+                        error
+                    );
+                    throw error;
+                }
+                this.client.logger.warn(`[SpotifyUtil] Attempt ${attempt} failed. Retrying...`);
+            }
+        }
+        throw new Error("[SpotifyUtil] Failed to fetch Spotify token after retries.");
     }
 
     public async renew(): Promise<void> {
         try {
-            const tokenLifetime = await this.fetchToken();
-            // Schedule the next renewal
-            setTimeout(() => this.renew(), tokenLifetime);
+            const renewInterval = await this.fetchTokenWithRetries();
+            this.client.logger.info(`[SpotifyUtil] Token fetched successfully.`);
             this.client.logger.info(
-                `Spotify token renewed, next renewal in ${Math.floor(tokenLifetime / 60000)} minutes`
+                `[SpotifyUtil] Renewing token in ${(renewInterval / 1_000 / 60).toFixed(2)} minutes.`
             );
+            setTimeout(async () => this.renew(), renewInterval);
         } catch (error) {
-            this.client.logger.error("Error in Spotify token renewal:", error);
-            // Try again in a minute
-            setTimeout(() => this.renew(), 60000);
-            this.client.logger.warn("Will retry Spotify token renewal in 1 minute");
+            this.client.logger.error("[SpotifyUtil] Failed to renew Spotify token: ", error);
         }
     }
 
     public resolveTracks(url: string): Promise<{ track: SpotifyTrack }[]> | Promise<SpotifyTrack> | undefined {
         const [, type, id] = this.spotifyRegex.exec(url) ?? [];
+
         switch (type) {
-            case "track": {
+            case "track":
                 return this.getTrack(id);
-            }
-
-            case "playlist": {
+            case "playlist":
                 return this.getPlaylist(id);
-            }
-
-            case "album": {
+            case "album":
                 return this.getAlbum(id);
-            }
+            default:
+                break;
         }
+        return undefined;
     }
 
     public async getAlbum(id: string): Promise<{ track: SpotifyTrack }[]> {
@@ -93,8 +103,10 @@ export class SpotifyUtil {
                 }
             })
             .json<SpotifyAlbum>();
+
         let next = albumResponse.tracks.next;
-        while (next) {
+
+        while (next !== null && next !== undefined) {
             const nextPlaylistResponse = await this.client.request
                 .get(next, {
                     headers: {
@@ -111,27 +123,28 @@ export class SpotifyUtil {
     public async getPlaylist(id: string): Promise<{ track: SpotifyTrack }[]> {
         const playlistResponse = await this.client.request
             .get(`${this.baseURI}/playlists/${id}`, {
-                headers: {
-                    Authorization: this.token
-                }
+                headers: { Authorization: this.token }
             })
             .json<SpotifyPlaylist>();
+
+        let allItems = playlistResponse.tracks.items;
         let next = playlistResponse.tracks.next;
-        while (next) {
+
+        while (next !== null && next !== undefined) {
             const nextPlaylistResponse = await this.client.request
                 .get(next, {
-                    headers: {
-                        Authorization: this.token
-                    }
+                    headers: { Authorization: this.token }
                 })
                 .json<SpotifyPlaylist["tracks"]>();
+
+            allItems = [...allItems, ...nextPlaylistResponse.items];
             next = nextPlaylistResponse.next;
-            playlistResponse.tracks.items.push(...nextPlaylistResponse.items);
         }
-        return playlistResponse.tracks.items.filter(spotifyTrack => spotifyTrack.track);
+
+        return allItems.map(item => ({ track: item.track }));
     }
 
-    public getTrack(id: string): Promise<SpotifyTrack> {
+    public async getTrack(id: string): Promise<SpotifyTrack> {
         return this.client.request
             .get(`${this.baseURI}/tracks/${id}`, {
                 headers: {

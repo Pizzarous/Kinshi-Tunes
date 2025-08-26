@@ -1,3 +1,5 @@
+import process from "node:process";
+import { setTimeout } from "node:timers";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";
@@ -18,7 +20,7 @@ export class ShutdownCommand extends BaseCommand {
         if (!process.env.ADMIN_ID || ctx.author.id !== process.env.ADMIN_ID) {
             ctx.reply({
                 embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.shutdown.errorMessage")}`)]
-            }).catch(e => this.client.logger.error("SHUTDOWN_CMD_ERR:", e));
+            }).catch(error => this.client.logger.error("SHUTDOWN_CMD_ERR:", error));
             return;
         }
 
@@ -26,10 +28,10 @@ export class ShutdownCommand extends BaseCommand {
 
         ctx.reply({
             embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.general.shutdown.leftMessage")}`)]
-        }).catch(e => this.client.logger.error("SHUTDOWN_CMD_ERR:", e));
+        }).catch(error => this.client.logger.error("SHUTDOWN_CMD_ERR:", error));
 
         setTimeout(() => {
             process.kill(process.pid, "SIGINT");
-        }, 2000);
+        }, 2_000);
     }
 }

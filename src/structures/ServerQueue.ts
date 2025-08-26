@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { clearTimeout } from "node:timers";
 import type { AudioPlayer, AudioPlayerPlayingState, AudioResource, VoiceConnection } from "@discordjs/voice";
 import { AudioPlayerStatus, createAudioPlayer } from "@discordjs/voice";
-import type { GuildMember, Snowflake, TextChannel } from "discord.js";
-import { clearTimeout } from "node:timers";
+import type { Snowflake, TextChannel } from "discord.js";
 import i18n from "../config/index.js";
 import type { LoopMode, QueueSong } from "../typings/index.js";
 import { createEmbed } from "../utils/functions/createEmbed.js";
@@ -101,7 +101,7 @@ export class ServerQueue {
                                                 )
                                             ]
                                         })
-                                        .catch((err: unknown) => this.client.logger.error("PLAY_ERR:", err));
+                                        .catch((error_: unknown) => this.client.logger.error("PLAY_ERR:", error_));
                                     this.connection?.disconnect();
                                     this.client.logger.error("PLAY_ERR:", error);
                                 });
@@ -152,10 +152,15 @@ export class ServerQueue {
         }
     }
 
-    public clear(ctx: GuildMember): void {
-        const currentSong = this.songs.current();
-        this.songs.clear();
-        if (currentSong) this.songs.addSong(currentSong, ctx);
+    public clear(): void {
+        let index = 0;
+
+        this.songs.forEach(song => {
+            if (index > 0) {
+                this.songs.delete(song.key); // delete everything after the first
+            }
+            index++;
+        });
     }
 
     public stop(): void {

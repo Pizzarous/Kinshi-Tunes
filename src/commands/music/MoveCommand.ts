@@ -49,11 +49,11 @@ export class MoveCommand extends BaseCommand {
         }
 
         // Get source and destination positions
-        const source = ctx.options?.getInteger("source") ?? parseInt(ctx.args[0]);
-        const destination = ctx.options?.getInteger("destination") ?? parseInt(ctx.args[1]);
+        const source = ctx.options?.getInteger("source") ?? Number.parseInt(ctx.args[0], 10);
+        const destination = ctx.options?.getInteger("destination") ?? Number.parseInt(ctx.args[1], 10);
 
         // Validate input
-        if (isNaN(source) || isNaN(destination)) {
+        if (Number.isNaN(source) || Number.isNaN(destination)) {
             void ctx.reply({
                 embeds: [createEmbed("error", i18n.__("commands.music.move.invalidInput"), true)]
             });
@@ -132,8 +132,8 @@ export class MoveCommand extends BaseCommand {
                     "success",
                     i18n.__mf("commands.music.move.moveSuccess", {
                         song: songToMove.song.title,
-                        source: source,
-                        destination: destination
+                        source,
+                        destination
                     })
                 ).setThumbnail(songToMove.song.thumbnail)
             ]

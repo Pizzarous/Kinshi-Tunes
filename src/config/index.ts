@@ -1,27 +1,33 @@
+import path from "node:path";
+import process from "node:process";
 import type { ClientOptions, ShardingManagerMode } from "discord.js";
 import { IntentsBitField, Options, Sweepers } from "discord.js";
 import i18n from "i18n";
-import path from "node:path";
-import process from "node:process";
-import { lang } from "./env.js";
+import { enablePrefix, enableSlashCommand, lang } from "./env.js";
+
+const intents: number[] = [
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.GuildEmojisAndStickers,
+    IntentsBitField.Flags.GuildVoiceStates,
+    IntentsBitField.Flags.GuildBans
+];
+
+if (enablePrefix) {
+    intents.push(IntentsBitField.Flags.MessageContent);
+}
+
+if (!enablePrefix && !enableSlashCommand) {
+    console.log("Both Slash Command and Prefix are disabled. Stopping the bot...");
+    process.exit(1);
+}
 
 export const clientOptions: ClientOptions = {
     allowedMentions: { parse: ["users"], repliedUser: true },
-    intents: [
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.MessageContent,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.GuildEmojisAndStickers,
-        IntentsBitField.Flags.GuildVoiceStates,
-        IntentsBitField.Flags.GuildBans
-    ],
+    intents,
     makeCache: Options.cacheWithLimits({
-        MessageManager: {
-            maxSize: Infinity
-        },
-        ThreadManager: {
-            maxSize: Infinity
-        }
+        MessageManager: { maxSize: Infinity },
+        ThreadManager: { maxSize: Infinity }
     }),
     sweepers: {
         messages: {

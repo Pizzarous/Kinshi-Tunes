@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Buffer } from "node:buffer";
 import type {
     BaseMessageOptions,
     ChatInputCommandInteraction,
@@ -27,7 +27,6 @@ import {
     MessageComponentInteraction,
     ModalSubmitInteraction
 } from "discord.js";
-import { Buffer } from "node:buffer";
 import type { MessageInteractionAction } from "../typings/index.js";
 
 export class CommandContext {

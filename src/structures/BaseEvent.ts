@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Event } from "../typings/index.js";
 import type { KinshiTunes } from "./KinshiTunes.js";
 

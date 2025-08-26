@@ -23,6 +23,6 @@ export class LeaveCommand extends BaseCommand {
 
         ctx.reply({
             embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.music.leave.leftMessage")}`)]
-        }).catch(e => this.client.logger.error("LEAVE_CMD_ERR:", e));
+        }).catch((error: unknown) => this.client.logger.error("LEAVE_CMD_ERR:", error));
     }
 }
