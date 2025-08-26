@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import type { ColorResolvable } from "discord.js";
 import { EmbedBuilder } from "discord.js";
 import { embedColor, noEmoji, yesEmoji } from "../../config/index.js";

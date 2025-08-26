@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { FunctionType, MethodDecorator, Promisable } from "../../typings/index.js";
 
 export function createMethodDecorator<TC = any, Target extends FunctionType = FunctionType>(

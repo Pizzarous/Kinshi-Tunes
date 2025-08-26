@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Buffer } from "node:buffer";
 import {
     ActionRowBuilder,

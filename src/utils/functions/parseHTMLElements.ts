@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/filename-case */
+/* eslint-disable @typescript-eslint/naming-convention */
 export const escapedHTMLElements: Record<string, string> = {
     '"': "&quot;",
     "&": "&amp;",

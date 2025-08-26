@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { promises as fs } from "node:fs";
 import nodePath from "node:path";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";

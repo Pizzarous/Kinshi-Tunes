@@ -13,7 +13,6 @@ export class ClientUtils {
 
     public async fetchMuteRole(guild: Guild): Promise<Role | null> {
         const id = this.client.data.data?.[guild.id]?.mute;
-        // eslint-disable-next-line promise/prefer-await-to-then
         return (id?.length ?? 0) > 0 ? guild.roles.fetch(id ?? "").catch(() => null) : null;
     }
 
@@ -143,7 +142,6 @@ export class ClientUtils {
 
     public getCommitHash(ref: string, short = true): string {
         try {
-            // eslint-disable-next-line node/no-sync
             const res = execSync(`git rev-parse${short ? " --short" : ""} ${ref}`);
             return res.toString().trim();
         } catch {

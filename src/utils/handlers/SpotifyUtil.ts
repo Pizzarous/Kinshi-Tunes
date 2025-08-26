@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { Buffer } from "node:buffer";
 import { setTimeout } from "node:timers";
 import { clientId, clientSecret } from "../../config/env.js";
@@ -20,7 +22,6 @@ export class SpotifyUtil {
 
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
-                // eslint-disable-next-line no-await-in-loop
                 const tokenData: unknown = await this.client.request
                     .post("https://accounts.spotify.com/api/token", {
                         headers: {
@@ -106,7 +107,6 @@ export class SpotifyUtil {
         let next = albumResponse.tracks.next;
 
         while (next !== null && next !== undefined) {
-            // eslint-disable-next-line no-await-in-loop
             const nextPlaylistResponse = await this.client.request
                 .get(next, {
                     headers: {
@@ -131,7 +131,6 @@ export class SpotifyUtil {
         let next = playlistResponse.tracks.next;
 
         while (next !== null && next !== undefined) {
-            // eslint-disable-next-line no-await-in-loop
             const nextPlaylistResponse = await this.client.request
                 .get(next, {
                     headers: { Authorization: this.token }

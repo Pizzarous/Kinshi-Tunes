@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import path from "node:path";
 import process from "node:process";
 import type { ClientOptions } from "discord.js";
@@ -49,9 +50,7 @@ export class KinshiTunes extends Client {
                     this.debugLog.logData("info", "GOT_REQUEST", [
                         ["URL", options.url?.toString() ?? "[???]"],
                         ["Method", options.method],
-                        // eslint-disable-next-line unicorn/text-encoding-identifier-case
                         ["Encoding", options.encoding ?? "UTF-8"],
-                        // eslint-disable-next-line typescript/strict-boolean-expressions
                         ["Agent", options.agent.http ? "HTTP" : "HTTPS"]
                     ]);
                 }

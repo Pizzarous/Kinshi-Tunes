@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/filename-case */
 import { createRequire } from "node:module";
 import type { Locale } from "date-fns";
 import { format } from "date-fns";

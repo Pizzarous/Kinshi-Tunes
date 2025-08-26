@@ -1,12 +1,4 @@
-/* eslint-disable unicorn/prefer-string-slice */
-/* eslint-disable node/prefer-global/url */
-/* eslint-disable typescript/no-inferrable-types */
-/* eslint-disable require-unicode-regexp */
-/* eslint-disable unicorn/better-regex */
-/* eslint-disable unicorn/prefer-string-replace-all */
-/* eslint-disable typescript/strict-boolean-expressions */
-/* eslint-disable node/no-sync */
-/* eslint-disable consistent-return */
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

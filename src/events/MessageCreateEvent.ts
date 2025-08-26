@@ -1,4 +1,3 @@
-/* eslint-disable prefer-named-capture-group */
 import { ChannelType, Message, User } from "discord.js";
 import i18n from "../config/index.js";
 import { BaseEvent } from "../structures/BaseEvent.js";

@@ -1,6 +1,3 @@
-/* eslint-disable unicorn/no-array-for-each */
-/* eslint-disable typescript/strict-boolean-expressions */
-/* eslint-disable typescript/no-non-null-assertion */
 import { ApplicationCommandOptionType, VoiceChannel } from "discord.js";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";

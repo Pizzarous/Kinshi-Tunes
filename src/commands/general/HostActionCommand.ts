@@ -1,5 +1,3 @@
-/* eslint-disable promise/prefer-await-to-callbacks */
-/* eslint-disable promise/prefer-await-to-then */
 import { exec } from "node:child_process";
 import process from "node:process";
 import { ApplicationCommandOptionType } from "discord.js";

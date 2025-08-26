@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { AudioPlayerPlayingState } from "@discordjs/voice";
 import { ApplicationCommandOptionType, VoiceChannel } from "discord.js";
 import i18n from "../../config/index.js";

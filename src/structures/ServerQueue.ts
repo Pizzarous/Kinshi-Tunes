@@ -1,7 +1,5 @@
-/* eslint-disable promise/no-promise-in-callback */
-/* eslint-disable promise/no-nesting */
-/* eslint-disable typescript/naming-convention */
-/* eslint-disable typescript/require-await */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { clearTimeout } from "node:timers";
 import type { AudioPlayer, AudioPlayerPlayingState, AudioResource, VoiceConnection } from "@discordjs/voice";
 import { AudioPlayerStatus, createAudioPlayer } from "@discordjs/voice";
@@ -157,7 +155,6 @@ export class ServerQueue {
     public clear(): void {
         let index = 0;
 
-        // eslint-disable-next-line unicorn/no-array-for-each
         this.songs.forEach(song => {
             if (index > 0) {
                 this.songs.delete(song.key); // delete everything after the first

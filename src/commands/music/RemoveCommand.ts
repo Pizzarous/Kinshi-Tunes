@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { AudioPlayerState, AudioResource } from "@discordjs/voice";
 import { ApplicationCommandOptionType, escapeMarkdown, VoiceChannel } from "discord.js";
 import i18n from "../../config/index.js";

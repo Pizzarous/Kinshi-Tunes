@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/filename-case, typescript/naming-convention */
 import type { Readable } from "node:stream";
 import ytdl, { exec } from "../../../yt-dlp-utils/index.js";
 import { streamStrategy } from "../../config/index.js";

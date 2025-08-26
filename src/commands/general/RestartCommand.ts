@@ -1,7 +1,3 @@
-/* eslint-disable typescript/use-unknown-in-catch-callback-variable */
-/* eslint-disable promise/prefer-await-to-callbacks */
-/* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable typescript/strict-boolean-expressions */
 import process from "node:process";
 import { setTimeout } from "node:timers";
 import i18n from "../../config/index.js";

@@ -260,7 +260,6 @@ export async function searchTrack(
 
         if (source === "soundcloud") {
             const searchRes = await client.soundcloud.tracks.searchV2({
-                // eslint-disable-next-line id-length
                 q: query
             });
             const tracks = await Promise.all(
