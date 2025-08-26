@@ -45,7 +45,7 @@ function npmInstall(deleteDir = false, forceInstall = false, additionalArgs = []
     }
 
     execSync(
-        `pnpm install${isGlitch ? " --only=prod" : ""}${forceInstall ? " --force" : ""} ${additionalArgs.join(" ")}`
+        `npm install${isGlitch ? " --only=prod" : ""}${forceInstall ? " --force" : ""} ${additionalArgs.join(" ")}`
     );
 }
 
