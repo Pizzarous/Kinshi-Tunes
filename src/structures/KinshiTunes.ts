@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import path from "node:path";
 import process from "node:process";
 import type { ClientOptions } from "discord.js";

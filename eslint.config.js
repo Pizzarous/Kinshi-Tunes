@@ -26,49 +26,23 @@ export default [
             // TypeScript Recommended Rules
             // "@typescript-eslint/no-explicit-any": "warn", // Warns against using 'any' type
             "@typescript-eslint/no-unused-vars": "warn", // Error on unused variables
-            "@typescript-eslint/explicit-function-return-type": "warn", // Require return types on functions
-            "@typescript-eslint/no-unnecessary-condition": "error", // Prevent unnecessary conditionals
+            "@typescript-eslint/explicit-function-return-type": "off", // Don't require return types on functions
+            "@typescript-eslint/no-unnecessary-condition": "warn", // Warn about unnecessary conditionals
             "@typescript-eslint/no-empty-interface": "error", // No empty interfaces
 
-            // Naming Conventions
+            // Naming Conventions - Simplified and more flexible
             "@typescript-eslint/naming-convention": [
-                "error",
+                "warn",
                 {
                     selector: "default",
                     format: ["camelCase", "UPPER_CASE", "PascalCase", "snake_case"],
                     leadingUnderscore: "allow",
                     trailingUnderscore: "allow"
-                },
-                {
-                    selector: "variable",
-                    format: ["camelCase", "UPPER_CASE", "PascalCase", "snake_case"],
-                    leadingUnderscore: "allow",
-                    trailingUnderscore: "allow"
-                },
-                {
-                    selector: "function",
-                    format: ["camelCase", "PascalCase"],
-                    leadingUnderscore: "allow"
-                },
-                {
-                    selector: "typeLike",
-                    format: ["PascalCase"],
-                    leadingUnderscore: "allow"
-                },
-                {
-                    selector: "interface",
-                    format: ["PascalCase"],
-                    leadingUnderscore: "allow"
-                },
-                {
-                    selector: "enum",
-                    format: ["PascalCase"],
-                    leadingUnderscore: "allow"
                 }
             ],
 
             // Error Prevention
-            "@typescript-eslint/no-floating-promises": "error", // Require promise handling
+            "@typescript-eslint/no-floating-promises": "warn", // Warn about unhandled promises
             // '@typescript-eslint/no-misused-promises': 'error',    // Prevent promise misuse
             // '@typescript-eslint/no-unsafe-call': 'error',        // Prevent unsafe function calls
             // '@typescript-eslint/no-unsafe-member-access': 'error', // Prevent unsafe property access

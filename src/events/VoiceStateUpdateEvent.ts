@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { clearTimeout, setTimeout } from "node:timers";
 import { AudioPlayerPausedState, entersState, VoiceConnectionStatus } from "@discordjs/voice";
