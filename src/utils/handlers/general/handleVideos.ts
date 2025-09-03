@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { joinVoiceChannel } from "@discordjs/voice";
 import type { Message, StageChannel, TextChannel, VoiceChannel } from "discord.js";

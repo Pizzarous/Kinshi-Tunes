@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { clearTimeout } from "node:timers";
 import type { AudioPlayer, AudioPlayerPlayingState, AudioResource, VoiceConnection } from "@discordjs/voice";
 import { AudioPlayerStatus, createAudioPlayer } from "@discordjs/voice";
 import type { Snowflake, TextChannel } from "discord.js";
+import prism from "prism-media";
 import i18n from "../config/index.js";
 import type { LoopMode, QueueSong } from "../typings/index.js";
 import { createEmbed } from "../utils/functions/createEmbed.js";
@@ -25,6 +25,7 @@ export class ServerQueue {
     public shuffle = false;
     public filters: Partial<Record<keyof typeof filterArgs, boolean>> = {};
     public destroyTimeoutId: NodeJS.Timeout | null = null;
+    public currentStream: prism.FFmpeg | null = null;
 
     private _volume = this.client.config.defaultVolume;
     private _lastVSUpdateMsg: Snowflake | null = null;
@@ -164,6 +165,8 @@ export class ServerQueue {
     }
 
     public stop(): void {
+        // Clean up current stream when stopping
+        this.cleanupCurrentStream();
         this.songs.clear();
         this.player.stop(true);
     }
@@ -255,6 +258,13 @@ export class ServerQueue {
 
     public get client(): KinshiTunes {
         return this.textChannel.client as KinshiTunes;
+    }
+
+    public cleanupCurrentStream(): void {
+        if (this.currentStream) {
+            this.currentStream.destroy();
+            this.currentStream = null;
+        }
     }
 
     private sendStartPlayingMsg(newSong: QueueSong["song"]): void {

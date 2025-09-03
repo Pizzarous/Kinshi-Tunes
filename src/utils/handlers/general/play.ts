@@ -54,9 +54,16 @@ export async function play(guild: Guild, nextSong?: string, wasIdle?: boolean): 
         return;
     }
 
+    // Clean up any existing stream before creating a new one
+    queue.cleanupCurrentStream();
+
     const stream = new prism.FFmpeg({
         args: ffmpegArgs(queue.filters)
     });
+
+    // Store reference to current stream for cleanup
+    queue.currentStream = stream;
+
     await getStream(queue.client, song.song.url).then(x => x.pipe(stream as unknown as NodeJS.WritableStream));
 
     const resource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.OggOpus, metadata: song });
