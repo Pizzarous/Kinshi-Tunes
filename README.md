@@ -6,32 +6,37 @@
 
 ## Features
 
--   **Interaction Support:** Engage with the bot.
--   **Configurable and Easy to Use:** Customize the bot according to your needs.
--   **Basic Music and Moderation Commands:** Enjoy essential functionalities.
--   **Production-Ready Project:** Set up the bot without coding.
+-   **Multi-Platform Music Support:** YouTube, SoundCloud, and Spotify integration
+-   **Advanced Audio Processing:** FFmpeg-based audio filters and effects
+-   **Slash Commands & Prefix Support:** Modern Discord interactions with fallback support
+-   **Queue Management:** Play, pause, skip, shuffle, repeat, and more
+-   **Voice Channel Controls:** Auto-join, auto-leave, and voice state management
+-   **Moderation Tools:** Ban, kick, mute, warn, and purge commands
+-   **Production-Ready:** Optimized for self-hosting with comprehensive error handling
 
 ## General Setup
 
 1. **Download and Install Node.js:** Ensure you have version `16.6.0` or higher. [Node.js Download](https://nodejs.org)
 2. **Download and Install Python:** Ensure you have version `3.12.6`.
-3. **Configure Environment Variables:** Open `.env_example`, rename it to `.env`.
+3. **Configure Environment Variables:** Copy `.env.example` to `.env` and configure your Discord token and other settings.
 4. **Install Dependencies:** Run the following command in your terminal.
     ```sh
     $ npm install
     ```
-5. **Compile the Code:** Execute the build script.
+5. **Build the Project:**
     ```sh
     $ npm run build
     ```
-6. **Optimize Disk Space:** Remove unnecessary dev dependencies.
-    ```sh
-    $ npm prune --production
-    ```
-7. **Start the Bot:** Launch the bot with the following command.
+6. **Start the Bot:**
     ```sh
     $ npm start
     ```
+
+### Development
+For development with automatic compilation:
+```sh
+$ npm run start:dev
+```
 
 ## Disclaimers
 
