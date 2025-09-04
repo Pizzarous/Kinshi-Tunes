@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { clearTimeout } from "node:timers";
 import type { AudioPlayer, AudioPlayerPlayingState, AudioResource, VoiceConnection } from "@discordjs/voice";
@@ -111,6 +112,23 @@ export class ServerQueue {
                 }
             })
             .on("error", err => {
+                const currentSong = this.songs.first();
+                this.client.debugLog.logData(
+                    "error",
+                    "AUDIO_PLAYER",
+                    `Audio player error in ${this.textChannel.guild.name}(${this.textChannel.guild.id}): ${err.message}${currentSong ? ` | Current song: ${currentSong.song.title} (${currentSong.song.url})` : ""}`
+                );
+
+                // Log additional details about the error
+                if (err.resource?.metadata) {
+                    const metadata = err.resource.metadata as QueueSong;
+                    this.client.debugLog.logData(
+                        "error",
+                        "AUDIO_PLAYER",
+                        `Failed song details - Title: ${metadata.song.title}, ID: ${metadata.song.id}, URL: ${metadata.song.url}`
+                    );
+                }
+
                 (async () => {
                     await this.textChannel
                         .send({

@@ -64,7 +64,34 @@ export async function play(guild: Guild, nextSong?: string, wasIdle?: boolean): 
     // Store reference to current stream for cleanup
     queue.currentStream = stream;
 
-    await getStream(queue.client, song.song.url).then(x => x.pipe(stream as unknown as NodeJS.WritableStream));
+    try {
+        const audioStream = await getStream(queue.client, song.song.url);
+        queue.client.debugLog.logData(
+            "info",
+            "PLAY_HANDLER",
+            `Successfully obtained audio stream for ${song.song.title} (${song.song.url})`
+        );
+
+        audioStream.on("error", (error: Error) => {
+            queue.client.debugLog.logData(
+                "error",
+                "PLAY_HANDLER",
+                `Audio stream error for ${song.song.title}: ${error.message}`
+            );
+            (queue.player as unknown as EventEmitter).emit("error", new AudioPlayerError(error, resource));
+        });
+
+        audioStream.pipe(stream as unknown as NodeJS.WritableStream);
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        queue.client.debugLog.logData(
+            "error",
+            "PLAY_HANDLER",
+            `Failed to get audio stream for ${song.song.title}: ${errorMessage}`
+        );
+        (queue.player as unknown as EventEmitter).emit("error", new AudioPlayerError(error as Error, resource));
+        return;
+    }
 
     const resource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.OggOpus, metadata: song });
 

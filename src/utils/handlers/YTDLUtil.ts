@@ -11,51 +11,123 @@ const { stream: pldlStream, video_basic_info } = await import("../../../play-dl-
     .then(x => x.default)
     .catch(() => ({ stream: null, video_basic_info: null }));
 
-export async function getStream(client: KinshiTunes, url: string): Promise<Readable> {
-    if (streamStrategy === "play-dl") {
-        const isSoundcloudUrl = checkQuery(url);
-        if (isSoundcloudUrl.sourceType === "soundcloud") {
-            return client.soundcloud.util.streamTrack(url) as unknown as Readable;
-        }
-        const rawPlayDlStream = await pldlStream?.(url, { discordPlayerCompatibility: true });
-        return rawPlayDlStream?.stream as unknown as Readable;
-    }
+export async function getStream(client: KinshiTunes, url: string, retryCount = 0): Promise<Readable> {
+    const maxRetries = 3;
+    const retryDelay = Math.pow(2, retryCount) * 1000; // Exponential backoff
 
-    return new Promise<Readable>((resolve, reject) => {
-        const proc = exec(
-            url,
-            {
-                output: "-",
-                quiet: true,
-                format: "bestaudio",
-                limitRate: "300K"
-            },
-            { stdio: ["ignore", "pipe", "ignore"] }
+    try {
+        if (streamStrategy === "play-dl") {
+            const isSoundcloudUrl = checkQuery(url);
+            if (isSoundcloudUrl.sourceType === "soundcloud") {
+                client.debugLog.logData("info", "YTDL_UTIL", `Getting SoundCloud stream for: ${url}`);
+                return client.soundcloud.util.streamTrack(url) as unknown as Readable;
+            }
+
+            client.debugLog.logData(
+                "info",
+                "YTDL_UTIL",
+                `Getting play-dl stream for: ${url} (attempt ${retryCount + 1}/${maxRetries + 1})`
+            );
+            const rawPlayDlStream = await pldlStream?.(url, { discordPlayerCompatibility: true });
+
+            if (!rawPlayDlStream?.stream) {
+                throw new Error("play-dl returned null stream");
+            }
+
+            return rawPlayDlStream.stream as unknown as Readable;
+        }
+
+        client.debugLog.logData(
+            "info",
+            "YTDL_UTIL",
+            `Getting yt-dlp stream for: ${url} (attempt ${retryCount + 1}/${maxRetries + 1})`
         );
 
-        if (!proc.stdout) {
-            reject(new Error("Error obtaining stdout from process."));
-            return;
+        return new Promise<Readable>((resolve, reject) => {
+            const proc = exec(
+                url,
+                {
+                    output: "-",
+                    quiet: true,
+                    format: "bestaudio",
+                    limitRate: "300K"
+                },
+                { stdio: ["ignore", "pipe", "ignore"] }
+            );
+
+            if (!proc.stdout) {
+                const error = new Error("Error obtaining stdout from yt-dlp process");
+                client.debugLog.logData("error", "YTDL_UTIL", `Failed to get stdout: ${error.message} for ${url}`);
+                reject(error);
+                return;
+            }
+
+            let hasResolved = false;
+            const timeout = setTimeout(() => {
+                if (!hasResolved) {
+                    hasResolved = true;
+                    proc.kill("SIGKILL");
+                    const error = new Error("yt-dlp stream timeout after 30 seconds");
+                    client.debugLog.logData("error", "YTDL_UTIL", `Stream timeout: ${error.message} for ${url}`);
+                    reject(error);
+                }
+            }, 30000);
+
+            proc.once("error", err => {
+                if (!hasResolved) {
+                    hasResolved = true;
+                    clearTimeout(timeout);
+                    proc.kill("SIGKILL");
+                    client.debugLog.logData("error", "YTDL_UTIL", `yt-dlp process error: ${err.message} for ${url}`);
+                    reject(err);
+                }
+            });
+
+            proc.stdout.once("error", err => {
+                if (!hasResolved) {
+                    hasResolved = true;
+                    clearTimeout(timeout);
+                    proc.kill("SIGKILL");
+                    client.debugLog.logData("error", "YTDL_UTIL", `yt-dlp stdout error: ${err.message} for ${url}`);
+                    reject(err);
+                }
+            });
+
+            proc.stdout.once("end", () => {
+                clearTimeout(timeout);
+                proc.kill("SIGKILL");
+            });
+
+            void proc.once("spawn", () => {
+                if (!hasResolved) {
+                    hasResolved = true;
+                    clearTimeout(timeout);
+                    client.debugLog.logData("info", "YTDL_UTIL", `Successfully spawned yt-dlp process for ${url}`);
+                    resolve(proc.stdout as unknown as Readable);
+                }
+            });
+        });
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        client.debugLog.logData(
+            "error",
+            "YTDL_UTIL",
+            `Stream error (attempt ${retryCount + 1}): ${errorMessage} for ${url}`
+        );
+
+        if (retryCount < maxRetries) {
+            client.debugLog.logData("info", "YTDL_UTIL", `Retrying stream in ${retryDelay}ms for ${url}`);
+            await new Promise(resolve => setTimeout(resolve, retryDelay));
+            return getStream(client, url, retryCount + 1);
         }
 
-        proc.once("error", err => {
-            proc.kill("SIGKILL");
-            reject(err);
-        });
-
-        proc.stdout.once("error", err => {
-            proc.kill("SIGKILL");
-            reject(err);
-        });
-
-        proc.stdout.once("end", () => {
-            proc.kill("SIGKILL");
-        });
-
-        void proc.once("spawn", () => {
-            resolve(proc.stdout as unknown as Readable);
-        });
-    });
+        client.debugLog.logData(
+            "error",
+            "YTDL_UTIL",
+            `Failed to get stream after ${maxRetries + 1} attempts for ${url}`
+        );
+        throw new Error(`Failed to get audio stream after ${maxRetries + 1} attempts: ${errorMessage}`);
+    }
 }
 
 export async function getInfo(url: string): Promise<BasicYoutubeVideoInfo> {
