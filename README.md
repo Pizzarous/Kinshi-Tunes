@@ -16,7 +16,7 @@
 
 ## General Setup
 
-1. **Download and Install Node.js:** Ensure you have version `16.6.0` or higher. [Node.js Download](https://nodejs.org)
+1. **Download and Install Node.js:** Ensure you have version `20.0.0` or higher. [Node.js Download](https://nodejs.org)
 2. **Download and Install Python:** Ensure you have version `3.12.6`.
 3. **Configure Environment Variables:** Copy `.env.example` to `.env` and configure your Discord token and other settings.
 4. **Install Dependencies:** Run the following command in your terminal.
