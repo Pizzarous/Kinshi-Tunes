@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import { URL } from "node:url";
 import type { SearchResult, Video, VideoCompact } from "youtubei";
 import { Playlist } from "youtubei";
@@ -78,25 +79,80 @@ export async function searchTrack(
             case "youtube": {
                 switch (queryData.type) {
                     case "track": {
-                        const track = await youtube.getVideo(
-                            /youtu\.be/gu.test(url.hostname)
-                                ? url.pathname.replace("/", "")
-                                : (url.searchParams.get("v") ?? "")
-                        );
+                        const videoId = /youtu\.be/gu.test(url.hostname)
+                            ? url.pathname.replace("/", "")
+                            : (url.searchParams.get("v") ?? "");
 
-                        if (track) {
-                            result.items = [
-                                {
-                                    duration: track.isLiveContent ? 0 : (track as Video).duration,
-                                    id: track.id,
-                                    thumbnail: track.thumbnails.sort(
-                                        (a, b) => b.height * b.width - a.height * a.width
-                                    )[0].url,
-                                    title: track.title,
-                                    url: `https://youtube.com/watch?v=${track.id}`
-                                }
-                            ];
-                            console.log("Track:", track.title);
+                        client.debugLog.logData("info", "SEARCH_TRACK", `Getting YouTube video info for: ${videoId}`);
+
+                        try {
+                            const track = await youtube.getVideo(videoId);
+
+                            if (track) {
+                                result.items = [
+                                    {
+                                        duration: track.isLiveContent ? 0 : (track as Video).duration,
+                                        id: track.id,
+                                        thumbnail: track.thumbnails.sort(
+                                            (a, b) => b.height * b.width - a.height * a.width
+                                        )[0].url,
+                                        title: track.title,
+                                        url: `https://youtube.com/watch?v=${track.id}`
+                                    }
+                                ];
+                                client.debugLog.logData(
+                                    "info",
+                                    "SEARCH_TRACK",
+                                    `Successfully retrieved track: ${track.title}`
+                                );
+                            } else {
+                                client.debugLog.logData(
+                                    "warning",
+                                    "SEARCH_TRACK",
+                                    `No track found for video ID: ${videoId}`
+                                );
+                            }
+                        } catch (error) {
+                            const errorMessage = error instanceof Error ? error.message : String(error);
+                            client.debugLog.logData(
+                                "error",
+                                "SEARCH_TRACK",
+                                `Failed to get YouTube video ${videoId}: ${errorMessage}`
+                            );
+
+                            // YouTube might be blocking, try using yt-dlp as fallback
+                            try {
+                                client.debugLog.logData(
+                                    "info",
+                                    "SEARCH_TRACK",
+                                    `Falling back to yt-dlp for video: ${videoId}`
+                                );
+                                const info = await getInfo(url.toString());
+                                result.items = [
+                                    {
+                                        duration: info?.duration ?? 0,
+                                        id: info?.id ?? videoId,
+                                        thumbnail:
+                                            info?.thumbnails?.sort((a, b) => b.height * b.width - a.height * a.width)[0]
+                                                .url ?? "",
+                                        title: info?.title ?? "Unknown Song",
+                                        url: url.toString()
+                                    }
+                                ];
+                                client.debugLog.logData(
+                                    "info",
+                                    "SEARCH_TRACK",
+                                    `Fallback successful for: ${info?.title}`
+                                );
+                            } catch (fallbackError) {
+                                const fallbackMessage =
+                                    fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+                                client.debugLog.logData(
+                                    "error",
+                                    "SEARCH_TRACK",
+                                    `Both YouTube API and yt-dlp failed for ${videoId}: ${fallbackMessage}`
+                                );
+                            }
                         }
                         break;
                     }
@@ -282,7 +338,26 @@ export async function searchTrack(
                     query
                 );
             const cleanQuery = query.split(query.includes("youtu.be") ? /[&?]/u : "&")[0];
-            const searchRes = await youtube.search(queryContainsYoutubeUrl ? cleanQuery : query, { type: "video" });
+
+            client.debugLog.logData(
+                "info",
+                "SEARCH_TRACK",
+                `Searching YouTube for: "${queryContainsYoutubeUrl ? cleanQuery : query}"`
+            );
+
+            let searchRes;
+            try {
+                searchRes = await youtube.search(queryContainsYoutubeUrl ? cleanQuery : query, { type: "video" });
+                client.debugLog.logData(
+                    "info",
+                    "SEARCH_TRACK",
+                    `YouTube search returned ${searchRes.items.length} results`
+                );
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                client.debugLog.logData("error", "SEARCH_TRACK", `YouTube search failed: ${errorMessage}`);
+                throw error;
+            }
 
             const tracks = await Promise.all(
                 searchRes.items.map(
