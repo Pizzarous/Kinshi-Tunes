@@ -90,13 +90,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Music System Architecture
 
 ### Audio Processing
-- FFmpeg integration via `fluent-ffmpeg` and `ffmpeg-static`
+- FFmpeg integration via `ffmpeg-static`
 - Multiple audio filters support
 - Voice connection management through Discord.js Voice
 - Audio streaming from various sources
+- Audio pre-caching via `src/utils/structures/AudioCacheManager.ts`
+
+### yt-dlp Integration
+- Custom yt-dlp wrapper in `yt-dlp-utils/` handles binary download and execution
+- All yt-dlp call sites pass `jsRuntimes: "node"` to enable Node.js JS runtime for YouTube extraction
+- Stream playback via `src/utils/handlers/YTDLUtil.ts`
+- Track info lookups include retry logic for transient youtubei failures (`src/utils/handlers/general/searchTrack.ts`)
 
 ### Search and Playback
 - Multi-platform search: YouTube, SoundCloud, Spotify
-- Playlist support and queue management  
+- Playlist support and queue management
 - Audio filters and effects
 - Volume control and playback controls (pause, skip, etc.)

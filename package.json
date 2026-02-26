@@ -57,12 +57,11 @@
         "zip-lib": "^1.0.4"
     },
     "devDependencies": {
-        "@eslint-community/eslint-plugin-eslint-comments": "^4.0.0",
         "@types/i18n": "0.13.12",
         "@types/node": "24.10.14",
         "@typescript-eslint/eslint-plugin": "^8.19.1",
         "@typescript-eslint/parser": "^8.19.1",
-        "eslint": "9.39.3",
+        "eslint": "^10.0.2",
         "eslint-config-prettier": "^10.0.0",
         "eslint-plugin-prettier": "^5.2.1",
         "prettier": "^3.8.1",
