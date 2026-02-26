@@ -9,6 +9,11 @@
                 "inputString": "Input",
                 "outputString": "Output",
                 "usage": "{prefix}eval <some code>"
+            },
+            "clearAudioCache": {
+                "description": "Clear the audio cache",
+                "success": "Audio cache cleared: {files} file(s) removed ({size} MB freed).",
+                "usage": "{prefix}clearaudiocache"
             }
         },
         "general": {

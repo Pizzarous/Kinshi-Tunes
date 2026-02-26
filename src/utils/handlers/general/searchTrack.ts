@@ -1,4 +1,5 @@
 import { URL } from "node:url";
+import { setTimeout } from "node:timers/promises";
 import type { SearchResult, Video, VideoCompact } from "youtubei";
 import { Playlist } from "youtubei";
 import type { KinshiTunes } from "../../../structures/KinshiTunes.js";
@@ -78,11 +79,15 @@ export async function searchTrack(
             case "youtube": {
                 switch (queryData.type) {
                     case "track": {
-                        const track = await youtube.getVideo(
-                            /youtu\.be/gu.test(url.hostname)
-                                ? url.pathname.replace("/", "")
-                                : (url.searchParams.get("v") ?? "")
-                        );
+                        const videoId = /youtu\.be/gu.test(url.hostname)
+                            ? url.pathname.replace("/", "")
+                            : (url.searchParams.get("v") ?? "");
+
+                        let track = await youtube.getVideo(videoId);
+                        if (!track) {
+                            await setTimeout(500);
+                            track = await youtube.getVideo(videoId);
+                        }
 
                         if (track) {
                             result.items = [
@@ -96,7 +101,22 @@ export async function searchTrack(
                                     url: `https://youtube.com/watch?v=${track.id}`
                                 }
                             ];
-                            console.log("Track:", track.title);
+                        } else {
+                            const searchRes = await youtube.search(videoId, { type: "video" });
+                            if (searchRes.items.length > 0) {
+                                const fallback = searchRes.items.find(v => v.id === videoId) ?? searchRes.items[0];
+                                result.items = [
+                                    {
+                                        duration: fallback.duration ?? 0,
+                                        id: fallback.id,
+                                        thumbnail: fallback.thumbnails.sort(
+                                            (a, b) => b.height * b.width - a.height * a.width
+                                        )[0].url,
+                                        title: fallback.title,
+                                        url: `https://youtube.com/watch?v=${fallback.id}`
+                                    }
+                                ];
+                            }
                         }
                         break;
                     }

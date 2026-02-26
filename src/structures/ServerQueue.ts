@@ -47,10 +47,10 @@ export class ServerQueue {
                 if (newState.status === AudioPlayerStatus.Playing && oldState.status !== AudioPlayerStatus.Paused) {
                     newState.resource.volume?.setVolumeLogarithmic(this.volume / 100);
 
-                    const newSong = ((this.player.state as AudioPlayerPlayingState).resource.metadata as QueueSong)
-                        .song;
-                    this.sendStartPlayingMsg(newSong);
+                    const currentSong = (this.player.state as AudioPlayerPlayingState).resource.metadata as QueueSong;
+                    this.sendStartPlayingMsg(currentSong.song);
                     this.handleIdleState();
+                    this.preCacheNextSong(currentSong);
                 } else if (newState.status === AudioPlayerStatus.Idle) {
                     const song = (oldState as AudioPlayerPlayingState).resource.metadata as QueueSong;
                     if (!this.destroyTimeoutId) {
@@ -264,6 +264,44 @@ export class ServerQueue {
         if (this.currentStream) {
             this.currentStream.destroy();
             this.currentStream = null;
+        }
+    }
+
+    private preCacheNextSong(currentSong: QueueSong): void {
+        if (this.loopMode === "SONG") return;
+
+        const PRE_CACHE_AHEAD = 3;
+        const songsToCache: string[] = [];
+
+        if (this.shuffle) {
+            const available = this.songs.filter(s => s.key !== currentSong.key && s.song.duration > 0).sortByIndex();
+            const shuffled = [...available.values()].sort(() => 0.5 - Math.random());
+            for (const s of shuffled.slice(0, PRE_CACHE_AHEAD)) {
+                songsToCache.push(s.song.url);
+            }
+        } else {
+            const sorted = this.songs.sortByIndex();
+            const next = [...sorted.filter(s => s.index > currentSong.index && s.song.duration > 0).values()].slice(
+                0,
+                PRE_CACHE_AHEAD
+            );
+            for (const s of next) {
+                songsToCache.push(s.song.url);
+            }
+
+            if (songsToCache.length < PRE_CACHE_AHEAD && this.loopMode === "QUEUE") {
+                const remaining = PRE_CACHE_AHEAD - songsToCache.length;
+                const fromStart = [
+                    ...sorted.filter(s => s.song.duration > 0 && !songsToCache.includes(s.song.url)).values()
+                ].slice(0, remaining);
+                for (const s of fromStart) {
+                    songsToCache.push(s.song.url);
+                }
+            }
+        }
+
+        if (songsToCache.length > 0) {
+            void this.client.audioCache.preCacheMultiple(songsToCache);
         }
     }
 
