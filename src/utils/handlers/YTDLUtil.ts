@@ -122,6 +122,11 @@ async function attemptStreamWithRetry(client: KinshiTunes, url: string, retryCou
                 stderrData += chunk.toString();
                 handleTransientError(stderrData);
             });
+            proc.stderr.on("end", () => {
+                if (stderrData.trim()) {
+                    client.logger.warn(`[YTDLUtil] yt-dlp stderr for ${url.substring(0, 50)}...: ${stderrData.substring(0, 500)}`);
+                }
+            });
         }
 
         proc.once("error", err => {
