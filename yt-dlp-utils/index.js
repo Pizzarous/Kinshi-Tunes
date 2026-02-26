@@ -30,10 +30,33 @@ function json(str) {
 }
 
 export async function downloadExecutable() {
+    const releases = await got.get("https://api.github.com/repos/yt-dlp/yt-dlp/releases?per_page=1").json();
+    const release = releases[0];
+    const latestVersion = release.tag_name;
+
+    let needsUpdate = false;
+
     if (!existsSync(exePath)) {
         console.info("[INFO] Yt-dlp couldn't be found, trying to download...");
-        const releases = await got.get("https://api.github.com/repos/yt-dlp/yt-dlp/releases?per_page=1").json();
-        const release = releases[0];
+        needsUpdate = true;
+    } else {
+        const currentVersion = await new Promise(resolve => {
+            const proc = spawn(exePath, ["--version"], { windowsHide: true });
+            let output = "";
+            proc.stdout.on("data", chunk => (output += chunk.toString()));
+            proc.on("close", () => resolve(output.trim()));
+            proc.on("error", () => resolve(""));
+        });
+
+        if (currentVersion !== latestVersion) {
+            console.info(`[INFO] Yt-dlp update available: ${currentVersion} → ${latestVersion}`);
+            needsUpdate = true;
+        } else {
+            console.info(`[INFO] Yt-dlp is up to date (${currentVersion}).`);
+        }
+    }
+
+    if (needsUpdate) {
         const asset = release.assets.find(ast => ast.name === filename);
         await new Promise((resolve, reject) => {
             got.get(asset.browser_download_url)
@@ -46,7 +69,7 @@ export async function downloadExecutable() {
                 .then(resolve)
                 .catch(reject);
         });
-        console.info("[INFO] Yt-dlp has been downloaded.");
+        console.info(`[INFO] Yt-dlp has been updated to ${latestVersion}.`);
     }
 }
 
