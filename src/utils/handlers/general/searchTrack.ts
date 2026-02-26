@@ -88,6 +88,10 @@ export async function searchTrack(
                             await setTimeout(500);
                             track = await youtube.getVideo(videoId);
                         }
+                        if (!track) {
+                            await setTimeout(1000);
+                            track = await youtube.getVideo(videoId);
+                        }
 
                         if (track) {
                             result.items = [
@@ -102,7 +106,11 @@ export async function searchTrack(
                                 }
                             ];
                         } else {
-                            const searchRes = await youtube.search(videoId, { type: "video" });
+                            let searchRes = await youtube.search(videoId, { type: "video" });
+                            if (searchRes.items.length === 0) {
+                                await setTimeout(500);
+                                searchRes = await youtube.search(videoId, { type: "video" });
+                            }
                             if (searchRes.items.length > 0) {
                                 const fallback = searchRes.items.find(v => v.id === videoId) ?? searchRes.items[0];
                                 result.items = [

@@ -346,7 +346,7 @@ export class AudioCacheManager {
 
             const proc = exec(
                 url,
-                { output: "-", quiet: true, format: "bestaudio" },
+                { output: "-", quiet: true, format: "bestaudio", jsRuntimes: "node" },
                 { stdio: ["ignore", "pipe", "pipe"] }
             );
 

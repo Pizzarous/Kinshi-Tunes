@@ -239,7 +239,8 @@ interface YTFlags {
     preferFfmpeg?: boolean,
     ffmpegLocation?: string,
     exec?: string,
-    convertSubs?: string
+    convertSubs?: string,
+    jsRuntimes?: string
 }
 
 export function downloadExecutable(): Promise<void>;

@@ -78,7 +78,8 @@ async function attemptStreamWithRetry(client: KinshiTunes, url: string, retryCou
                 output: "-",
                 quiet: true,
                 format: "bestaudio",
-                limitRate: "300K"
+                limitRate: "300K",
+                jsRuntimes: "node"
             },
             { stdio: ["ignore", "pipe", "pipe"] }
         );
@@ -208,7 +209,7 @@ async function attemptGetInfoWithRetry(
     retryCount: number
 ): Promise<BasicYoutubeVideoInfo> {
     try {
-        return await ytdl(url, { dumpJson: true });
+        return await ytdl(url, { dumpJson: true, jsRuntimes: "node" });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (isTransientError(errorMessage) && retryCount < MAX_TRANSIENT_RETRIES) {
