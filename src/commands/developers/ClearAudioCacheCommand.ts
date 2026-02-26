@@ -10,6 +10,9 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
     cooldown: 0,
     description: i18n.__("commands.developers.clearAudioCache.description"),
     name: "clearaudiocache",
+    slash: {
+        options: []
+    },
     usage: i18n.__("commands.developers.clearAudioCache.usage")
 })
 export class ClearAudioCacheCommand extends BaseCommand {
