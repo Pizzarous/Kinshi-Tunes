@@ -39,9 +39,9 @@ export function checkQuery(string: string): QueryData {
     } else if (/spotify/gu.test(url.hostname)) {
         result.sourceType = "spotify";
 
-        if (["/playlist", "/album"].some(path => url.pathname.startsWith(path))) {
+        if (/\/(playlist|album)(\/|$)/u.test(url.pathname)) {
             result.type = "playlist";
-        } else if (url.pathname.startsWith("/track")) {
+        } else if (/\/track(\/|$)/u.test(url.pathname)) {
             result.type = "track";
         } else {
             result.type = "unknown";
