@@ -8,9 +8,7 @@ import { enablePrefix, enableSlashCommand, lang } from "./env.js";
 const intents: number[] = [
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMessages,
-    IntentsBitField.Flags.GuildEmojisAndStickers,
-    IntentsBitField.Flags.GuildVoiceStates,
-    IntentsBitField.Flags.GuildBans
+    IntentsBitField.Flags.GuildVoiceStates
 ];
 
 if (enablePrefix) {
@@ -48,7 +46,7 @@ export const clientOptions: ClientOptions = {
 i18n.configure({
     defaultLocale: "en",
     directory: path.join(process.cwd(), "lang"),
-    locales: ["en", "es"],
+    locales: ["en"],
     objectNotation: true
 });
 

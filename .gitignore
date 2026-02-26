@@ -101,6 +101,7 @@ dist
 .tern-port
 
 # Cache directories and files
+cache/
 data.json
 scripts/
 play-dl-fix/

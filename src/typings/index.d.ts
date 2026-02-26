@@ -181,18 +181,6 @@ export type GuildData = {
         enable: boolean;
         role: string | null;
     };
-    infractions: Record<
-        string,
-        {
-            on: number;
-            reason: string | null;
-        }[]
-    >;
-    modLog?: {
-        enable: boolean;
-        channel: string | null;
-    };
-    mute?: string | null;
 };
 
 export type NonAbstractConstructor<Result = unknown> = new (...args: any[]) => Result;
