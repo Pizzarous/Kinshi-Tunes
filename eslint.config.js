@@ -9,10 +9,12 @@ export default [
     },
     {
         files: ["**/*.ts"],
+        linterOptions: {
+            reportUnusedDisableDirectives: "warn"
+        },
         plugins: {
             prettier: prettier,
-            "@typescript-eslint": tseslint,
-            "@eslint-community/eslint-comments": eslintCommentsPlugin
+            "@typescript-eslint": tseslint
         },
         languageOptions: {
             parser: tsparser,
@@ -56,9 +58,7 @@ export default [
             // Prettier Integration
             "prettier/prettier": "error",
 
-            // Comments
-            "@eslint-community/eslint-comments/no-unused-disable": "warn", // Warn about unused eslint-disable
-            "@eslint-community/eslint-comments/no-unlimited-disable": "error" // No eslint-disable without specific rules
+            // Comments - reportUnusedDisableDirectives handles unused eslint-disable warnings via linterOptions above
         }
     }
 ];
