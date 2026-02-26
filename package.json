@@ -1,6 +1,6 @@
 {
     "name": "kinshi-tunes",
-    "version": "4.0.0",
+    "version": "4.1.0",
     "description": "A simple powerful Discord music bot built to fulfill your production desires. Easy to use, with no coding required.",
     "main": "index.js",
     "type": "module",
@@ -72,6 +72,6 @@
         "play-dl": "^1.9.7"
     },
     "overrides": {
-        "undici": "6.23.0"
+        "undici": "7.22.0"
     }
 }
