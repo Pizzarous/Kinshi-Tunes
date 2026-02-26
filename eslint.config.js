@@ -1,4 +1,3 @@
-import eslintCommentsPlugin from "@eslint-community/eslint-plugin-eslint-comments";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import prettier from "eslint-plugin-prettier";
@@ -56,7 +55,7 @@ export default [
             "@typescript-eslint/prefer-nullish-coalescing": "error", // Prefer ?? over ||
 
             // Prettier Integration
-            "prettier/prettier": "error",
+            "prettier/prettier": "error"
 
             // Comments - reportUnusedDisableDirectives handles unused eslint-disable warnings via linterOptions above
         }
