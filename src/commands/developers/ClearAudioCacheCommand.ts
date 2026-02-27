@@ -17,7 +17,7 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 })
 export class ClearAudioCacheCommand extends BaseCommand {
     public async execute(ctx: CommandContext): Promise<void> {
-        const isAdmin = Boolean(process.env.ADMIN_ID) && ctx.author.id === process.env.ADMIN_ID;
+        const isAdmin = Boolean(process.env.ADMIN) && ctx.author.id === process.env.ADMIN;
 
         if (!isAdmin) {
             await ctx

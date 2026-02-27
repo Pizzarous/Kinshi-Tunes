@@ -9,7 +9,7 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 
 @Command<typeof HostActionCommand>({
     aliases: ["hostaction"],
-    description: i18n.__("commands.general.hostaction.description"),
+    description: i18n.__("commands.developers.hostaction.description"),
     name: "hostaction",
     slash: {
         options: [
@@ -39,12 +39,12 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 })
 export class HostActionCommand extends BaseCommand {
     public execute(ctx: CommandContext): void {
-        const isAdmin = Boolean(process.env.ADMIN_ID) && ctx.author.id === process.env.ADMIN_ID;
+        const isAdmin = Boolean(process.env.ADMIN) && ctx.author.id === process.env.ADMIN;
         const action = ctx.isInteraction() ? ctx.options?.getString("action") : ctx.args[0];
 
         if (!isAdmin) {
             ctx.reply({
-                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.hostaction.errorMessage")}`)]
+                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.developers.hostaction.errorMessage")}`)]
             }).catch((error: unknown) => this.client.logger.error("HostAction_CMD_ERR:", error));
             return;
         }
@@ -52,7 +52,7 @@ export class HostActionCommand extends BaseCommand {
         if (action !== "restart" && action !== "shutdown" && action !== "cancel") {
             console.log(action);
             ctx.reply({
-                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.hostaction.invalidAction")}`)]
+                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.developers.hostaction.invalidAction")}`)]
             }).catch((error: unknown) => this.client.logger.error("HostAction_CMD_ERR:", error));
             return;
         }
@@ -75,7 +75,9 @@ export class HostActionCommand extends BaseCommand {
         }
 
         ctx.reply({
-            embeds: [createEmbed("success", `👋 **|** ${i18n.__(`commands.general.hostaction.${successMessageKey}`)}`)]
+            embeds: [
+                createEmbed("success", `👋 **|** ${i18n.__(`commands.developers.hostaction.${successMessageKey}`)}`)
+            ]
         }).catch((error: unknown) => this.client.logger.error("HostAction_CMD_ERR:", error));
 
         let cmd = "";

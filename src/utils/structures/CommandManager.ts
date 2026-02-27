@@ -29,6 +29,11 @@ export class CommandManager extends Collection<string, CommandComponent> {
             const categories = await fs.readdir(nodePath.resolve(this.path));
             this.client.logger.info(`Found ${categories.length} categories, registering...`);
 
+            const allCmd = await (
+                this.client.application as unknown as NonNullable<typeof this.client.application>
+            ).commands.fetch();
+            const registeredCmdNames = new Set(allCmd.map(c => c.name));
+
             for await (const category of categories) {
                 try {
                     const meta = (
@@ -47,9 +52,6 @@ export class CommandManager extends Collection<string, CommandComponent> {
                     let disabledCount = 0;
 
                     this.client.logger.info(`Found ${files.length} of commands in ${category}, loading...`);
-                    const allCmd = await (
-                        this.client.application as unknown as NonNullable<typeof this.client.application>
-                    ).commands.fetch();
 
                     for await (const file of files) {
                         try {
@@ -66,7 +68,10 @@ export class CommandManager extends Collection<string, CommandComponent> {
                             }
                             this.set(command.meta.name, command);
 
-                            if ((command.meta.contextChat?.length ?? 0) > 0) {
+                            if (
+                                (command.meta.contextChat?.length ?? 0) > 0 &&
+                                !registeredCmdNames.has(command.meta.contextChat ?? "")
+                            ) {
                                 await this.registerCmd(
                                     {
                                         name: command.meta.contextChat ?? "",
@@ -90,7 +95,10 @@ export class CommandManager extends Collection<string, CommandComponent> {
                                         `Registered ${command.meta.name} to message context for global.`
                                     );
                             }
-                            if ((command.meta.contextUser?.length ?? 0) > 0) {
+                            if (
+                                (command.meta.contextUser?.length ?? 0) > 0 &&
+                                !registeredCmdNames.has(command.meta.contextUser ?? "")
+                            ) {
                                 await this.registerCmd(
                                     {
                                         name: command.meta.contextUser ?? "",
@@ -115,7 +123,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
                                     );
                             }
                             if (
-                                !allCmd.has(command.meta.name) &&
+                                !registeredCmdNames.has(command.meta.name) &&
                                 command.meta.slash &&
                                 this.client.config.enableSlashCommand
                             ) {
@@ -181,19 +189,16 @@ export class CommandManager extends Collection<string, CommandComponent> {
 
             try {
                 const app = (this.client as unknown as { application: ClientApplication | null }).application;
-                const registeredCmds = await app?.commands.fetch();
-                if (registeredCmds) {
-                    const validNames = new Set<string>();
-                    for (const [, cmd] of this as unknown as Map<string, CommandComponent>) {
-                        validNames.add(cmd.meta.name);
-                        if (cmd.meta.contextChat) validNames.add(cmd.meta.contextChat);
-                        if (cmd.meta.contextUser) validNames.add(cmd.meta.contextUser);
-                    }
-                    for (const [id, cmd] of registeredCmds) {
-                        if (!validNames.has(cmd.name)) {
-                            await app?.commands.delete(id);
-                            this.client.logger.info(`Deleted stale slash command: ${cmd.name}`);
-                        }
+                const validNames = new Set<string>();
+                for (const [, cmd] of this as unknown as Map<string, CommandComponent>) {
+                    validNames.add(cmd.meta.name);
+                    if (cmd.meta.contextChat) validNames.add(cmd.meta.contextChat);
+                    if (cmd.meta.contextUser) validNames.add(cmd.meta.contextUser);
+                }
+                for (const [id, cmd] of allCmd) {
+                    if (!validNames.has(cmd.name)) {
+                        await app?.commands.delete(id);
+                        this.client.logger.info(`Deleted stale slash command: ${cmd.name}`);
                     }
                 }
             } catch (error) {
