@@ -8,7 +8,7 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 
 @Command<typeof RestartCommand>({
     aliases: ["restart", "reboot", "reset"],
-    description: i18n.__("commands.general.restart.description"),
+    description: i18n.__("commands.developers.restart.description"),
     name: "restart",
     slash: {
         options: []
@@ -17,9 +17,11 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 })
 export class RestartCommand extends BaseCommand {
     public execute(ctx: CommandContext): void {
-        if (!process.env.ADMIN_ID || ctx.author.id !== process.env.ADMIN_ID) {
+        const isAdmin = Boolean(process.env.ADMIN) && ctx.author.id === process.env.ADMIN;
+        const isDev = this.client.config.devs.includes(ctx.author.id);
+        if (!isAdmin && !isDev) {
             ctx.reply({
-                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.restart.errorMessage")}`)]
+                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.developers.restart.errorMessage")}`)]
             }).catch(error => this.client.logger.error("RESTART_CMD_ERR:", error));
             return;
         }
@@ -27,7 +29,7 @@ export class RestartCommand extends BaseCommand {
         ctx.guild?.queue?.destroy();
 
         ctx.reply({
-            embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.general.restart.leftMessage")}`)]
+            embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.developers.restart.leftMessage")}`)]
         }).catch(error => this.client.logger.error("RESTART_CMD_ERR:", error));
 
         setTimeout(() => {

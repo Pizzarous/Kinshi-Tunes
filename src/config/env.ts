@@ -1,18 +1,7 @@
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
 import process from "node:process";
 import type { ClientPresenceStatus } from "discord.js";
-import { parse } from "dotenv";
 import type { EnvActivityTypes, PresenceData } from "../typings/index.js";
 import { parseEnvValue } from "../utils/functions/parseEnvValue.js";
-
-const devEnvPath = path.resolve(process.cwd(), "dev.env");
-if (existsSync(devEnvPath)) {
-    const parsed = parse(readFileSync(devEnvPath));
-    for (const [key, val] of Object.entries(parsed)) {
-        process.env[key] = val;
-    }
-}
 
 const toCapitalCase = (text: string): string => {
     if (text === "") return "";

@@ -8,7 +8,7 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 
 @Command<typeof ShutdownCommand>({
     aliases: ["shutdown", "bye", "terminate", "exit"],
-    description: i18n.__("commands.general.shutdown.description"),
+    description: i18n.__("commands.developers.shutdown.description"),
     name: "shutdown",
     slash: {
         options: []
@@ -17,9 +17,9 @@ import { createEmbed } from "../../utils/functions/createEmbed.js";
 })
 export class ShutdownCommand extends BaseCommand {
     public execute(ctx: CommandContext): void {
-        if (!process.env.ADMIN_ID || ctx.author.id !== process.env.ADMIN_ID) {
+        if (!process.env.ADMIN || ctx.author.id !== process.env.ADMIN) {
             ctx.reply({
-                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.general.shutdown.errorMessage")}`)]
+                embeds: [createEmbed("error", `❌ **|** ${i18n.__("commands.developers.shutdown.errorMessage")}`)]
             }).catch(error => this.client.logger.error("SHUTDOWN_CMD_ERR:", error));
             return;
         }
@@ -27,7 +27,7 @@ export class ShutdownCommand extends BaseCommand {
         ctx.guild?.queue?.destroy();
 
         ctx.reply({
-            embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.general.shutdown.leftMessage")}`)]
+            embeds: [createEmbed("success", `👋 **|** ${i18n.__("commands.developers.shutdown.leftMessage")}`)]
         }).catch(error => this.client.logger.error("SHUTDOWN_CMD_ERR:", error));
 
         setTimeout(() => {
