@@ -19,8 +19,8 @@ import { exec } from "../../../yt-dlp-utils/index.js";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";
 
 const PRE_CACHE_AHEAD_COUNT = 5;
-const MAX_CACHE_SIZE_MB = 500;
-const MAX_CACHE_FILES = 50;
+const MAX_CACHE_SIZE_MB = 1000;
+const MAX_CACHE_FILES = 100;
 const PRE_CACHE_RETRY_COUNT = 2;
 const QUEUE_PROCESSING_DELAY_MS = 50;
 const MAX_PRE_CACHE_RETRIES = 2;
