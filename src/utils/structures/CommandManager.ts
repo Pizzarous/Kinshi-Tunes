@@ -2,7 +2,7 @@
 import { promises as fs } from "node:fs";
 import nodePath from "node:path";
 import { setTimeout } from "node:timers";
-import type { ApplicationCommandData, Guild, Message, Snowflake, TextChannel } from "discord.js";
+import type { ApplicationCommandData, ClientApplication, Guild, Message, Snowflake, TextChannel } from "discord.js";
 import { ApplicationCommandType, Collection } from "discord.js";
 import i18n from "../../config/index.js";
 import { CommandContext } from "../../structures/CommandContext.js";
@@ -177,6 +177,27 @@ export class CommandManager extends Collection<string, CommandComponent> {
                 } finally {
                     this.client.logger.info(`Done registering ${category} category.`);
                 }
+            }
+
+            try {
+                const app = (this.client as unknown as { application: ClientApplication | null }).application;
+                const registeredCmds = await app?.commands.fetch();
+                if (registeredCmds) {
+                    const validNames = new Set<string>();
+                    for (const [, cmd] of this as unknown as Map<string, CommandComponent>) {
+                        validNames.add(cmd.meta.name);
+                        if (cmd.meta.contextChat) validNames.add(cmd.meta.contextChat);
+                        if (cmd.meta.contextUser) validNames.add(cmd.meta.contextUser);
+                    }
+                    for (const [id, cmd] of registeredCmds) {
+                        if (!validNames.has(cmd.name)) {
+                            await app?.commands.delete(id);
+                            this.client.logger.info(`Deleted stale slash command: ${cmd.name}`);
+                        }
+                    }
+                }
+            } catch (error) {
+                this.client.logger.error("Failed to clean up stale commands:", error);
             }
         } catch (error) {
             this.client.logger.error("CMD_LOADER_ERR:", error);
