@@ -16,24 +16,23 @@
 
 ## General Setup
 
-1. **Download and Install Node.js:** Ensure you have version `20.0.0` or higher. [Node.js Download](https://nodejs.org)
+1. **Download and Install Node.js:** Ensure you have version `22.0.0` or higher. [Node.js Download](https://nodejs.org)
 2. **Download and Install Python:** Ensure you have version `3.12.6`.
 3. **Configure Environment Variables:** Copy `.env.example` to `.env` and configure your Discord token and other settings.
-4. **Install Dependencies:** Run the following command in your terminal.
+4. **Install, build, and start in one command:**
     ```sh
-    $ npm install
-    ```
-5. **Build the Project:**
-    ```sh
-    $ npm run build
-    ```
-6. **Start the Bot:**
-    ```sh
-    $ npm start
+    $ npm run fresh
     ```
 
+Or run each step manually:
+```sh
+$ npm install
+$ npm run build
+$ npm start
+```
+
 ### Development
-For development with automatic compilation:
+For development with automatic compilation (skips lint, cleans dist):
 ```sh
 $ npm run start:dev
 ```

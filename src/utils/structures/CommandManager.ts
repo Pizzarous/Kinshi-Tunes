@@ -122,11 +122,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
                                         `Registered ${command.meta.name} to user context for global.`
                                     );
                             }
-                            if (
-                                !registeredCmdNames.has(command.meta.name) &&
-                                command.meta.slash &&
-                                this.client.config.enableSlashCommand
-                            ) {
+                            if (command.meta.slash && this.client.config.enableSlashCommand) {
                                 if ((command.meta.slash.name?.length ?? 0) === 0) {
                                     Object.assign(command.meta.slash, {
                                         name: command.meta.name
@@ -137,7 +133,13 @@ export class CommandManager extends Collection<string, CommandComponent> {
                                         description: command.meta.description
                                     });
                                 }
+                            }
 
+                            if (
+                                !registeredCmdNames.has(command.meta.name) &&
+                                command.meta.slash &&
+                                this.client.config.enableSlashCommand
+                            ) {
                                 await this.registerCmd(command.meta.slash as ApplicationCommandData, {
                                     onError: (gld, err) =>
                                         this.client.logger.error(

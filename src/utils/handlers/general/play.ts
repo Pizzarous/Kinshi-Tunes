@@ -25,6 +25,7 @@ export async function play(guild: Guild, nextSong?: string, wasIdle?: boolean): 
     if (!song) {
         queue.lastMusicMsg = null;
         queue.lastVSUpdateMsg = null;
+        queue.client.audioCache.cleanupPartFiles(guild.id);
         void queue.textChannel.send({
             embeds: [
                 createEmbed(
@@ -64,7 +65,10 @@ export async function play(guild: Guild, nextSong?: string, wasIdle?: boolean): 
     // Store reference to current stream for cleanup
     queue.currentStream = stream;
 
-    await getStream(queue.client, song.song.url).then(x => x.pipe(stream as unknown as NodeJS.WritableStream));
+    await getStream(queue.client, song.song.url, guild.id).then(x => {
+        queue.currentPlaybackStream = x;
+        x.pipe(stream as unknown as NodeJS.WritableStream);
+    });
 
     const resource = createAudioResource(stream, { inlineVolume: true, inputType: StreamType.OggOpus, metadata: song });
 

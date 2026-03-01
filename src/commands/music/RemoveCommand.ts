@@ -56,8 +56,13 @@ export class RemoveCommand extends BaseCommand {
 
         const cloned = [...(ctx.guild?.queue?.songs as unknown as SongManager).sortByIndex().values()];
         const songs = positions.map(x => cloned[Number.parseInt(x, 10) - 1]).filter(Boolean);
+        const removedUrls: string[] = [];
         for (const song of songs) {
             ctx.guild?.queue?.songs.delete(song.key);
+            removedUrls.push(song.song.url);
+        }
+        if (removedUrls.length > 0) {
+            this.client.audioCache.clearCacheForUrls(removedUrls);
         }
 
         const np = (
