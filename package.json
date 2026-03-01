@@ -1,6 +1,6 @@
 {
     "name": "kinshi-tunes",
-    "version": "4.1.1",
+    "version": "4.1.2",
     "description": "A simple powerful Discord music bot built to fulfill your production desires. Easy to use, with no coding required.",
     "main": "index.js",
     "type": "module",
@@ -13,7 +13,9 @@
         "pretty": "prettier --check src/**/*.ts",
         "pretty:write": "prettier --write src/**/*.ts",
         "start": "node --es-module-specifier-resolution=node -r dotenv/config .",
-        "start:dev": "rimraf ./dist && npm run compile && npm start"
+        "start:dev": "rimraf ./dist && npm run compile && npm start",
+        "fresh": "npm install && npm run build && npm start",
+        "fresh:clean": "rimraf node_modules dist cache && npm install && npm run build && npm start"
     },
     "repository": {
         "type": "git",

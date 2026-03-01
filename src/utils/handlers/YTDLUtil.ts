@@ -1,4 +1,5 @@
 import { type Buffer } from "node:buffer";
+import { type ChildProcess, execFileSync } from "node:child_process";
 import { createReadStream } from "node:fs";
 import type { Readable } from "node:stream";
 import { clearTimeout, setTimeout } from "node:timers";
@@ -9,6 +10,17 @@ import type { BasicYoutubeVideoInfo } from "../../typings/index.js";
 import { checkQuery } from "./GeneralUtil.js";
 
 type Unpromisify<T> = T extends Promise<infer U> ? U : T;
+
+function killProcessTree(proc: ChildProcess): void {
+    if (!proc.pid) return;
+    try {
+        if (process.platform === "win32") {
+            execFileSync("taskkill", ["/F", "/T", "/PID", String(proc.pid)], { stdio: "ignore" });
+        } else {
+            proc.kill("SIGKILL");
+        }
+    } catch {}
+}
 
 const { stream: pldlStream, video_basic_info } = await import("../../../play-dl-importer/index.js")
     .then(x => x.default)
@@ -42,7 +54,7 @@ function isTransientError(errorMessage: string): boolean {
     return transientPatterns.some(pattern => lowerError.includes(pattern));
 }
 
-export async function getStream(client: KinshiTunes, url: string): Promise<Readable> {
+export async function getStream(client: KinshiTunes, url: string, guildId = ""): Promise<Readable> {
     if (streamStrategy === "play-dl") {
         const isSoundcloudUrl = checkQuery(url);
         if (isSoundcloudUrl.sourceType === "soundcloud") {
@@ -61,17 +73,21 @@ export async function getStream(client: KinshiTunes, url: string): Promise<Reada
         return cachedStream;
     }
 
-    const rawStream = await attemptStreamWithRetry(client, url, 0);
+    const { stream: rawStream, proc } = await attemptStreamWithRetry(client, url, 0);
 
     if (!client.audioCache.isInProgress(url)) {
-        return client.audioCache.cacheStream(url, rawStream);
+        return client.audioCache.cacheStream(url, rawStream, proc, guildId);
     }
 
     return rawStream;
 }
 
-async function attemptStreamWithRetry(client: KinshiTunes, url: string, retryCount: number): Promise<Readable> {
-    return new Promise<Readable>((resolve, reject) => {
+async function attemptStreamWithRetry(
+    client: KinshiTunes,
+    url: string,
+    retryCount: number
+): Promise<{ stream: Readable; proc: ChildProcess }> {
+    return new Promise<{ stream: Readable; proc: ChildProcess }>((resolve, reject) => {
         const proc = exec(
             url,
             {
@@ -101,7 +117,7 @@ async function attemptStreamWithRetry(client: KinshiTunes, url: string, retryCou
                 clearTimeout(validationTimeout);
                 validationTimeout = null;
             }
-            proc.kill("SIGKILL");
+            killProcessTree(proc);
             if (retryCount < MAX_TRANSIENT_RETRIES) {
                 client.logger.debug(
                     `[YTDLUtil] Transient error, retrying (${retryCount + 1}/${MAX_TRANSIENT_RETRIES}): ${url.substring(0, 50)}...`
@@ -132,7 +148,7 @@ async function attemptStreamWithRetry(client: KinshiTunes, url: string, retryCou
         }
 
         proc.once("error", err => {
-            proc.kill("SIGKILL");
+            killProcessTree(proc);
             if (validationTimeout) {
                 clearTimeout(validationTimeout);
                 validationTimeout = null;
@@ -144,7 +160,7 @@ async function attemptStreamWithRetry(client: KinshiTunes, url: string, retryCou
         });
 
         proc.stdout.once("error", err => {
-            proc.kill("SIGKILL");
+            killProcessTree(proc);
             if (validationTimeout) {
                 clearTimeout(validationTimeout);
                 validationTimeout = null;
@@ -179,7 +195,7 @@ async function attemptStreamWithRetry(client: KinshiTunes, url: string, retryCou
         });
 
         proc.stdout.once("end", () => {
-            proc.kill("SIGKILL");
+            killProcessTree(proc);
         });
 
         void proc.once("spawn", () => {
@@ -188,7 +204,7 @@ async function attemptStreamWithRetry(client: KinshiTunes, url: string, retryCou
                 validationTimeout = null;
                 if (hasHandledError) return;
                 hasResolved = true;
-                resolve(proc.stdout as unknown as Readable);
+                resolve({ stream: proc.stdout as unknown as Readable, proc });
             }, STREAM_VALIDATION_DELAY_MS);
         });
     });

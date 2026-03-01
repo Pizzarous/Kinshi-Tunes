@@ -190,9 +190,6 @@ export class SearchCommand extends BaseCommand {
             return;
         }
 
-        await msg
-            .delete()
-            .catch((error: unknown) => this.client.logger.error("SEARCH_SELECTION_DELETE_MSG_ERR:", error));
         await respond
             .first()
             ?.delete()

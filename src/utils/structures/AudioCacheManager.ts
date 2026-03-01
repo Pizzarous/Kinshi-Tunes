@@ -1,5 +1,5 @@
 import { type Buffer } from "node:buffer";
-import { type ChildProcess } from "node:child_process";
+import { type ChildProcess, execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
     createReadStream,
@@ -8,6 +8,7 @@ import {
     mkdirSync,
     readdirSync,
     type ReadStream,
+    renameSync,
     rmSync,
     statSync
 } from "node:fs";
@@ -17,6 +18,17 @@ import { PassThrough, type Readable } from "node:stream";
 import { clearInterval, setInterval, setTimeout } from "node:timers";
 import { exec } from "../../../yt-dlp-utils/index.js";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";
+
+function killProcessTree(proc: ChildProcess): void {
+    if (!proc.pid) return;
+    try {
+        if (process.platform === "win32") {
+            execFileSync("taskkill", ["/F", "/T", "/PID", String(proc.pid)], { stdio: "ignore" });
+        } else {
+            proc.kill("SIGKILL");
+        }
+    } catch {}
+}
 
 const PRE_CACHE_AHEAD_COUNT = 5;
 const MAX_CACHE_SIZE_MB = 1000;
@@ -32,10 +44,10 @@ export class AudioCacheManager {
     private readonly inProgressFiles = new Set<string>();
     private readonly inProgressProcs = new Map<
         string,
-        { proc?: ChildProcess; stream?: Readable; writeStreamPath?: string }
+        { proc?: ChildProcess; stream?: Readable; writeStreamPath?: string; guildId: string }
     >();
     private readonly failedUrls = new Map<string, { count: number; lastAttempt: number }>();
-    private readonly preCacheQueue: string[] = [];
+    private readonly preCacheQueue: { url: string; guildId: string }[] = [];
     private isProcessingQueue = false;
 
     public constructor(public readonly client: KinshiTunes) {
@@ -53,8 +65,18 @@ export class AudioCacheManager {
 
     private loadExistingCache(): void {
         try {
-            const files = readdirSync(this.cacheDir).filter(f => f.endsWith(".opus"));
-            for (const file of files) {
+            const files = readdirSync(this.cacheDir);
+
+            // Clean up any leftover .part files from previous crashes
+            const partFiles = files.filter(f => f.endsWith(".opus.part"));
+            for (const file of partFiles) {
+                try {
+                    rmSync(path.join(this.cacheDir, file), { force: true });
+                } catch {}
+            }
+
+            const opusFiles = files.filter(f => f.endsWith(".opus"));
+            for (const file of opusFiles) {
                 const filePath = path.join(this.cacheDir, file);
                 try {
                     const stats = statSync(filePath);
@@ -79,6 +101,10 @@ export class AudioCacheManager {
     public getCachePath(url: string): string {
         const key = this.getCacheKey(url);
         return path.join(this.cacheDir, `${key}.opus`);
+    }
+
+    private getPartPath(key: string): string {
+        return path.join(this.cacheDir, `${key}.opus.part`);
     }
 
     public invalidateCache(url: string): void {
@@ -157,20 +183,52 @@ export class AudioCacheManager {
         return createReadStream(cachePath);
     }
 
-    public cacheStream(url: string, sourceStream: Readable): Readable {
+    public cacheStream(url: string, sourceStream: Readable, proc: ChildProcess, guildId: string): Readable {
         const cachePath = this.getCachePath(url);
         const key = this.getCacheKey(url);
+        const partPath = this.getPartPath(key);
 
         this.inProgressFiles.add(key);
-        this.inProgressProcs.set(key, { stream: sourceStream, writeStreamPath: cachePath });
+        this.inProgressProcs.set(key, { proc, stream: sourceStream, writeStreamPath: partPath, guildId });
 
         const playbackStream = new PassThrough();
-        const cacheStream = new PassThrough();
-        const writeStream = createWriteStream(cachePath);
+        const cachePassThrough = new PassThrough();
+        const writeStream = createWriteStream(partPath);
+
+        let sourceEndedNaturally = false;
+        sourceStream.on("end", () => {
+            sourceEndedNaturally = true;
+            this.client.logger.debug(
+                `[AudioCacheManager] Live-cache source ended naturally: ${url.substring(0, 50)}...`
+            );
+        });
+
+        sourceStream.on("close", () => {
+            if (!sourceEndedNaturally) {
+                this.client.logger.debug(
+                    `[AudioCacheManager] Live-cache source closed early (skipped/stopped): ${url.substring(0, 50)}...`
+                );
+                // pipe() only calls cachePassThrough.end() on 'end', not 'close'
+                // so if source is destroyed, writeStream hangs open forever — force-end it
+                cachePassThrough.end();
+            }
+        });
 
         sourceStream.pipe(playbackStream);
-        sourceStream.pipe(cacheStream);
-        cacheStream.pipe(writeStream);
+        sourceStream.pipe(cachePassThrough);
+        cachePassThrough.pipe(writeStream);
+
+        // When playbackStream is destroyed (FFmpeg cleaned up on skip/stop),
+        // destroy the source stream to cancel the yt-dlp download.
+        // The 'close' handler above will then call cachePassThrough.end()
+        // which triggers writeStream finish → .part file deleted.
+        // For natural end, sourceStream is already done by the time playbackStream closes, so destroy() is a no-op.
+        playbackStream.on("close", () => {
+            if (!sourceEndedNaturally) {
+                killProcessTree(proc);
+                sourceStream.destroy();
+            }
+        });
 
         writeStream.on("error", error => {
             this.client.logger.error("[AudioCacheManager] Error writing cache file:", error);
@@ -178,7 +236,7 @@ export class AudioCacheManager {
             this.cachedFiles.delete(key);
             this.inProgressProcs.delete(key);
             try {
-                rmSync(cachePath, { force: true });
+                rmSync(partPath, { force: true });
             } catch {}
         });
 
@@ -186,21 +244,32 @@ export class AudioCacheManager {
             this.inProgressFiles.delete(key);
             this.inProgressProcs.delete(key);
 
+            if (!sourceEndedNaturally) {
+                this.client.logger.debug(
+                    `[AudioCacheManager] Stream interrupted for ${url.substring(0, 50)}..., discarding partial cache`
+                );
+                try {
+                    rmSync(partPath, { force: true });
+                } catch {}
+                return;
+            }
+
             try {
-                const stats = statSync(cachePath);
+                const stats = statSync(partPath);
                 if (stats.size < 1024) {
                     this.client.logger.warn(
                         `[AudioCacheManager] Cached file too small (${stats.size} bytes) for ${url.substring(0, 50)}..., discarding`
                     );
-                    rmSync(cachePath, { force: true });
+                    rmSync(partPath, { force: true });
                     return;
                 }
+                renameSync(partPath, cachePath);
             } catch {
                 this.client.logger.warn(
-                    `[AudioCacheManager] Could not stat cached file for ${url.substring(0, 50)}..., discarding`
+                    `[AudioCacheManager] Could not finalize cached file for ${url.substring(0, 50)}..., discarding`
                 );
                 try {
-                    rmSync(cachePath, { force: true });
+                    rmSync(partPath, { force: true });
                 } catch {}
                 return;
             }
@@ -218,14 +287,14 @@ export class AudioCacheManager {
             this.cachedFiles.delete(key);
             this.inProgressProcs.delete(key);
             try {
-                rmSync(cachePath, { force: true });
+                rmSync(partPath, { force: true });
             } catch {}
         });
 
         return playbackStream;
     }
 
-    public async preCacheUrl(url: string, priority = false): Promise<boolean> {
+    public async preCacheUrl(url: string, priority = false, guildId = ""): Promise<boolean> {
         if (this.isCached(url)) {
             return true;
         }
@@ -245,25 +314,25 @@ export class AudioCacheManager {
         }
 
         if (priority) {
-            const index = this.preCacheQueue.indexOf(url);
+            const index = this.preCacheQueue.findIndex(e => e.url === url);
             if (index > 0) {
                 this.preCacheQueue.splice(index, 1);
             }
             if (index !== 0) {
-                this.preCacheQueue.unshift(url);
+                this.preCacheQueue.unshift({ url, guildId });
             }
-        } else if (!this.preCacheQueue.includes(url)) {
-            this.preCacheQueue.push(url);
+        } else if (!this.preCacheQueue.some(e => e.url === url)) {
+            this.preCacheQueue.push({ url, guildId });
         }
 
         void this.processQueue();
         return true;
     }
 
-    public async preCacheMultiple(urls: string[]): Promise<void> {
+    public async preCacheMultiple(urls: string[], guildId = ""): Promise<void> {
         for (const url of urls.slice(0, PRE_CACHE_AHEAD_COUNT)) {
             if (url && !this.isCached(url) && !this.isInProgress(url)) {
-                await this.preCacheUrl(url);
+                await this.preCacheUrl(url, false, guildId);
             }
         }
     }
@@ -317,16 +386,16 @@ export class AudioCacheManager {
         this.isProcessingQueue = true;
 
         while (this.preCacheQueue.length > 0) {
-            const batch: string[] = [];
+            const batch: { url: string; guildId: string }[] = [];
             while (batch.length < MAX_CONCURRENT_PRECACHE && this.preCacheQueue.length > 0) {
-                const url = this.preCacheQueue.shift();
-                if (url && !this.isCached(url) && !this.isInProgress(url)) {
-                    batch.push(url);
+                const entry = this.preCacheQueue.shift();
+                if (entry && !this.isCached(entry.url) && !this.isInProgress(entry.url)) {
+                    batch.push(entry);
                 }
             }
 
             if (batch.length > 0) {
-                await Promise.all(batch.map(url => this.doPreCache(url)));
+                await Promise.all(batch.map(({ url, guildId }) => this.doPreCache(url, 0, guildId)));
             }
 
             if (this.preCacheQueue.length > 0) {
@@ -337,11 +406,12 @@ export class AudioCacheManager {
         this.isProcessingQueue = false;
     }
 
-    private async doPreCache(url: string, retryCount = 0): Promise<void> {
+    private async doPreCache(url: string, retryCount = 0, guildId = ""): Promise<void> {
         const key = this.getCacheKey(url);
 
         try {
             const cachePath = this.getCachePath(url);
+            const partPath = this.getPartPath(key);
             this.inProgressFiles.add(key);
 
             const proc = exec(
@@ -350,7 +420,7 @@ export class AudioCacheManager {
                 { stdio: ["ignore", "pipe", "pipe"] }
             );
 
-            this.inProgressProcs.set(key, { proc, writeStreamPath: cachePath });
+            this.inProgressProcs.set(key, { proc, writeStreamPath: partPath, guildId });
 
             if (!proc.stdout) {
                 this.inProgressFiles.delete(key);
@@ -374,35 +444,81 @@ export class AudioCacheManager {
                 });
             }
 
-            const writeStream = createWriteStream(cachePath);
+            const writeStream = createWriteStream(partPath);
             proc.stdout.pipe(writeStream);
 
             await new Promise<void>(resolve => {
-                writeStream.on("finish", () => {
+                let writeDone = false;
+                let procExitCode: number | null = null;
+
+                const tryFinalize = (): void => {
+                    if (!writeDone || procExitCode === null) return;
+
                     this.inProgressFiles.delete(key);
                     this.inProgressProcs.delete(key);
 
+                    if (procExitCode !== 0) {
+                        this.client.logger.debug(
+                            `[AudioCacheManager] yt-dlp exited with code ${procExitCode} for ${url.substring(0, 50)}..., discarding`
+                        );
+                        try {
+                            rmSync(partPath, { force: true });
+                        } catch {}
+                        if (retryCount < MAX_PRE_CACHE_RETRIES) {
+                            setTimeout(
+                                () => void this.doPreCache(url, retryCount + 1, guildId),
+                                1000 * (retryCount + 1)
+                            );
+                        } else {
+                            this.markFailed(key);
+                        }
+                        resolve();
+                        return;
+                    }
+
                     try {
-                        const stats = statSync(cachePath);
+                        const stats = statSync(partPath);
                         if (stats.size >= 1024) {
+                            renameSync(partPath, cachePath);
                             this.cachedFiles.set(key, { path: cachePath, lastAccess: Date.now() });
                             this.failedUrls.delete(key);
                             this.client.logger.info(
                                 `[AudioCacheManager] Pre-cached audio for: ${url.substring(0, 50)}...`
                             );
                         } else {
-                            rmSync(cachePath, { force: true });
+                            rmSync(partPath, { force: true });
                             if (retryCount < MAX_PRE_CACHE_RETRIES) {
-                                setTimeout(() => void this.doPreCache(url, retryCount + 1), 1000 * (retryCount + 1));
+                                setTimeout(
+                                    () => void this.doPreCache(url, retryCount + 1, guildId),
+                                    1000 * (retryCount + 1)
+                                );
                             } else {
                                 this.markFailed(key);
                             }
                         }
                     } catch {
                         this.markFailed(key);
+                        try {
+                            rmSync(partPath, { force: true });
+                        } catch {}
                     }
 
                     resolve();
+                };
+
+                writeStream.on("finish", () => {
+                    writeDone = true;
+                    tryFinalize();
+                });
+
+                proc.on("close", code => {
+                    procExitCode = code ?? 1;
+                    if (procExitCode !== 0) {
+                        this.client.logger.debug(
+                            `[AudioCacheManager] Pre-cache yt-dlp exited with code ${procExitCode}: ${url.substring(0, 50)}...`
+                        );
+                    }
+                    tryFinalize();
                 });
 
                 writeStream.on("error", () => {
@@ -410,7 +526,7 @@ export class AudioCacheManager {
                     this.inProgressProcs.delete(key);
                     this.markFailed(key);
                     try {
-                        rmSync(cachePath, { force: true });
+                        rmSync(partPath, { force: true });
                     } catch {}
                     resolve();
                 });
@@ -420,7 +536,7 @@ export class AudioCacheManager {
                     this.inProgressProcs.delete(key);
                     this.markFailed(key);
                     try {
-                        rmSync(cachePath, { force: true });
+                        rmSync(partPath, { force: true });
                     } catch {}
                     resolve();
                 });
@@ -486,27 +602,41 @@ export class AudioCacheManager {
         }
     }
 
+    public cleanupPartFiles(guildId: string): void {
+        // Kill in-progress downloads belonging to this guild only
+        for (const [key, procInfo] of this.inProgressProcs) {
+            if (procInfo.guildId !== guildId) continue;
+            if (procInfo.proc) killProcessTree(procInfo.proc);
+            try {
+                if (procInfo.stream && typeof procInfo.stream.destroy === "function") {
+                    procInfo.stream.destroy();
+                }
+                if (procInfo.writeStreamPath && existsSync(procInfo.writeStreamPath)) {
+                    rmSync(procInfo.writeStreamPath, { force: true });
+                }
+            } catch {}
+            this.inProgressProcs.delete(key);
+            this.inProgressFiles.delete(key);
+        }
+
+        // Remove queued pre-cache entries for this guild
+        for (let i = this.preCacheQueue.length - 1; i >= 0; i--) {
+            if (this.preCacheQueue[i]!.guildId === guildId) {
+                this.preCacheQueue.splice(i, 1);
+            }
+        }
+    }
+
     public clearCacheForUrls(urls: string[]): void {
         let removedCount = 0;
         for (const url of urls) {
             const key = this.getCacheKey(url);
-            const entry = this.cachedFiles.get(key);
-            if (entry) {
-                try {
-                    if (existsSync(entry.path)) {
-                        rmSync(entry.path, { force: true });
-                        removedCount++;
-                    }
-                    this.cachedFiles.delete(key);
-                } catch {}
-            }
 
+            // Only cancel in-progress downloads — leave completed cache entries intact
             const procInfo = this.inProgressProcs.get(key);
             if (procInfo) {
                 try {
-                    if (procInfo.proc && typeof procInfo.proc.kill === "function") {
-                        procInfo.proc.kill("SIGKILL");
-                    }
+                    if (procInfo.proc) killProcessTree(procInfo.proc);
                     if (procInfo.stream && typeof procInfo.stream.destroy === "function") {
                         procInfo.stream.destroy();
                     }
@@ -516,11 +646,10 @@ export class AudioCacheManager {
                     }
                 } catch {}
                 this.inProgressProcs.delete(key);
+                this.inProgressFiles.delete(key);
             }
 
-            this.inProgressFiles.delete(key);
-            this.failedUrls.delete(key);
-            const queueIndex = this.preCacheQueue.indexOf(url);
+            const queueIndex = this.preCacheQueue.findIndex(e => e.url === url);
             if (queueIndex !== -1) {
                 this.preCacheQueue.splice(queueIndex, 1);
             }

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { clearTimeout } from "node:timers";
+import type { Readable } from "node:stream";
 import type { AudioPlayer, AudioPlayerPlayingState, AudioResource, VoiceConnection } from "@discordjs/voice";
 import { AudioPlayerStatus, createAudioPlayer } from "@discordjs/voice";
 import type { Snowflake, TextChannel } from "discord.js";
@@ -26,6 +27,7 @@ export class ServerQueue {
     public filters: Partial<Record<keyof typeof filterArgs, boolean>> = {};
     public destroyTimeoutId: NodeJS.Timeout | null = null;
     public currentStream: prism.FFmpeg | null = null;
+    public currentPlaybackStream: Readable | null = null;
 
     private _volume = this.client.config.defaultVolume;
     private _lastVSUpdateMsg: Snowflake | null = null;
@@ -154,19 +156,29 @@ export class ServerQueue {
     }
 
     public clear(): void {
-        let index = 0;
+        const currentKey =
+            this.player.state.status !== AudioPlayerStatus.Idle
+                ? ((this.player.state as AudioPlayerPlayingState).resource.metadata as QueueSong).key
+                : null;
+
+        const removedUrls: string[] = [];
 
         this.songs.forEach(song => {
-            if (index > 0) {
-                this.songs.delete(song.key); // delete everything after the first
+            if (song.key !== currentKey) {
+                removedUrls.push(song.song.url);
+                this.songs.delete(song.key);
             }
-            index++;
         });
+
+        if (removedUrls.length > 0) {
+            this.client.audioCache.clearCacheForUrls(removedUrls);
+        }
     }
 
     public stop(): void {
         // Clean up current stream when stopping
         this.cleanupCurrentStream();
+        this.client.audioCache.cleanupPartFiles(this.textChannel.guild.id);
         this.songs.clear();
         this.player.stop(true);
     }
@@ -261,6 +273,10 @@ export class ServerQueue {
     }
 
     public cleanupCurrentStream(): void {
+        if (this.currentPlaybackStream) {
+            this.currentPlaybackStream.destroy();
+            this.currentPlaybackStream = null;
+        }
         if (this.currentStream) {
             this.currentStream.destroy();
             this.currentStream = null;
@@ -301,7 +317,7 @@ export class ServerQueue {
         }
 
         if (songsToCache.length > 0) {
-            void this.client.audioCache.preCacheMultiple(songsToCache);
+            void this.client.audioCache.preCacheMultiple(songsToCache, this.textChannel.guild.id);
         }
     }
 
