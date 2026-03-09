@@ -129,14 +129,14 @@ export async function searchTrack(
                                 if (info) {
                                     result.items = [
                                         {
-                                            duration: info.duration ?? 0,
-                                            id: info.id ?? videoId,
+                                            duration: info.duration,
+                                            id: info.id,
                                             thumbnail:
                                                 info.thumbnails?.sort(
                                                     (a, b) => b.height * b.width - a.height * a.width
                                                 )[0].url ?? "",
-                                            title: info.title ?? "Unknown Song",
-                                            url: info.url ?? `https://youtube.com/watch?v=${videoId}`
+                                            title: info.title,
+                                            url: info.url
                                         }
                                     ];
                                 }
