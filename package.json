@@ -55,7 +55,7 @@
         "tslib": "2.8.1",
         "tweetnacl": "1.0.3",
         "youtube-dl-exec": "^3.0.24",
-        "youtubei": "1.8.4",
+        "youtubei": "1.8.5",
         "zip-lib": "^1.0.4"
     },
     "devDependencies": {
