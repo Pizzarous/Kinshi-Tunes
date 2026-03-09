@@ -124,6 +124,22 @@ export async function searchTrack(
                                         url: `https://youtube.com/watch?v=${fallback.id}`
                                     }
                                 ];
+                            } else {
+                                const info = await getInfo(url.toString()).catch(() => void 0);
+                                if (info) {
+                                    result.items = [
+                                        {
+                                            duration: info.duration ?? 0,
+                                            id: info.id ?? videoId,
+                                            thumbnail:
+                                                info.thumbnails?.sort(
+                                                    (a, b) => b.height * b.width - a.height * a.width
+                                                )[0].url ?? "",
+                                            title: info.title ?? "Unknown Song",
+                                            url: info.url ?? `https://youtube.com/watch?v=${videoId}`
+                                        }
+                                    ];
+                                }
                             }
                         }
                         break;
