@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ApplicationCommandOptionType, AttachmentBuilder, Message } from "discord.js";
 import ffmpegStatic from "ffmpeg-static";
-import { youtubeDl } from "youtube-dl-exec";
+import ytdl, { exec as ytdlExec } from "../../../yt-dlp-utils/index.js";
 import i18n from "../../config/index.js";
 import { ytCookiesFile } from "../../config/env.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -62,19 +61,15 @@ export class DownloadCommand extends BaseCommand {
         try {
             // Extract video metadata to get the title
             console.log("Extracting video metadata using youtube-dl");
-            const metadata = await youtubeDl(url, {
+            const metadata = await ytdl(url, {
                 dumpSingleJson: true,
-                noCheckCertificates: true,
+                noCheckCertificate: true,
                 noWarnings: true,
                 format: "bestaudio/best",
                 jsRuntimes: "node",
                 ...(ytCookiesFile ? { cookies: ytCookiesFile } : {})
             });
-
-            const title =
-                typeof metadata === "object" && metadata !== null && "fulltitle" in metadata
-                    ? ((metadata as { fulltitle?: string }).fulltitle ?? "audio")
-                    : "audio";
+            const title = metadata.fulltitle || metadata.title || "audio";
 
             console.log("Video title:", title);
 
@@ -99,23 +94,28 @@ export class DownloadCommand extends BaseCommand {
 
             mp3FilePath = path.join(tempDir, `${sanitizedTitle}.mp3`);
 
-            // Download and convert to MP3 directly using youtube-dl
-            console.log("Downloading and converting to MP3 using youtube-dl");
-            await youtubeDl(url, {
-                extractAudio: true,
-                audioFormat: "mp3",
-                audioQuality: 192, // Good quality MP3
-                output: path.join(tempDir, `${sanitizedTitle}.%(ext)s`),
-                ffmpegLocation: String(ffmpegStatic),
-                noCheckCertificates: true,
-                noWarnings: true,
-                restrictFilenames: true, // Helps avoid filename issues
-                jsRuntimes: "node",
-                addHeader: [
-                    "referer:youtube.com",
-                    "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-                ],
-                ...(ytCookiesFile ? { cookies: ytCookiesFile } : {})
+            // Download and convert to MP3 directly using yt-dlp
+            console.log("Downloading and converting to MP3 using yt-dlp");
+            await new Promise<void>((resolve, reject) => {
+                const proc = ytdlExec(url, {
+                    extractAudio: true,
+                    audioFormat: "mp3",
+                    audioQuality: 192,
+                    output: path.join(tempDir, `${sanitizedTitle}.%(ext)s`),
+                    ffmpegLocation: String(ffmpegStatic),
+                    noCheckCertificate: true,
+                    noWarnings: true,
+                    restrictFilenames: true,
+                    jsRuntimes: "node",
+                    ...(ytCookiesFile ? { cookies: ytCookiesFile } : {})
+                });
+                let stderr = "";
+                proc.stderr?.on("data", (chunk: Buffer) => (stderr += chunk.toString()));
+                proc.on("close", (code: number | null) => {
+                    if (code !== 0) reject(new Error(stderr || "Download failed"));
+                    else resolve();
+                });
+                proc.on("error", reject);
             });
 
             console.log("Download and conversion successful");
