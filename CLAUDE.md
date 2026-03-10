@@ -99,8 +99,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### yt-dlp Integration
 - Custom yt-dlp wrapper in `yt-dlp-utils/` handles binary download and execution
 - All yt-dlp call sites pass `jsRuntimes: "node"` to enable Node.js JS runtime for YouTube extraction
+- All yt-dlp call sites pass `cookies` from `YT_COOKIES_FILE` env var when set (helps bypass bot detection)
+- Stream format is `bestaudio/best` — falls back to combined format if no audio-only stream is available
 - Stream playback via `src/utils/handlers/YTDLUtil.ts`
 - Track info lookups include retry logic for transient youtubei failures (`src/utils/handlers/general/searchTrack.ts`)
+- When youtubei and youtube.search() both fail for a URL, falls back to yt-dlp `getInfo()` for metadata
 
 ### Search and Playback
 - Multi-platform search: YouTube, SoundCloud, Spotify

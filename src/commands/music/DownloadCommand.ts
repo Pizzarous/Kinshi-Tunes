@@ -6,6 +6,7 @@ import { ApplicationCommandOptionType, AttachmentBuilder, Message } from "discor
 import ffmpegStatic from "ffmpeg-static";
 import { youtubeDl } from "youtube-dl-exec";
 import i18n from "../../config/index.js";
+import { ytCookiesFile } from "../../config/env.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
 import { CommandContext } from "../../structures/CommandContext.js";
 import { Command } from "../../utils/decorators/Command.js";
@@ -64,7 +65,10 @@ export class DownloadCommand extends BaseCommand {
             const metadata = await youtubeDl(url, {
                 dumpSingleJson: true,
                 noCheckCertificates: true,
-                noWarnings: true
+                noWarnings: true,
+                format: "bestaudio/best",
+                jsRuntimes: "node",
+                ...(ytCookiesFile ? { cookies: ytCookiesFile } : {})
             });
 
             const title =
@@ -106,10 +110,12 @@ export class DownloadCommand extends BaseCommand {
                 noCheckCertificates: true,
                 noWarnings: true,
                 restrictFilenames: true, // Helps avoid filename issues
+                jsRuntimes: "node",
                 addHeader: [
                     "referer:youtube.com",
                     "user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-                ]
+                ],
+                ...(ytCookiesFile ? { cookies: ytCookiesFile } : {})
             });
 
             console.log("Download and conversion successful");
