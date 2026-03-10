@@ -23,6 +23,7 @@ export const embedColor = (process.env.EMBED_COLOR?.toUpperCase() ?? "") || "22C
 export const lang = formatLocale(process.env.LOCALE) || "en";
 export const mainGuild = parseEnvValue(process.env.MAIN_GUILD ?? "");
 export const streamStrategy = (process.env.STREAM_STRATEGY ?? "") || "yt-dlp";
+export const ytCookiesFile = process.env.YT_COOKIES_FILE ?? "";
 export const enablePrefix = process.env.ENABLE_PREFIX?.toLowerCase() !== "no";
 export const enableSlashCommand = process.env.ENABLE_SLASH_COMMAND?.toLowerCase() !== "no";
 export const is247Allowed = process.env.ENABLE_24_7_COMMAND?.toLowerCase() === "yes";

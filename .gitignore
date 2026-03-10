@@ -105,3 +105,6 @@ cache/
 data.json
 scripts/
 play-dl-fix/
+
+# YouTube cookies
+cookies.txt

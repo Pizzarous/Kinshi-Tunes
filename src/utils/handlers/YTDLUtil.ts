@@ -4,7 +4,7 @@ import { createReadStream } from "node:fs";
 import type { Readable } from "node:stream";
 import { clearTimeout, setTimeout } from "node:timers";
 import ytdl, { exec } from "../../../yt-dlp-utils/index.js";
-import { streamStrategy } from "../../config/index.js";
+import { streamStrategy, ytCookiesFile } from "../../config/index.js";
 import type { KinshiTunes } from "../../structures/KinshiTunes.js";
 import type { BasicYoutubeVideoInfo } from "../../typings/index.js";
 import { checkQuery } from "./GeneralUtil.js";
@@ -93,9 +93,10 @@ async function attemptStreamWithRetry(
             {
                 output: "-",
                 quiet: true,
-                format: "bestaudio",
+                format: "bestaudio/best",
                 limitRate: "300K",
-                jsRuntimes: "node"
+                jsRuntimes: "node",
+                ...(ytCookiesFile ? { cookies: ytCookiesFile } : {})
             },
             { stdio: ["ignore", "pipe", "pipe"] }
         );
@@ -232,7 +233,11 @@ async function attemptGetInfoWithRetry(
     retryCount: number
 ): Promise<BasicYoutubeVideoInfo> {
     try {
-        return await ytdl(url, { dumpJson: true, jsRuntimes: "node" });
+        return await ytdl(url, {
+            dumpJson: true,
+            jsRuntimes: "node",
+            ...(ytCookiesFile ? { cookies: ytCookiesFile } : {})
+        });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
         if (isTransientError(errorMessage) && retryCount < MAX_TRANSIENT_RETRIES) {

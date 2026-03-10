@@ -37,6 +37,17 @@ For development with automatic compilation (skips lint, cleans dist):
 $ npm run start:dev
 ```
 
+### YouTube Cookies (Optional)
+
+Some YouTube videos may fail to play or download due to bot detection. You can provide a cookies file to authenticate yt-dlp as a logged-in user:
+
+1. Install the **"Get cookies.txt LOCALLY"** browser extension
+2. Log into YouTube in your browser
+3. Export cookies for `youtube.com` to a `cookies.txt` file in the bot's root directory
+4. Set `YT_COOKIES_FILE="./cookies.txt"` in your `.env` file
+
+> **Note:** Cookies expire periodically — re-export them if issues return.
+
 ## Disclaimers
 
 Please review the disclaimers listed in [DISCLAIMERS.md](./DISCLAIMERS.md).
