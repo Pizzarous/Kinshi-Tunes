@@ -36,7 +36,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Music System
 - Queue management via `src/structures/ServerQueue.ts`
 - Song handling through `src/utils/structures/SongManager.ts`
-- Multiple audio sources: YouTube (youtubei, youtube-dl-exec), SoundCloud, Spotify integration
+- Multiple audio sources: YouTube (youtubei, yt-dlp-utils), SoundCloud, Spotify integration
 - Voice connection handling with @discordjs/voice
 
 ### Event System
@@ -97,11 +97,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Audio pre-caching via `src/utils/structures/AudioCacheManager.ts`
 
 ### yt-dlp Integration
-- Custom yt-dlp wrapper in `yt-dlp-utils/` handles binary download and execution
+- Custom yt-dlp wrapper in `yt-dlp-utils/` handles binary download, auto-update, and execution — used by all yt-dlp call sites including `DownloadCommand`
+- `youtube-dl-exec` package has been removed; `yt-dlp-utils` is the sole yt-dlp interface
 - All yt-dlp call sites pass `jsRuntimes: "node"` to enable Node.js JS runtime for YouTube extraction
-- All yt-dlp call sites pass `cookies` from `YT_COOKIES_FILE` env var when set (helps bypass bot detection)
+- All yt-dlp call sites pass `cookies` from `YT_COOKIES_FILE` env var when set (helps bypass bot detection and age restrictions)
 - Stream format is `bestaudio/best` — falls back to combined format if no audio-only stream is available
 - Stream playback via `src/utils/handlers/YTDLUtil.ts`
+- Download command (`src/commands/music/DownloadCommand.ts`) uses `ytdl()` for metadata and `exec()` for the actual download
 - Track info lookups include retry logic for transient youtubei failures (`src/utils/handlers/general/searchTrack.ts`)
 - When youtubei and youtube.search() both fail for a URL, falls back to yt-dlp `getInfo()` for metadata
 
