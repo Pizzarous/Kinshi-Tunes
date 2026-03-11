@@ -15,7 +15,8 @@
         "start": "node --es-module-specifier-resolution=node -r dotenv/config .",
         "start:dev": "rimraf ./dist && npm run compile && npm start",
         "fresh": "npm install && npm run build && npm start",
-        "fresh:clean": "rimraf node_modules dist cache && npm install && npm run build && npm start"
+        "fresh:clean": "rimraf node_modules dist cache && npm install && npm run build && npm start",
+        "fresh:clean:keep-cache": "rimraf node_modules dist && npm install && npm run build && npm start"
     },
     "repository": {
         "type": "git",
