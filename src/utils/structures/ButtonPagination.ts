@@ -13,23 +13,23 @@ const DATAS: InteractionButtonComponentData[] = [
     {
         style: ButtonStyle.Secondary,
         emoji: "⏪",
-        customId: `PREV10`,
+        customId: `FIRST`,
         type: ComponentType.Button
     },
     {
-        style: ButtonStyle.Primary,
+        style: ButtonStyle.Secondary,
         emoji: "⬅️",
         customId: "PREV",
         type: ComponentType.Button
     },
     {
         style: ButtonStyle.Danger,
-        emoji: "🚫",
+        emoji: "⏹",
         customId: "STOP",
         type: ComponentType.Button
     },
     {
-        style: ButtonStyle.Primary,
+        style: ButtonStyle.Secondary,
         emoji: "➡️",
         customId: "NEXT",
         type: ComponentType.Button
@@ -37,7 +37,7 @@ const DATAS: InteractionButtonComponentData[] = [
     {
         style: ButtonStyle.Secondary,
         emoji: "⏩",
-        customId: "NEXT10",
+        customId: "LAST",
         type: ComponentType.Button
     }
 ];
@@ -89,8 +89,8 @@ export class ButtonPagination {
 
         collector.on("collect", async i => {
             switch (i.customId) {
-                case "PREV10":
-                    index -= 10;
+                case "FIRST":
+                    index = 0;
                     break;
                 case "PREV":
                     index--;
@@ -98,8 +98,8 @@ export class ButtonPagination {
                 case "NEXT":
                     index++;
                     break;
-                case "NEXT10":
-                    index += 10;
+                case "LAST":
+                    index = pages.length - 1;
                     break;
                 default:
                     void msg.delete();

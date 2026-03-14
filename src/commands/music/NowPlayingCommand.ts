@@ -1,4 +1,4 @@
-import { AudioPlayerState, AudioResource } from "@discordjs/voice";
+import { AudioPlayerState, AudioPlayerStatus, AudioResource } from "@discordjs/voice";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, EmbedBuilder } from "discord.js";
 import i18n from "../../config/index.js";
 import { BaseCommand } from "../../structures/BaseCommand.js";
@@ -45,10 +45,15 @@ export class NowPlayingCommand extends BaseCommand {
             return embed;
         }
 
+        const initialSongKey = (
+            (ctx.guild?.queue?.player.state as (AudioPlayerState & { resource: AudioResource | undefined }) | undefined)
+                ?.resource?.metadata as QueueSong | undefined
+        )?.key;
+
         const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
             new ButtonBuilder()
                 .setCustomId("TOGGLE_STATE_BUTTON")
-                .setLabel("Pause/Resume")
+                .setLabel("Pause/Play")
                 .setStyle(ButtonStyle.Primary)
                 .setEmoji("⏯️"),
             new ButtonBuilder()
@@ -56,24 +61,40 @@ export class NowPlayingCommand extends BaseCommand {
                 .setLabel("Skip")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji("⏭"),
-            new ButtonBuilder()
-                .setCustomId("STOP_BUTTON")
-                .setLabel("Stop Player")
-                .setStyle(ButtonStyle.Danger)
-                .setEmoji("⏹"),
+            new ButtonBuilder().setCustomId("STOP_BUTTON").setLabel("Stop").setStyle(ButtonStyle.Danger).setEmoji("⏹"),
             new ButtonBuilder()
                 .setCustomId("SHOW_QUEUE_BUTTON")
-                .setLabel("Show Queue")
+                .setLabel("Queue")
                 .setStyle(ButtonStyle.Secondary)
                 .setEmoji("#️⃣")
         );
         const msg = await ctx.reply({ embeds: [getEmbed()], components: [buttons] });
 
+        const interval = setInterval(() => {
+            void msg.edit({ embeds: [getEmbed()], components: [buttons] });
+        }, 5_000);
+
         const collector = msg.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            filter: i => i.isButton() && i.user.id === ctx.author.id,
-            idle: 30_000
+            filter: i => i.isButton() && i.user.id === ctx.author.id
         });
+
+        const player = ctx.guild?.queue?.player;
+        const onStateChange = (_oldState: AudioPlayerState, newState: AudioPlayerState): void => {
+            if (newState.status === AudioPlayerStatus.Idle) {
+                collector.stop("songEnd");
+                return;
+            }
+            if (newState.status === AudioPlayerStatus.Playing) {
+                const newKey = (
+                    (newState as AudioPlayerState & { resource: AudioResource }).resource.metadata as
+                        | QueueSong
+                        | undefined
+                )?.key;
+                if (newKey !== initialSongKey) collector.stop("songEnd");
+            }
+        };
+        player?.on("stateChange", onStateChange);
 
         collector
             .on("collect", async i => {
@@ -111,6 +132,8 @@ export class NowPlayingCommand extends BaseCommand {
                 await msg.edit({ embeds: [embed] });
             })
             .on("end", () => {
+                clearInterval(interval);
+                player?.off("stateChange", onStateChange);
                 const embed = getEmbed().setFooter({ text: i18n.__("commands.music.nowplaying.disableButton") });
 
                 void msg.edit({

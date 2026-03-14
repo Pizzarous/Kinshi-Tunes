@@ -28,10 +28,10 @@ export async function handleVideos(
 
         const opening = i18n.__mf("utils.generalHandler.handleVideoInitial", { length: toQueue.length });
         const pages = await Promise.all(
-            chunk(toQueue, 10).map(async (vals, i) => {
+            chunk(toQueue, 20).map(async (vals, i) => {
                 const texts = await Promise.all(
                     vals.map(
-                        (song, index) => `${i * 10 + (index + 1)}.) ${escapeMarkdown(parseHTMLElements(song.title))}`
+                        (song, index) => `${i * 20 + (index + 1)}.) ${escapeMarkdown(parseHTMLElements(song.title))}`
                     )
                 );
 
