@@ -2,7 +2,15 @@
 import { promises as fs } from "node:fs";
 import nodePath from "node:path";
 import { setTimeout } from "node:timers";
-import type { ApplicationCommandData, ClientApplication, Guild, Message, Snowflake, TextChannel } from "discord.js";
+import type {
+    ApplicationCommand,
+    ApplicationCommandData,
+    ClientApplication,
+    Guild,
+    Message,
+    Snowflake,
+    TextChannel
+} from "discord.js";
 import { ApplicationCommandType, Collection } from "discord.js";
 import i18n from "../../config/index.js";
 import { CommandContext } from "../../structures/CommandContext.js";
@@ -33,6 +41,7 @@ export class CommandManager extends Collection<string, CommandComponent> {
                 this.client.application as unknown as NonNullable<typeof this.client.application>
             ).commands.fetch();
             const registeredCmdNames = new Set(allCmd.map(c => c.name));
+            const registeredCmdMap = new Map(allCmd.map(c => [c.name, c]));
 
             for await (const category of categories) {
                 try {
@@ -136,26 +145,47 @@ export class CommandManager extends Collection<string, CommandComponent> {
                             }
 
                             if (
-                                !registeredCmdNames.has(command.meta.name) &&
                                 command.meta.slash &&
-                                this.client.config.enableSlashCommand
+                                this.client.config.enableSlashCommand &&
+                                (this.client.shard?.ids[0] ?? 0) === 0
                             ) {
-                                await this.registerCmd(command.meta.slash as ApplicationCommandData, {
-                                    onError: (gld, err) =>
-                                        this.client.logger.error(
-                                            `Unable to register ${command.meta.name} to slash command for ${
-                                                gld?.id ?? "???"
-                                            }, reason: ${err.message}`
-                                        ),
-                                    onRegistered: gld =>
+                                const slashData = command.meta.slash as ApplicationCommandData;
+                                const existingCmd = registeredCmdMap.get(command.meta.name);
+                                if (!existingCmd) {
+                                    await this.registerCmd(slashData, {
+                                        onError: (gld, err) =>
+                                            this.client.logger.error(
+                                                `Unable to register ${command.meta.name} to slash command for ${
+                                                    gld?.id ?? "???"
+                                                }, reason: ${err.message}`
+                                            ),
+                                        onRegistered: gld =>
+                                            this.client.logger.info(
+                                                `Registered ${command.meta.name} to slash command for ${gld.id}`
+                                            )
+                                    });
+                                    if (!this.client.config.isDev)
                                         this.client.logger.info(
-                                            `Registered ${command.meta.name} to slash command for ${gld.id}`
-                                        )
-                                });
-                                if (!this.client.config.isDev)
-                                    this.client.logger.info(
-                                        `Registered ${command.meta.name} to slash command for global.`
-                                    );
+                                            `Registered ${command.meta.name} to slash command for global.`
+                                        );
+                                } else if (!this.cmdOptionsMatch(existingCmd, slashData)) {
+                                    await this.updateCmd(existingCmd.id, slashData, {
+                                        onError: (gld, err) =>
+                                            this.client.logger.error(
+                                                `Unable to update ${command.meta.name} slash command for ${
+                                                    gld?.id ?? "???"
+                                                }, reason: ${err.message}`
+                                            ),
+                                        onRegistered: gld =>
+                                            this.client.logger.info(
+                                                `Updated ${command.meta.name} slash command for ${gld.id}`
+                                            )
+                                    });
+                                    if (!this.client.config.isDev)
+                                        this.client.logger.info(
+                                            `Updated ${command.meta.name} slash command for global.`
+                                        );
+                                }
                             }
                             this.client.logger.info(
                                 `Command ${command.meta.name} from ${category} category is now loaded.`
@@ -290,6 +320,33 @@ export class CommandManager extends Collection<string, CommandComponent> {
                         message.guild?.name
                     } [${message.guild?.id}]`
             );
+        }
+    }
+
+    private cmdOptionsMatch(existing: ApplicationCommand, local: ApplicationCommandData): boolean {
+        type Opt = { name: string; type: number | string; options?: Opt[] };
+        const fingerprint = (opts: Opt[]): string =>
+            JSON.stringify(opts.map(o => ({ n: o.name, t: o.type, o: fingerprint((o.options ?? []) as Opt[]) })));
+        const existingOpts = (existing.options as Opt[] | undefined) ?? [];
+        const localOpts = (local as { options?: Opt[] }).options ?? [];
+        return fingerprint(existingOpts) === fingerprint(localOpts);
+    }
+
+    private async updateCmd(id: Snowflake, data: ApplicationCommandData, options?: RegisterCmdOptions): Promise<void> {
+        if (options && this.client.config.isDev) {
+            for (const guildId of this.client.config.mainGuild) {
+                let guild: Guild | null = null;
+                try {
+                    guild = await this.client.guilds.fetch(guildId).catch(() => null);
+                    if (!guild) throw new Error("Invalid Guild.");
+                    await guild.commands.edit(id, data);
+                    void options.onRegistered(guild);
+                } catch (error) {
+                    void options.onError(guild, error as Error);
+                }
+            }
+        } else {
+            await this.client.application?.commands.edit(id, data);
         }
     }
 

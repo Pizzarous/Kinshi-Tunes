@@ -189,9 +189,8 @@
                 "usage": "{prefix}search <query> [source]"
             },
             "shuffle": {
-                "actualState": "Current shuffle mode is **`{state}`**",
-                "description": "Set mode for shuffle feature",
-                "newState": "Shuffle mode is now set to **`{state}`**"
+                "description": "Shuffle the queue",
+                "shuffled": "Queue has been shuffled!"
             },
             "skip": {
                 "description": "Skip the music",

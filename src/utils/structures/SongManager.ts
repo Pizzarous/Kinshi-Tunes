@@ -48,6 +48,18 @@ export class SongManager extends Collection<Snowflake, QueueSong> {
         return this.sort((a, b) => a.index - b.index);
     }
 
+    public shuffleIndices(currentKey: Snowflake): void {
+        const toShuffle = [...this.filter(s => s.key !== currentKey).values()];
+        const indices = toShuffle.map(s => s.index);
+        for (let i = indices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+        toShuffle.forEach((s, i) => {
+            s.index = indices[i];
+        });
+    }
+
     public current(): Song | null {
         const firstSong = this.first();
         if (firstSong) return firstSong.song;

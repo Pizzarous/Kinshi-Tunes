@@ -133,10 +133,9 @@ export class CommandContext {
             ];
         }
         if (this.isInteraction()) {
-            (options as InteractionReplyOptions).fetchReply = true;
-            const msg = (await (this.context as CommandInteraction)[type](
-                options as InteractionReplyOptions | MessagePayload | string
-            )) as Message;
+            (options as InteractionReplyOptions).withResponse = true;
+            const response = (await (this.context as any)[type](options)) as { resource: { message: Message } };
+            const msg = response.resource.message;
             const channel = this.context.channel;
             const res = await channel?.messages.fetch(msg.id).catch(() => null);
             return res ?? msg;

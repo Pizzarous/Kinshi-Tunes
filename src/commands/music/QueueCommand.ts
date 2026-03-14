@@ -26,13 +26,15 @@ export class QueueCommand extends BaseCommand {
         const full = ctx.guild?.queue?.songs.sortByIndex() as unknown as SongManager;
         const songs = ctx.guild?.queue?.loopMode === "QUEUE" ? full : full.filter(val => val.index >= np.index);
         const pages = await Promise.all(
-            chunk([...songs.values()], 10).map(async (sngs, ind) => {
+            chunk([...songs.values()], 20).map(async (sngs, ind) => {
                 const names = await Promise.all(
                     sngs.map((song, i) => {
                         const npKey = np.key;
-                        const addition = song.key === npKey ? "**" : "";
+                        const isNp = song.key === npKey;
+                        const addition = isNp ? "**" : "";
+                        const prefix = isNp ? "🎵 " : "";
 
-                        return `${addition}${ind * 10 + (i + 1)} - [${song.song.title}](${song.song.url})${addition}`;
+                        return `${addition}${ind * 20 + (i + 1)} - ${prefix}[${song.song.title}](${song.song.url})${addition}`;
                     })
                 );
 

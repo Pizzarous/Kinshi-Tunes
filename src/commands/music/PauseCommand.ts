@@ -28,8 +28,9 @@ export class PauseCommand extends BaseCommand {
 
         ctx.guild.queue.playing = false;
 
-        await ctx.reply({
+        const msg = await ctx.reply({
             embeds: [createEmbed("success", `⏸ **|** ${i18n.__("commands.music.pause.pauseMessage")}`)]
         });
+        setTimeout(() => msg.delete().catch(() => undefined), 5_000);
     }
 }

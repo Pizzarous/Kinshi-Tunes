@@ -99,7 +99,13 @@ export class SkipToCommand extends BaseCommand {
             return;
         }
 
-        const songs = [...(ctx.guild?.queue?.songs.sortByIndex().values() as unknown as QueueSong[])];
+        const np = (ctx.guild?.queue?.player.state as AudioPlayerPlayingState).resource.metadata as QueueSong;
+        const songs = [
+            ...(ctx.guild?.queue?.songs
+                .sortByIndex()
+                .filter(s => s.index >= np.index)
+                .values() as unknown as QueueSong[])
+        ];
         if (
             !["first", "last"].includes(String(targetType).toLowerCase()) &&
             !Number.isNaN(Number(targetType)) &&

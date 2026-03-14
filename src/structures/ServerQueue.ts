@@ -1,16 +1,26 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
-import { clearTimeout } from "node:timers";
+import { clearInterval, clearTimeout, setInterval } from "node:timers";
 import type { Readable } from "node:stream";
-import type { AudioPlayer, AudioPlayerPlayingState, AudioResource, VoiceConnection } from "@discordjs/voice";
+import type {
+    AudioPlayer,
+    AudioPlayerPlayingState,
+    AudioPlayerState,
+    AudioResource,
+    VoiceConnection
+} from "@discordjs/voice";
 import { AudioPlayerStatus, createAudioPlayer } from "@discordjs/voice";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } from "discord.js";
 import type { Snowflake, TextChannel } from "discord.js";
 import prism from "prism-media";
 import i18n from "../config/index.js";
 import type { LoopMode, QueueSong } from "../typings/index.js";
 import { createEmbed } from "../utils/functions/createEmbed.js";
+import { createProgressBar } from "../utils/functions/createProgressBar.js";
 import type { filterArgs } from "../utils/functions/ffmpegArgs.js";
+import { normalizeTime } from "../utils/functions/normalizeTime.js";
 import { play } from "../utils/handlers/GeneralUtil.js";
 import { SongManager } from "../utils/structures/SongManager.js";
+import { CommandContext } from "./CommandContext.js";
 import type { KinshiTunes } from "./KinshiTunes.js";
 
 const nonEnum = { enumerable: false };
@@ -23,7 +33,6 @@ export class ServerQueue {
     public timeout: NodeJS.Timeout | null = null;
     public readonly songs: SongManager;
     public loopMode: LoopMode = "OFF";
-    public shuffle = false;
     public filters: Partial<Record<keyof typeof filterArgs, boolean>> = {};
     public destroyTimeoutId: NodeJS.Timeout | null = null;
     public currentStream: prism.FFmpeg | null = null;
@@ -50,7 +59,7 @@ export class ServerQueue {
                     newState.resource.volume?.setVolumeLogarithmic(this.volume / 100);
 
                     const currentSong = (this.player.state as AudioPlayerPlayingState).resource.metadata as QueueSong;
-                    this.sendStartPlayingMsg(currentSong.song);
+                    this.sendStartPlayingMsg(currentSong);
                     this.handleIdleState();
                     this.preCacheNextSong(currentSong);
                 } else if (newState.status === AudioPlayerStatus.Idle) {
@@ -67,15 +76,13 @@ export class ServerQueue {
                         }
 
                         const nextS =
-                            this.shuffle && this.loopMode !== "SONG"
-                                ? this.songs.random()?.key
-                                : this.loopMode === "SONG"
-                                  ? song.key
-                                  : (this.songs
-                                        .sortByIndex()
-                                        .filter(x => x.index > song.index)
-                                        .first()?.key ??
-                                    (this.loopMode === "QUEUE" ? (this.songs.sortByIndex().first()?.key ?? "") : ""));
+                            this.loopMode === "SONG"
+                                ? song.key
+                                : (this.songs
+                                      .sortByIndex()
+                                      .filter(x => x.index > song.index)
+                                      .first()?.key ??
+                                  (this.loopMode === "QUEUE" ? (this.songs.sortByIndex().first()?.key ?? "") : ""));
 
                         await this.textChannel
                             .send({
@@ -153,6 +160,14 @@ export class ServerQueue {
                 true
             );
         }
+    }
+
+    public shuffleQueue(): void {
+        const currentKey =
+            this.player.state.status !== AudioPlayerStatus.Idle
+                ? ((this.player.state as AudioPlayerPlayingState).resource.metadata as QueueSong).key
+                : null;
+        this.songs.shuffleIndices(currentKey ?? "");
     }
 
     public clear(): void {
@@ -289,30 +304,22 @@ export class ServerQueue {
         const PRE_CACHE_AHEAD = 3;
         const songsToCache: string[] = [];
 
-        if (this.shuffle) {
-            const available = this.songs.filter(s => s.key !== currentSong.key && s.song.duration > 0).sortByIndex();
-            const shuffled = [...available.values()].sort(() => 0.5 - Math.random());
-            for (const s of shuffled.slice(0, PRE_CACHE_AHEAD)) {
-                songsToCache.push(s.song.url);
-            }
-        } else {
-            const sorted = this.songs.sortByIndex();
-            const next = [...sorted.filter(s => s.index > currentSong.index && s.song.duration > 0).values()].slice(
-                0,
-                PRE_CACHE_AHEAD
-            );
-            for (const s of next) {
-                songsToCache.push(s.song.url);
-            }
+        const sorted = this.songs.sortByIndex();
+        const next = [...sorted.filter(s => s.index > currentSong.index && s.song.duration > 0).values()].slice(
+            0,
+            PRE_CACHE_AHEAD
+        );
+        for (const s of next) {
+            songsToCache.push(s.song.url);
+        }
 
-            if (songsToCache.length < PRE_CACHE_AHEAD && this.loopMode === "QUEUE") {
-                const remaining = PRE_CACHE_AHEAD - songsToCache.length;
-                const fromStart = [
-                    ...sorted.filter(s => s.song.duration > 0 && !songsToCache.includes(s.song.url)).values()
-                ].slice(0, remaining);
-                for (const s of fromStart) {
-                    songsToCache.push(s.song.url);
-                }
+        if (songsToCache.length < PRE_CACHE_AHEAD && this.loopMode === "QUEUE") {
+            const remaining = PRE_CACHE_AHEAD - songsToCache.length;
+            const fromStart = [
+                ...sorted.filter(s => s.song.duration > 0 && !songsToCache.includes(s.song.url)).values()
+            ].slice(0, remaining);
+            for (const s of fromStart) {
+                songsToCache.push(s.song.url);
             }
         }
 
@@ -321,26 +328,138 @@ export class ServerQueue {
         }
     }
 
-    private sendStartPlayingMsg(newSong: QueueSong["song"]): void {
+    private sendStartPlayingMsg(currentSong: QueueSong): void {
+        const song = currentSong.song;
+        const initialSongKey = currentSong.key;
+
         this.client.logger.info(
-            `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""} Track: "${newSong.title}" on ${
+            `${this.client.shard ? `[Shard #${this.client.shard.ids[0]}]` : ""} Track: "${song.title}" on ${
                 this.textChannel.guild.name
             } has started.`
         );
+
+        const getEmbed = () => {
+            const res = (this.player.state as (AudioPlayerState & { resource: AudioResource | undefined }) | undefined)
+                ?.resource;
+            const qSong = (res?.metadata as QueueSong | undefined)?.song;
+
+            const embed = createEmbed("info", `${this.playing ? "▶" : "⏸"} **|** `).setThumbnail(
+                qSong?.thumbnail ?? song.thumbnail
+            );
+
+            const curr = Math.trunc((res?.playbackDuration ?? 0) / 1_000);
+            embed.data.description += qSong
+                ? `**[${qSong.title}](${qSong.url})**\n` +
+                  `${normalizeTime(curr)} ${createProgressBar(curr, qSong.duration)} ${normalizeTime(qSong.duration)}`
+                : i18n.__("commands.music.nowplaying.emptyQueue");
+
+            return embed;
+        };
+
+        const buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
+            new ButtonBuilder()
+                .setCustomId("TOGGLE_STATE_BUTTON")
+                .setLabel("Pause/Play")
+                .setStyle(ButtonStyle.Primary)
+                .setEmoji("⏯️"),
+            new ButtonBuilder()
+                .setCustomId("SKIP_BUTTON")
+                .setLabel("Skip")
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji("⏭"),
+            new ButtonBuilder().setCustomId("STOP_BUTTON").setLabel("Stop").setStyle(ButtonStyle.Danger).setEmoji("⏹"),
+            new ButtonBuilder()
+                .setCustomId("SHOW_QUEUE_BUTTON")
+                .setLabel("Queue")
+                .setStyle(ButtonStyle.Secondary)
+                .setEmoji("#️⃣")
+        );
+
         (async () => {
-            await this.textChannel
-                .send({
-                    embeds: [
-                        createEmbed(
-                            "info",
-                            `▶ **|** ${i18n.__mf("utils.generalHandler.startPlaying", {
-                                song: `[${newSong.title}](${newSong.url})`
-                            })}`
-                        ).setThumbnail(newSong.thumbnail)
-                    ]
+            await this.textChannel.send({
+                embeds: [
+                    createEmbed(
+                        "info",
+                        `▶ **|** ${i18n.__mf("utils.generalHandler.startPlaying", {
+                            song: `[${song.title}](${song.url})`
+                        })}`
+                    ).setThumbnail(song.thumbnail)
+                ]
+            });
+        })();
+
+        (async () => {
+            const ms = await this.textChannel
+                .send({ embeds: [getEmbed()], components: [buttons] })
+                .catch((error: unknown) => {
+                    this.client.logger.error("PLAY_ERR:", error);
+                    return null;
+                });
+
+            if (!ms) return;
+            this.lastMusicMsg = ms.id;
+
+            const interval = setInterval(() => {
+                void ms.edit({ embeds: [getEmbed()], components: [buttons] }).catch(() => undefined);
+            }, 10_000);
+
+            const collector = ms.createMessageComponentCollector({
+                componentType: ComponentType.Button
+            });
+
+            const onStateChange = (_oldState: AudioPlayerState, newState: AudioPlayerState): void => {
+                if (newState.status === AudioPlayerStatus.Idle) {
+                    collector.stop("songEnd");
+                    return;
+                }
+                if (newState.status === AudioPlayerStatus.Playing) {
+                    const newKey = (
+                        (newState as AudioPlayerState & { resource: AudioResource }).resource.metadata as
+                            | QueueSong
+                            | undefined
+                    )?.key;
+                    if (newKey !== initialSongKey) collector.stop("songEnd");
+                }
+            };
+            this.player.on("stateChange", onStateChange);
+
+            collector
+                .on("collect", async i => {
+                    const newCtx = new CommandContext(i);
+                    let cmdName = "";
+
+                    switch (i.customId) {
+                        case "TOGGLE_STATE_BUTTON": {
+                            cmdName = this.playing ? "pause" : "resume";
+                            break;
+                        }
+                        case "SKIP_BUTTON": {
+                            cmdName = "skip";
+                            break;
+                        }
+                        case "SHOW_QUEUE_BUTTON": {
+                            cmdName = "queue";
+                            break;
+                        }
+                        case "STOP_BUTTON": {
+                            cmdName = "stop";
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+
+                    await this.client.commands.get(cmdName)?.execute(newCtx);
+                    void ms.edit({ embeds: [getEmbed()] }).catch(() => undefined);
                 })
-                .then(ms => (this.lastMusicMsg = ms.id))
-                .catch((error: unknown) => this.client.logger.error("PLAY_ERR:", error));
+                .on("end", () => {
+                    clearInterval(interval);
+                    this.player.off("stateChange", onStateChange);
+                    const embed = getEmbed().setFooter({
+                        text: i18n.__("commands.music.nowplaying.disableButton")
+                    });
+                    void ms.edit({ embeds: [embed], components: [] }).catch(() => undefined);
+                });
         })();
     }
 }
