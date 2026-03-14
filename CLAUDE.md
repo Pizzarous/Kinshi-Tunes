@@ -58,7 +58,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Configuration
 
 ### Environment Setup
-- Copy `dev.env.example` to `.env` for development configuration
+- Copy `.env.example` to `.env` for development configuration
 - Required: `DISCORD_TOKEN`
 - Optional: `DEVS`, `NODE_ENV`, `DEBUG_MODE`, `REPL`
 
