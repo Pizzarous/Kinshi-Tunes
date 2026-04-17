@@ -73,6 +73,7 @@
     },
     "overrides": {
         "undici": "7.24.2",
-        "file-type": ">=21.3.1"
+        "file-type": ">=21.3.1",
+        "protobufjs": ">=7.5.5"
     }
 }
