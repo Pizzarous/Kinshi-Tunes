@@ -109,17 +109,16 @@ export class MultiBotManager {
             }
         }
 
-        // 3. Free bot — no VC and no queue
-        const freeBots = botsInGuild
-            .filter(bot => !botsInVoice.get(bot.client) && !botsWithQueues.get(bot.client))
-            .sort((a, b) => {
-                if (a.isPrimary && !b.isPrimary) return -1;
-                if (!a.isPrimary && b.isPrimary) return 1;
-                return a.tokenIndex - b.tokenIndex;
-            });
+        // 3. Free bot — no VC and no queue.
+        // Selection is deterministic within the same routing event (hash of guild + VC IDs +
+        // current minute) so every bot instance independently arrives at the same answer,
+        // but the winner rotates each time a fresh queue is started.
+        const freeBots = botsInGuild.filter(bot => !botsInVoice.get(bot.client) && !botsWithQueues.get(bot.client));
 
         if (freeBots.length > 0) {
-            return freeBots[0]!.client;
+            const minute = Math.floor(Date.now() / 60_000).toString();
+            const seed = MultiBotManager.hashStr(guild.id + voiceChannelId + minute);
+            return freeBots[seed % freeBots.length]!.client;
         }
 
         return null;
@@ -221,5 +220,14 @@ export class MultiBotManager {
 
         // Fall back to primary
         return botsInGuild.find(b => b.isPrimary)?.client ?? botsInGuild[0]!.client;
+    }
+
+    /** Simple deterministic hash of a string to a non-negative integer. */
+    private static hashStr(s: string): number {
+        let h = 0;
+        for (let i = 0; i < s.length; i++) {
+            h = (Math.imul(31, h) + s.charCodeAt(i)) >>> 0;
+        }
+        return h;
     }
 }

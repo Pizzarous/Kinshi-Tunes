@@ -53,7 +53,8 @@ export class VoiceStateUpdateEvent extends BaseEvent {
         }
 
         if (isMultiBot) {
-            const vcId = newState.channel?.id ?? oldState.channel?.id;
+            const ownVcId = queue.connection?.joinConfig.channelId;
+            const vcId = ownVcId ?? newState.channel?.id ?? oldState.channel?.id;
             if (vcId && !this.client.multiBotManager.shouldRespondToVoice(this.client, newState.guild, vcId)) return;
         }
 
