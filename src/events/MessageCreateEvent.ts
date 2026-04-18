@@ -1,8 +1,35 @@
 import { ChannelType, Message, User } from "discord.js";
 import i18n from "../config/index.js";
+import { isMultiBot } from "../config/env.js";
 import { BaseEvent } from "../structures/BaseEvent.js";
 import { Event } from "../utils/decorators/Event.js";
 import { createEmbed } from "../utils/functions/createEmbed.js";
+
+// Music commands that require voice-channel-aware routing in multi-bot mode
+const MUSIC_COMMANDS = [
+    "play",
+    "p",
+    "add",
+    "search",
+    "skip",
+    "stop",
+    "pause",
+    "resume",
+    "queue",
+    "nowplaying",
+    "np",
+    "volume",
+    "shuffle",
+    "repeat",
+    "filter",
+    "move",
+    "remove",
+    "skipto",
+    "clearqueue",
+    "leave",
+    "stayinqueue",
+    "dj"
+];
 
 @Event<typeof MessageCreateEvent>("messageCreate")
 export class MessageCreateEvent extends BaseEvent {
@@ -47,7 +74,42 @@ export class MessageCreateEvent extends BaseEvent {
 
             return message.content.startsWith(pr);
         });
+
         if ((pref?.length ?? 0) > 0) {
+            if (isMultiBot && message.guild) {
+                const thisBotGuild = this.client.guilds.cache.get(message.guild.id);
+                if (!thisBotGuild) return;
+
+                const cmdContent = message.content.slice(pref!.length).trim();
+                const cmdName = cmdContent.split(/ +/u)[0]?.toLowerCase() ?? "";
+                const isMusicCmd = MUSIC_COMMANDS.includes(cmdName);
+
+                if (isMusicCmd) {
+                    let member = thisBotGuild.members.cache.get(message.author.id);
+                    member ??= (await thisBotGuild.members.fetch(message.author.id).catch(() => null)) ?? undefined;
+                    const userVoiceChannelId = member?.voice.channelId ?? null;
+
+                    if (userVoiceChannelId) {
+                        const shouldRespond = this.client.multiBotManager.shouldRespondToMusicCommand(
+                            this.client,
+                            thisBotGuild,
+                            userVoiceChannelId
+                        );
+                        if (shouldRespond === "busy") {
+                            void message.reply({
+                                embeds: [createEmbed("error", `⚠️ **|** ${i18n.__("utils.multiBotManager.botBusy")}`)]
+                            });
+                            return;
+                        }
+                        if (shouldRespond !== "respond") return;
+                    } else if (!this.client.multiBotManager.shouldRespond(this.client, thisBotGuild)) {
+                        return;
+                    }
+                } else if (!this.client.multiBotManager.shouldRespond(this.client, thisBotGuild)) {
+                    return;
+                }
+            }
+
             this.client.commands.handle(message, pref as unknown as string);
         }
     }

@@ -40,6 +40,18 @@ export const mainPrefix = isDev ? "d!" : (process.env.MAIN_PREFIX ?? "") || "!";
 export const debugMode = process.env.DEBUG_MODE?.toLowerCase() === "yes";
 export const enableRepl = process.env.REPL?.toLowerCase() === "yes";
 
+const rawTokens = process.env.DISCORD_TOKEN ?? "";
+const hasMultipleTokens = rawTokens.includes(",");
+export const discordTokens: string[] = hasMultipleTokens
+    ? rawTokens
+          .split(",")
+          .map(t => t.trim())
+          .filter(t => t.length > 0)
+    : rawTokens.trim().length > 0
+      ? [rawTokens.trim()]
+      : [];
+export const isMultiBot = hasMultipleTokens && discordTokens.length > 1;
+
 export const altPrefixes: string[] = parseEnvValue((process.env.ALT_PREFIX ?? "") || "{mention}").filter(
     (x, i, a) => a.indexOf(x) === i && x !== mainPrefix
 );

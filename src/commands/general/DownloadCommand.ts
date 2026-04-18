@@ -16,20 +16,20 @@ const currentDir = path.dirname(currentFilename);
 
 @Command<typeof DownloadCommand>({
     aliases: ["d", "download"],
-    description: i18n.__("commands.music.download.description"),
+    description: i18n.__("commands.general.download.description"),
     name: "download",
     slash: {
-        description: i18n.__("commands.music.download.description"),
+        description: i18n.__("commands.general.download.description"),
         options: [
             {
-                description: i18n.__("commands.music.download.slashUrlDescription"),
+                description: i18n.__("commands.general.download.slashUrlDescription"),
                 name: "url",
                 type: ApplicationCommandOptionType.String,
                 required: true
             }
         ]
     },
-    usage: i18n.__("commands.music.download.usage")
+    usage: i18n.__("commands.general.download.usage")
 })
 export class DownloadCommand extends BaseCommand {
     public async execute(ctx: CommandContext): Promise<Message | undefined> {
@@ -44,10 +44,10 @@ export class DownloadCommand extends BaseCommand {
             console.error("No URL provided");
             return ctx.isInteraction()
                 ? ctx.followUp({
-                      embeds: [createEmbed("warn", i18n.__("commands.music.download.noUrlProvided"))]
+                      embeds: [createEmbed("warn", i18n.__("commands.general.download.noUrlProvided"))]
                   })
                 : ctx.reply({
-                      embeds: [createEmbed("warn", i18n.__("commands.music.download.noUrlProvided"))]
+                      embeds: [createEmbed("warn", i18n.__("commands.general.download.noUrlProvided"))]
                   });
         }
 
@@ -80,10 +80,10 @@ export class DownloadCommand extends BaseCommand {
             // Send a message indicating the download attempt
             await (ctx.isInteraction()
                 ? ctx.followUp({
-                      content: i18n.__("commands.music.download.downloading", { title: sanitizedTitle })
+                      content: i18n.__("commands.general.download.downloading", { title: sanitizedTitle })
                   })
                 : ctx.reply({
-                      content: i18n.__("commands.music.download.downloading", { title: sanitizedTitle })
+                      content: i18n.__("commands.general.download.downloading", { title: sanitizedTitle })
                   }));
 
             // Create temp directory if it doesn't exist
@@ -129,11 +129,11 @@ export class DownloadCommand extends BaseCommand {
             const attachment = new AttachmentBuilder(mp3FilePath);
             await (ctx.isInteraction()
                 ? ctx.followUp({
-                      content: i18n.__("commands.music.download.downloadCompleted"),
+                      content: i18n.__("commands.general.download.downloadCompleted"),
                       files: [attachment]
                   })
                 : ctx.reply({
-                      content: i18n.__("commands.music.download.downloadCompleted"),
+                      content: i18n.__("commands.general.download.downloadCompleted"),
                       files: [attachment]
                   }));
 
@@ -145,10 +145,10 @@ export class DownloadCommand extends BaseCommand {
 
             await (ctx.isInteraction()
                 ? ctx.followUp({
-                      embeds: [createEmbed("error", i18n.__("commands.music.download.downloadFailed"))]
+                      embeds: [createEmbed("error", i18n.__("commands.general.download.downloadFailed"))]
                   })
                 : ctx.reply({
-                      embeds: [createEmbed("error", i18n.__("commands.music.download.downloadFailed"))]
+                      embeds: [createEmbed("error", i18n.__("commands.general.download.downloadFailed"))]
                   }));
             return;
         } finally {

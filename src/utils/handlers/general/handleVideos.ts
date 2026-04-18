@@ -77,6 +77,7 @@ export async function handleVideos(
             adapterCreator: ctx.guild?.voiceAdapterCreator as DiscordGatewayAdapterCreator,
             channelId: voiceChannel.id,
             guildId: ctx.guild?.id ?? "",
+            group: client.user!.id,
             selfDeaf: true
         }).on("debug", message => {
             client.logger.debug(message);

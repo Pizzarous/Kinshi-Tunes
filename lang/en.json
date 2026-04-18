@@ -51,6 +51,15 @@
                 "sourceCodeString": "Source code"
             },
             "categoryName": "GENERAL",
+            "download": {
+                "description": "Download some music",
+                "slashUrlDescription": "URL to download",
+                "usage": "{prefix}download <url>",
+                "noUrlProvided": "No URL provided. Please provide a valid URL to download the music.",
+                "downloading": "Attempting to download **{{title}}**. Please wait!",
+                "downloadCompleted": "Here's your lovely file, fresh and ready! Enjoy the beats!",
+                "downloadFailed": "Failed to download the song from the provided URL. \nThis may be due an invalid URL or to the song being too long.\nPlease check the URL and try again."
+            },
             "help": {
                 "aliasesString": "Aliases",
                 "authorString": "{username} - Command List",
@@ -135,15 +144,6 @@
                 "noSongData": "That URL doesn't have any song data.",
                 "slashQueryDescription": "Query to search",
                 "usage": "{prefix}play <query | url>"
-            },
-            "download": {
-                "description": "Download some music",
-                "slashUrlDescription": "URL to download",
-                "usage": "{prefix}download <url>",
-                "noUrlProvided": "No URL provided. Please provide a valid URL to download the music.",
-                "downloading": "Attempting to download **{{title}}**. Please wait!",
-                "downloadCompleted": "Here's your lovely file, fresh and ready! Enjoy the beats!",
-                "downloadFailed": "Failed to download the song from the provided URL. \nThis may be due an invalid URL or to the song being too long.\nPlease check the URL and try again."
             },
             "queue": {
                 "description": "Show the queue list"
@@ -291,6 +291,9 @@
             "queueEnded": "Queue has ended, use **`{usage}`** to play more music.",
             "startPlaying": "Started playing **{song}**",
             "stopPlaying": "Stopped playing **{song}**"
+        },
+        "multiBotManager": {
+            "botBusy": "Something went wrong, please try again later."
         },
         "musicDecorator": {
             "noInVC": "Sowwy, but u need to be in a voice channel to do that.",

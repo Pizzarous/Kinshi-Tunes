@@ -1,6 +1,6 @@
 import { type Buffer } from "node:buffer";
 import { type ChildProcess, execFileSync } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
     createReadStream,
     createWriteStream,
@@ -31,8 +31,8 @@ function killProcessTree(proc: ChildProcess): void {
 }
 
 const PRE_CACHE_AHEAD_COUNT = 5;
-const MAX_CACHE_SIZE_MB = 1000;
-const MAX_CACHE_FILES = 100;
+const MAX_CACHE_SIZE_MB = 2000;
+const MAX_CACHE_FILES = 200;
 const PRE_CACHE_RETRY_COUNT = 2;
 const QUEUE_PROCESSING_DELAY_MS = 50;
 const MAX_PRE_CACHE_RETRIES = 2;
@@ -40,6 +40,7 @@ const MAX_CONCURRENT_PRECACHE = 2;
 
 export class AudioCacheManager {
     public readonly cacheDir: string;
+    private readonly instanceId = randomUUID().slice(0, 8);
     private readonly cachedFiles = new Map<string, { path: string; lastAccess: number }>();
     private readonly inProgressFiles = new Set<string>();
     private readonly inProgressProcs = new Map<
@@ -67,7 +68,7 @@ export class AudioCacheManager {
         try {
             const files = readdirSync(this.cacheDir);
 
-            // Clean up any leftover .part files from previous crashes
+            // Clean up any leftover .part files from previous crashes (including from this instance)
             const partFiles = files.filter(f => f.endsWith(".opus.part"));
             for (const file of partFiles) {
                 try {
@@ -75,7 +76,7 @@ export class AudioCacheManager {
                 } catch {}
             }
 
-            const opusFiles = files.filter(f => f.endsWith(".opus"));
+            const opusFiles = files.filter(f => /^[a-f0-9]{32}\.opus$/.test(f));
             for (const file of opusFiles) {
                 const filePath = path.join(this.cacheDir, file);
                 try {
@@ -104,7 +105,7 @@ export class AudioCacheManager {
     }
 
     private getPartPath(key: string): string {
-        return path.join(this.cacheDir, `${key}.opus.part`);
+        return path.join(this.cacheDir, `${key}.${this.instanceId}.opus.part`);
     }
 
     public invalidateCache(url: string): void {
@@ -263,7 +264,11 @@ export class AudioCacheManager {
                     rmSync(partPath, { force: true });
                     return;
                 }
-                renameSync(partPath, cachePath);
+                if (existsSync(cachePath)) {
+                    rmSync(partPath, { force: true });
+                } else {
+                    renameSync(partPath, cachePath);
+                }
             } catch {
                 this.client.logger.warn(
                     `[AudioCacheManager] Could not finalize cached file for ${url.substring(0, 50)}..., discarding`
@@ -479,7 +484,11 @@ export class AudioCacheManager {
                     try {
                         const stats = statSync(partPath);
                         if (stats.size >= 1024) {
-                            renameSync(partPath, cachePath);
+                            if (existsSync(cachePath)) {
+                                rmSync(partPath, { force: true });
+                            } else {
+                                renameSync(partPath, cachePath);
+                            }
                             this.cachedFiles.set(key, { path: cachePath, lastAccess: Date.now() });
                             this.failedUrls.delete(key);
                             this.client.logger.info(

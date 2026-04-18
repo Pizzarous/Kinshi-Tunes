@@ -8,10 +8,34 @@ import {
     TextChannel
 } from "discord.js";
 import i18n from "../config/index.js";
+import { isMultiBot } from "../config/env.js";
 import { BaseEvent } from "../structures/BaseEvent.js";
 import { CommandContext } from "../structures/CommandContext.js";
 import { Event } from "../utils/decorators/Event.js";
 import { createEmbed } from "../utils/functions/createEmbed.js";
+
+// Music slash commands that require voice-channel-aware routing in multi-bot mode
+const MUSIC_SLASH_COMMANDS = [
+    "play",
+    "search",
+    "skip",
+    "stop",
+    "pause",
+    "resume",
+    "queue",
+    "nowplaying",
+    "volume",
+    "shuffle",
+    "repeat",
+    "filter",
+    "move",
+    "remove",
+    "skipto",
+    "clearqueue",
+    "leave",
+    "stayinqueue",
+    "dj"
+];
 
 @Event("interactionCreate")
 export class InteractionCreateEvent extends BaseEvent {
@@ -84,6 +108,42 @@ export class InteractionCreateEvent extends BaseEvent {
         }
 
         if (interaction.isCommand()) {
+            // Multi-bot routing: only the responsible bot handles music slash commands
+            if (isMultiBot && interaction.guild) {
+                const thisBotGuild = this.client.guilds.cache.get(interaction.guild.id);
+                if (!thisBotGuild) return;
+
+                const cmdName = interaction.commandName.toLowerCase();
+                const isMusicCmd = MUSIC_SLASH_COMMANDS.includes(cmdName);
+
+                if (isMusicCmd) {
+                    const member = await thisBotGuild.members
+                        .fetch(interaction.user.id)
+                        .catch(() => thisBotGuild.members.cache.get(interaction.user.id) ?? null);
+                    const userVoiceChannelId = member?.voice.channelId ?? null;
+
+                    if (userVoiceChannelId) {
+                        const shouldRespond = this.client.multiBotManager.shouldRespondToMusicCommand(
+                            this.client,
+                            thisBotGuild,
+                            userVoiceChannelId
+                        );
+                        if (shouldRespond === "busy") {
+                            void interaction.reply({
+                                embeds: [createEmbed("error", `⚠️ **|** ${i18n.__("utils.multiBotManager.botBusy")}`)],
+                                ephemeral: true
+                            });
+                            return;
+                        }
+                        if (shouldRespond !== "respond") return;
+                    } else if (!this.client.multiBotManager.shouldRespond(this.client, thisBotGuild)) {
+                        return;
+                    }
+                } else if (!this.client.multiBotManager.shouldRespond(this.client, thisBotGuild)) {
+                    return;
+                }
+            }
+
             const cmd = this.client.commands
                 .filter(x => x.meta.slash !== undefined)
                 .find(x => x.meta.slash?.name === interaction.commandName);
