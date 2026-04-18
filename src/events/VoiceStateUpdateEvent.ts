@@ -3,6 +3,7 @@ import { clearTimeout, setTimeout } from "node:timers";
 import { AudioPlayerPausedState, entersState, VoiceConnectionStatus } from "@discordjs/voice";
 import { ChannelType, Message, StageChannel, VoiceChannel, VoiceState } from "discord.js";
 import i18n from "../config/index.js";
+import { isMultiBot } from "../config/env.js";
 import { BaseEvent } from "../structures/BaseEvent.js";
 import { ServerQueue } from "../structures/ServerQueue.js";
 import { QueueSong } from "../typings/index.js";
@@ -49,6 +50,11 @@ export class VoiceStateUpdateEvent extends BaseEvent {
         if (!queue) return;
         if (queue.destroyTimeoutId) {
             return;
+        }
+
+        if (isMultiBot) {
+            const vcId = newState.channel?.id ?? oldState.channel?.id;
+            if (vcId && !this.client.multiBotManager.shouldRespondToVoice(this.client, newState.guild, vcId)) return;
         }
 
         const newVC = newState.channel;

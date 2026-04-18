@@ -6,13 +6,13 @@
 
 ## Features
 
--   **Multi-Platform Music Support:** YouTube, SoundCloud, and Spotify integration
--   **Advanced Audio Processing:** FFmpeg-based audio filters and effects
--   **Slash Commands & Prefix Support:** Modern Discord interactions with fallback support
--   **Queue Management:** Play, pause, skip, shuffle, repeat, and more
--   **Voice Channel Controls:** Auto-join, auto-leave, and voice state management
--   **Moderation Tools:** Ban, kick, mute, warn, and purge commands
--   **Production-Ready:** Optimized for self-hosting with comprehensive error handling
+- **Multi-Platform Music Support:** YouTube, SoundCloud, and Spotify integration
+- **Advanced Audio Processing:** FFmpeg-based audio filters and effects
+- **Slash Commands & Prefix Support:** Modern Discord interactions with fallback support
+- **Queue Management:** Play, pause, skip, shuffle, repeat, and more
+- **Voice Channel Controls:** Auto-join, auto-leave, and voice state management
+- **Multi-Bot Support:** Run multiple bot instances from a single process for multi-VC setups
+- **Production-Ready:** Optimized for self-hosting with comprehensive error handling
 
 ## General Setup
 
@@ -25,6 +25,7 @@
     ```
 
 Or run each step manually:
+
 ```sh
 $ npm install
 $ npm run build
@@ -32,7 +33,9 @@ $ npm start
 ```
 
 ### Development
+
 For development with automatic compilation (skips lint, cleans dist):
+
 ```sh
 $ npm run start:dev
 ```
@@ -47,6 +50,26 @@ Some YouTube videos may fail to play or download due to bot detection. You can p
 4. Set `YT_COOKIES_FILE="./cookies.txt"` in your `.env` file
 
 > **Note:** Cookies expire periodically — re-export them if issues return.
+
+### Multi-Bot Mode (Optional)
+
+You can run multiple bot instances from a single process. This allows multiple bots to independently serve different voice channels in the same server.
+
+1. Create multiple Discord applications in the [Developer Portal](https://discord.com/developers/applications) — each needs Message Content, Server Members, and Presence intents enabled
+2. Invite all bots to your server
+3. In `.env`, list all tokens separated by commas:
+    ```
+    DISCORD_TOKEN="token1, token2, token3"
+    ```
+4. Start the bot normally (`npm start` or `npm run start:dev`) — the launcher detects multiple tokens automatically
+
+**How routing works:**
+
+- If a bot already has an active queue for your voice channel → that bot responds
+- If a bot is physically in your voice channel → that bot responds
+- Otherwise → the lowest-indexed free bot responds (deterministic, never both bots at once)
+
+> **Note:** Non-music commands (ping, help, etc.) are handled by the "primary" bot (first token).
 
 ## Disclaimers
 

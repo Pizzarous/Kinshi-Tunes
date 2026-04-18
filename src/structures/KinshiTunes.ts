@@ -10,6 +10,7 @@ import { importURLToString } from "../utils/functions/importURLToString.js";
 import { SpotifyUtil } from "../utils/handlers/SpotifyUtil.js";
 import { AudioCacheManager } from "../utils/structures/AudioCacheManager.js";
 import { ClientUtils } from "../utils/structures/ClientUtils.js";
+import { MultiBotManager } from "../utils/structures/MultiBotManager.js";
 import { CommandManager } from "../utils/structures/CommandManager.js";
 import { DebugLogManager } from "../utils/structures/DebugLogManager.js";
 import { EventsLoader } from "../utils/structures/EventsLoader.js";
@@ -30,6 +31,7 @@ export class KinshiTunes extends Client {
     public readonly utils = new ClientUtils(this);
     public readonly soundcloud = new Soundcloud();
     public readonly audioCache = new AudioCacheManager(this);
+    public readonly multiBotManager = MultiBotManager.getInstance();
     public readonly request = got.extend({
         timeout: { request: 15_000 },
         hooks: {
@@ -61,10 +63,10 @@ export class KinshiTunes extends Client {
         super(opt);
     }
 
-    public build: () => Promise<this> = async () => {
+    public build: (token?: string) => Promise<this> = async (token?: string) => {
         this.startTimestamp = Date.now();
         this.events.load();
-        await this.login();
+        await this.login(token);
         return this;
     };
 }
