@@ -72,7 +72,7 @@
         "play-dl": "^1.9.7"
     },
     "overrides": {
-        "undici": "7.25.0",
+        "undici": "7.28.0",
         "file-type": ">=22.0.0",
         "protobufjs": ">=7.5.5"
     }
