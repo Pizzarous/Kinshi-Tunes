@@ -244,6 +244,11 @@
                 "invalidDestination": "Invalid destination position. Please specify a position between 1 and {length}",
                 "cantMoveNowPlaying": "You cannot move the currently playing song. Use 'skip' instead",
                 "moveSuccess": "Moved **{song}** from position **{source}** to position **{destination}**"
+            },
+            "download": {
+                "description": "commands.music.download.description",
+                "slashUrlDescription": "commands.music.download.slashUrlDescription",
+                "usage": "commands.music.download.usage"
             }
         }
     },
