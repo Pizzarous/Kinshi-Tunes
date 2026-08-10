@@ -45,7 +45,7 @@
         "@swc/core": "1.15.26",
         "axios": "^1.6.8",
         "date-fns": "4.1.0",
-        "discord.js": "14.26.3",
+        "discord.js": "14.27.0",
         "dotenv": "17.4.2",
         "ffmpeg-static": "^5.2.0",
         "got": "^15.0.2",
@@ -72,7 +72,6 @@
         "play-dl": "^1.9.7"
     },
     "overrides": {
-        "undici": "8.10.0",
         "file-type": ">=22.0.0",
         "protobufjs": ">=7.5.5"
     }
