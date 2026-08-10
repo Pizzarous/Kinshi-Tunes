@@ -1,7 +1,22 @@
 {
-    "typescript.preferences.importModuleSpecifierEnding": "js",
+    "js/ts.preferences.importModuleSpecifierEnding": "js",
     "liveshare.languages.allowGuestCommandControl": true,
-    "typescript.tsdk": "node_modules/typescript/lib",
+    "js/ts.tsdk.path": "node_modules/typescript/lib",
     "npm.packageManager": "npm",
-    "files.eol": "\n"
+    "files.eol": "\n",
+    "prettier.prettierPath": "node_modules/prettier",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }

@@ -63,8 +63,7 @@ export class VoiceStateUpdateEvent extends BaseEvent {
         const newID = newVC?.id;
         const oldID = oldVC?.id;
         const queueVC = newState.guild.channels.cache.get(queue.connection?.joinConfig.channelId ?? "") as
-            | StageChannel
-            | VoiceChannel;
+            StageChannel | VoiceChannel;
         const member = newState.member;
         const oldMember = oldState.member;
         const newVCMembers = newVC?.members.filter(mbr => !mbr.user.bot);

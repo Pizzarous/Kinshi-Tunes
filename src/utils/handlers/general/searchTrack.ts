@@ -54,15 +54,13 @@ export async function searchTrack(
                     case "playlist": {
                         const playlist = await client.soundcloud.playlists.getV2(scUrl.toString());
                         const tracks = await Promise.all(
-                            playlist.tracks.map(
-                                (track): Song => ({
-                                    duration: track.full_duration,
-                                    id: track.id.toString(),
-                                    thumbnail: track.artwork_url,
-                                    title: track.title,
-                                    url: track.permalink_url
-                                })
-                            )
+                            playlist.tracks.map((track): Song => ({
+                                duration: track.full_duration,
+                                id: track.id.toString(),
+                                thumbnail: track.artwork_url,
+                                title: track.title,
+                                url: track.permalink_url
+                            }))
                         );
 
                         result.items = tracks;
@@ -307,15 +305,13 @@ export async function searchTrack(
                 q: query
             });
             const tracks = await Promise.all(
-                searchRes.collection.map(
-                    (track): Song => ({
-                        duration: track.full_duration,
-                        id: track.id.toString(),
-                        thumbnail: track.artwork_url,
-                        title: track.title,
-                        url: track.permalink_url
-                    })
-                )
+                searchRes.collection.map((track): Song => ({
+                    duration: track.full_duration,
+                    id: track.id.toString(),
+                    thumbnail: track.artwork_url,
+                    title: track.title,
+                    url: track.permalink_url
+                }))
             );
 
             result.items = tracks;
@@ -329,15 +325,13 @@ export async function searchTrack(
             const searchRes = await youtube.search(queryContainsYoutubeUrl ? cleanQuery : query, { type: "video" });
 
             const tracks = await Promise.all(
-                searchRes.items.map(
-                    (track): Song => ({
-                        duration: track.duration ?? 0,
-                        id: track.id,
-                        thumbnail: track.thumbnails.sort((a, b) => b.height * b.width - a.height * a.width)[0].url,
-                        title: track.title,
-                        url: `https://youtube.com/watch?v=${track.id}`
-                    })
-                )
+                searchRes.items.map((track): Song => ({
+                    duration: track.duration ?? 0,
+                    id: track.id,
+                    thumbnail: track.thumbnails.sort((a, b) => b.height * b.width - a.height * a.width)[0].url,
+                    title: track.title,
+                    url: `https://youtube.com/watch?v=${track.id}`
+                }))
             );
 
             result.items = tracks;

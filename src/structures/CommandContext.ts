@@ -36,11 +36,7 @@ export class CommandContext {
 
     public constructor(
         public readonly context:
-            | CommandInteraction
-            | ContextMenuCommandInteraction
-            | Interaction
-            | Message
-            | StringSelectMenuInteraction,
+            CommandInteraction | ContextMenuCommandInteraction | Interaction | Message | StringSelectMenuInteraction,
         public args: string[] = []
     ) {
         this.channel = this.context.channel;

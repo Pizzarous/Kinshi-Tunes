@@ -45,11 +45,7 @@ const DATAS: InteractionButtonComponentData[] = [
 export class ButtonPagination {
     public constructor(
         public readonly msg:
-            | CommandInteraction
-            | ContextMenuCommandInteraction
-            | Interaction
-            | Message
-            | StringSelectMenuInteraction,
+            CommandInteraction | ContextMenuCommandInteraction | Interaction | Message | StringSelectMenuInteraction,
         public readonly payload: PaginationPayload
     ) {}
 

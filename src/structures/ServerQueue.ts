@@ -415,8 +415,7 @@ export class ServerQueue {
                 if (newState.status === AudioPlayerStatus.Playing) {
                     const newKey = (
                         (newState as AudioPlayerState & { resource: AudioResource }).resource.metadata as
-                            | QueueSong
-                            | undefined
+                            QueueSong | undefined
                     )?.key;
                     if (newKey !== initialSongKey) collector.stop("songEnd");
                 }
