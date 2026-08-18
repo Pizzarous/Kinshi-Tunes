@@ -37,6 +37,7 @@ function isTransientError(errorMessage: string): boolean {
         "temporarily unavailable",
         "network is unreachable",
         "unable to download",
+        "http error 403",
         "http error 503",
         "http error 502",
         "http error 500",
